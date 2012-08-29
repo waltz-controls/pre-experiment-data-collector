@@ -1,0 +1,67 @@
+{
+    "forms" :[
+        {
+            "name":"Beamline Parameters",
+            "id":"beamline",
+            "help":"Here you can fill beamline parameters. Please ask your leader for more details...",
+            "fields" : [
+                {
+                    "name":"Beamtime ID",
+                    "id":"beamtimeId",
+                    "type":"number",
+                    "description":"A beamtime ID",
+                    "validation":"required,custom[integer]"
+                },
+                {
+                    "name":"Group Name",
+                    "id":"groupName",
+                    "type":"string",
+                    "description":"A name of the group",
+                    "validation":"required"
+                },
+                {
+                    "name":"Sample Holder ID",
+                    "id":"sampleHolderId",
+                    "type":"string",
+                    "description":"A sample holder ID",
+                    "validation":"required"
+                },
+                {
+                    "name":"Sample Name",
+                    "id":"sampleName",
+                    "type":"string",
+                    "description":"A name of the sample",
+                    "validation":"required"
+                },
+                {
+                    "name":"Sample Description",
+                    "id":"sampleDesc",
+                    "type":"text",
+                    "description":"A short description of the sample",
+                    "validation":"required"
+                }
+            ]
+        },
+        {
+            "name":"Upload additional documents",
+            "id":"upload",
+            "help":"Please upload a pdf document with experiment description and/or several tif images of the sample",
+            "fields":[
+                {
+                    "name":".pdf document",
+                    "id":"pdfDoc",
+                    "description":"Please browse for a pdf document",
+                    "type":"file",
+                    "validation":null
+                },
+                {
+                    "name":".tif images",
+                    "id":"tifImg",
+                    "description":"Please browse for a tif image",
+                    "type":"file-multiply",
+                    "validation":null
+                }
+            ]
+        }
+    ]
+}

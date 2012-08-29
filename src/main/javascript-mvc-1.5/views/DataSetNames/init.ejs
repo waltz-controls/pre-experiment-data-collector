@@ -1,0 +1,32 @@
+﻿<div id="DataSetNames" class="regular-form">
+    <fieldset>
+        <div class="title-wrap">
+            <strong class="label">Scans info.</strong>
+        </div>
+        <div class="form-box">
+            <% for (var i = 0, size = data.length, tomoScan = data[0]; i<size; tomoScan = data[++i]) {%>
+            <%= tomoScan.toView() %>
+            <% } %>
+            <div class="row">
+                <input type="radio" name="dataset" id="new" CHECKED/><input type="text" id="newScanName"
+                                                                            value="Enter here new scan name" size="15"/>
+            </div>
+        </div>
+        <div class="ui-widget help-box">
+            <div class="ui-state-highlight ui-corner-all help-content">
+                <p>
+                    <span class="ui-icon ui-icon-info"></span>
+                    Press 'Add new...' button to create new scan.
+                </p>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<div class="navigation">
+    <ul class="clearfix">
+        <li>
+            <button type="button" name="forward" onclick="javascript:DataSetNamesController.onForward()">Forward
+            </button>
+        </li>
+    </ul>
+</div>

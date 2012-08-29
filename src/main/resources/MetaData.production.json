@@ -1,0 +1,739 @@
+{
+    "forms":[
+        {
+            "name"  :"Basic sample and scan parameters",
+            "id"    :"frmBasicSampleParam",
+            "type"  :"fieldset",
+            "help"  :"Please fill in all required fields on this form.",
+            "fields":[
+                {
+                    "name"       :"Energy",
+                    "id"         :"scan_energie",
+                    "type"       :"double",
+                    "description":"Energy used in the experiment.",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"Scan path",
+                    "id"         :"scan_pfad",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"Sample ID",
+                    "id"         :"sample_id",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"Sample description",
+                    "id"         :"sample_desc",
+                    "type"       :"text",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :false
+                }
+            ]
+        },
+        {
+            "name"  :"Detector parameters",
+            "id"    :"frmDctParam",
+            "type"  :"fieldset",
+            "help"  :"Detector parameters. These parameters are set by the operator and therefore readonly",
+            "fields":[
+                {
+                    "name"       :"Vendor",
+                    "id"         :"dct_vendor",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"pixel_size_x",
+                    "id"         :"dct_pixel_size_x",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"pixel_size_y",
+                    "id"         :"dct_pixel_size_y",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Region of Interest.X",
+                    "id"         :"dct_roi_x",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Region of Interest.Y",
+                    "id"         :"dct_roi_y",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Lens focus (mm)",
+                    "id"         :"dct_lens_focus",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Magnification",
+                    "id"         :"dct_magnification",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Spatial resolution",
+                    "id"         :"dct_spatial_resolution",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                }
+
+            ]
+        },
+        {
+            "name"  :"CCD camera parameters",
+            "id"    :"frmCcdCameraParam",
+            "type"  :"fieldset",
+            "help"  :"Please fill in all required parameters for ccd camera setup.",
+            "fields":[
+                {
+                    "name"       :"Vendor",
+                    "id"         :"ccd_vendor",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Pixel size (&#x03BC;m)",
+                    "id"         :"ccd_pixel_size",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"x min",
+                    "id"         :"ccd_xmin",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"required,custom[integer],min[0],max[3056]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"x max",
+                    "id"         :"ccd_xmax",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"required,custom[integer],min[0],max[3056]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"y min",
+                    "id"         :"ccd_ymin",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"required,custom[integer],min[0],max[3056]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"y max",
+                    "id"         :"ccd_ymax",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"required,custom[integer],min[0],max[3056]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"bin",
+                    "id"         :"ccd_bin",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"Start rotangle",
+                    "id"         :"ccd_start",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"End rotangle",
+                    "id"         :"ccd_end",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"Rotation step",
+                    "id"         :"ccd_step",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"FixTime",
+                    "id"         :"ccd_FixTime",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"required,custom[integer]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"Exposure time",
+                    "id"         :"ccd_ExpTime",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"required,custom[integer]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                }
+            ]
+        },
+        {
+            "name"  :"Extended scan parameters",
+            "id"    :"frmExtScanParam",
+            "type"  :"fieldset",
+            "help"  :"Please fill in all required fields on this form.",
+            "fields":[
+                {
+                    "name"       :"Reference count",
+                    "id"         :"scan_refcount",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"required,custom[integer]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"Number exposure",
+                    "id"         :"scan_numexp",
+                    "type"       :"number",
+                    "description":"Estimated exposure time",
+                    "validation" :"required,custom[integer]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"Number reference",
+                    "id"         :"scan_numref",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"required,custom[integer]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"Number scan",
+                    "id"         :"scan_numscan",
+                    "type"       :"number",
+                    "description":"...",
+                    "validation" :"required,custom[integer]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"Number dark",
+                    "id"         :"scan_numdark",
+                    "type"       :"number",
+                    "description":"Defines number of a dark image",
+                    "validation" :"required,custom[integer]",
+                    "visibility" :"web",
+                    "readonly"   :false
+                }
+            ]
+        },
+        {
+            "name"  :"Motor parameters",
+            "id"    :"frmMtrParam",
+            "type"  :"fieldset",
+            "help"  :"Please fill in all required fields on this form.",
+            "fields":[
+                {
+                    "name"       :"S_POS_X",
+                    "id"         :"motor_s_pos_x",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"S_POS_Y",
+                    "id"         :"motor_s_pos_y",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"S_HIGH",
+                    "id"         :"motor_s_high",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"S_IN_POS",
+                    "id"         :"motor_s_in_pos",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                },
+                {
+                    "name"       :"S_OUT_POS",
+                    "id"         :"motor_s_out_pos",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"required",
+                    "visibility" :"web",
+                    "readonly"   :false
+                }
+            ]
+        },
+        {
+            "name"  :"Instrument parameters",
+            "id"    :"frmInstrParam",
+            "type"  :"fieldset",
+            "help"  :"These fields are filled by the operator and therefore readonly.",
+            "fields":[
+                {
+                    "name"       :"Name",
+                    "id"         :"instr_name",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Source Name",
+                    "id"         :"instr_src_name",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Source type",
+                    "id"         :"instr_src_type",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Source probe",
+                    "id"         :"instr_src_probe",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Distance (m)",
+                    "id"         :"instr_distance",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Insertion device type",
+                    "id"         :"instr_insrt_dvc_type",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                }
+            ]
+        },
+        {
+            "name"  :"Slit1 parameters",
+            "id"    :"frmSlit1Param",
+            "type"  :"fieldset",
+            "help"  :"These fields are filled by the operator and therefore readonly.",
+            "fields":[
+                {
+                    "name"       :"x_gap",
+                    "id"         :"slit_1_x_gap",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_gap",
+                    "id"         :"slit_1_y_gap",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"x_center",
+                    "id"         :"slit_1_x_center",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_center",
+                    "id"         :"slit_1_y_center",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"x_direction",
+                    "id"         :"slit_1_x_direction",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_direction",
+                    "id"         :"slit_1_y_direction",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                }
+            ]
+        },
+        {
+            "name"  :"Filters parameters",
+            "id"    :"frmFltrsParam",
+            "type"  :"fieldset",
+            "help"  :"These fields are filled by the operator and therefore readonly.",
+            "fields":[
+                {
+                    "name"       :"Filter1 description",
+                    "id"         :"fltr_1_desc",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Filter2 description",
+                    "id"         :"fltr_2_desc",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Filter3 description",
+                    "id"         :"fltr_3_desc",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                }
+            ]
+        },
+        {
+            "name"  :"Monochromator parameters",
+            "id"    :"frmMonoParam",
+            "type"  :"fieldset",
+            "help"  :"These fields are filled by the operator and therefore readonly.",
+            "fields":[
+                {
+                    "name"       :"Wave length (nm)",
+                    "id"         :"mono_wave_length",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"Energy (keV)",
+                    "id"         :"mono_energy",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                }
+            ]
+        },
+        {
+            "name"  :"Slit2 parameters",
+            "id"    :"frmSlit2Param",
+            "type"  :"fieldset",
+            "help"  :"These fields are filled by the operator and therefore readonly.",
+            "fields":[
+                {
+                    "name"       :"x_gap",
+                    "id"         :"slit_2_x_gap",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_gap",
+                    "id"         :"slit_2_y_gap",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"x_center",
+                    "id"         :"slit_2_x_center",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_center",
+                    "id"         :"slit_2_y_center",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"x_direction",
+                    "id"         :"slit_2_x_direction",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_direction",
+                    "id"         :"slit_2_y_direction",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                }
+            ]
+        },
+        {
+            "name"  :"Slit3 parameters",
+            "id"    :"frmSlit3Param",
+            "type"  :"fieldset",
+            "help"  :"These fields are filled by the operator and therefore readonly.",
+            "fields":[
+                {
+                    "name"       :"x_gap",
+                    "id"         :"slit_3_x_gap",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_gap",
+                    "id"         :"slit_3_y_gap",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"x_center",
+                    "id"         :"slit_3_x_center",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_center",
+                    "id"         :"slit_3_y_center",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"x_direction",
+                    "id"         :"slit_3_x_direction",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_direction",
+                    "id"         :"slit_3_y_direction",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                }
+            ]
+        },
+        {
+            "name"  :"Slit4 parameters",
+            "id"    :"frmSlit4Param",
+            "type"  :"fieldset",
+            "help"  :"These fields are filled by the operator and therefore readonly.",
+            "fields":[
+                {
+                    "name"       :"x_gap",
+                    "id"         :"slit_4_x_gap",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_gap",
+                    "id"         :"slit_4_y_gap",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"x_center",
+                    "id"         :"slit_4_x_center",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_center",
+                    "id"         :"slit_4_y_center",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"x_direction",
+                    "id"         :"slit_4_x_direction",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                },
+                {
+                    "name"       :"y_direction",
+                    "id"         :"slit_4_y_direction",
+                    "type"       :"double",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                }
+            ]
+        },
+        {
+            "name"  :"Ionization chamber parameters",
+            "id"    :"frmIonParam",
+            "type"  :"fieldset",
+            "help"  :"These fields are filled by the operator and therefore readonly.",
+            "fields":[
+                {
+                    "name"       :"Mode",
+                    "id"         :"ion_mode",
+                    "type"       :"string",
+                    "description":"...",
+                    "validation" :"",
+                    "visibility" :"web",
+                    "readonly"   :true
+                }
+            ]
+        }
+    ]
+}

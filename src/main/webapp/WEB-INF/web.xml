@@ -1,0 +1,145 @@
+<!--
+  ~ The main contributor to this project is Institute of Materials Research,
+  ~ Helmholtz-Zentrum Geesthacht,
+  ~ Germany.
+  ~
+  ~ This project is a contribution of the Helmholtz Association Centres and
+  ~ Technische Universitaet Muenchen to the ESS Design Update Phase.
+  ~
+  ~ The project's funding reference is FKZ05E11CG1.
+  ~
+  ~ Copyright (c) 2012. Institute of Materials Research,
+  ~ Helmholtz-Zentrum Geesthacht,
+  ~ Germany.
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+  -->
+
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+    <display-name>Kommunikationenplatform</display-name>
+    <distributable/>
+    <servlet>
+        <servlet-name>ApplicationServlet</servlet-name>
+        <display-name>ApplicationServlet</display-name>
+        <description>Main servlet. Loads at startup and initializes essential items of the application.</description>
+        <servlet-class>wpn.hdri.web.backend.ApplicationServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>DataSets</servlet-name>
+        <display-name>DataSets</display-name>
+        <description>Provides info about DataSets.</description>
+        <servlet-class>wpn.hdri.web.backend.jsonp.DataSetsService</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DataSetNames</servlet-name>
+        <display-name>DataSetNames</display-name>
+        <description>Provides info about DataSetNames.</description>
+        <servlet-class>wpn.hdri.web.backend.jsonp.DataSetNamesService</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UploadHandler</servlet-name>
+        <display-name>UploadHandler</display-name>
+        <description>Handles user's upload actions</description>
+        <servlet-class>wpn.hdri.web.backend.upload.UploadHandler</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SubmitDataHandler</servlet-name>
+        <display-name>SubmitDataHandler</display-name>
+        <description>saves the user's data to the local storage. The local storage implementation is defined by the
+            initialization parameter
+        </description>
+        <servlet-class>wpn.hdri.web.backend.submit.SubmitDataHandler</servlet-class>
+        <init-param>
+            <param-name>submit.data.handler.storage.class</param-name>
+            <param-value>wpn.hdri.web.backend.storage.SimpleJsonStorage</param-value>
+        </init-param>
+    </servlet>
+    <servlet>
+        <servlet-name>IndexServlet</servlet-name>
+        <servlet-class>wpn.hdri.web.backend.IndexServlet</servlet-class>
+        <init-param>
+            <param-name>web-client.context.path</param-name>
+            <param-value>web-client</param-value>
+        </init-param>
+    </servlet>
+    <servlet>
+        <servlet-name>TangoServlet</servlet-name>
+        <servlet-class>wpn.hdri.web.frontend.TangoServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DataSetNames</servlet-name>
+        <url-pattern>/backend/DataSetNames.json</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DataSets</servlet-name>
+        <url-pattern>/backend/DataSets.json</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UploadHandler</servlet-name>
+        <url-pattern>/backend/upload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubmitDataHandler</servlet-name>
+        <url-pattern>/backend/SubmitData</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>IndexServlet</servlet-name>
+        <url-pattern>/index.html</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TangoServlet</servlet-name>
+        <url-pattern>/frontend/tango</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ApplicationServlet</servlet-name>
+        <url-pattern>/backend/application</url-pattern>
+    </servlet-mapping>
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>eXperiment InformaTion</web-resource-name>
+            <!--<url-pattern>/web-client/apps/main/*</url-pattern>
+            <url-pattern>/backend/*</url-pattern>-->
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>user</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>Basic Authentication</realm-name>
+        <!--<auth-method>FORM</auth-method>
+        <form-login-config>
+        <form-login-page>/login.html</form-login-page>
+        <form-error-page>/fail_login.html</form-error-page>
+        </form-login-config>-->
+    </login-config>
+    <security-role>
+        <description>The owner of the login/password pair.</description>
+        <role-name>user</role-name>
+    </security-role>
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+</web-app>

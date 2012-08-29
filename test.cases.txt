@@ -1,0 +1,11 @@
+Web-Client:
+1) create data set, modify data, upload files, submit; check everything on server
+2) modify created data set
+Offline-Client:
+1) same as web
+2) same as web
+3) upload data to server; check everything on server
+Tango:
+1) access different data sets
+2) setReadOnly; check in web-client
+3) update data set; check in web-client

@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<!--
+  ~ The main contributor to this project is Institute of Materials Research,
+  ~ Helmholtz-Zentrum Geesthacht,
+  ~ Germany.
+  ~
+  ~ This project is a contribution of the Helmholtz Association Centres and
+  ~ Technische Universitaet Muenchen to the ESS Design Update Phase.
+  ~
+  ~ The project's funding reference is FKZ05E11CG1.
+  ~
+  ~ Copyright (c) 2012. Institute of Materials Research,
+  ~ Helmholtz-Zentrum Geesthacht,
+  ~ Germany.
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+  -->
+<project name="PreExperiment Data Collector web-client" default="build-client" basedir=".">
+
+
+    <property name="appName" value="main"/>
+    <!--directory name of the app in the javascriptmvc-->
+    <property name="root" value="."/>
+    <property name="src" value="src/main/javascript-mvc-1.5"/>
+    <property name="build" value="src/main/webapp/web-client"/>
+
+    <target name="unit-test">
+        <echo>Testing javascript...</echo>
+        <echo>Executing: js.bat apps/${appName}/run_unit.js</echo>
+        <exec dir="${src}" executable="cmd" failonerror="true" failifexecutionfails="true">
+            <arg line="/c"/>
+            <arg line="js.bat"/>
+            <arg line="apps/${appName}/run_unit.js"/>
+        </exec>
+    </target>
+
+
+    <target name="compile-javascript">
+        <echo>Compressing javascript...</echo>
+        <echo>Executing: js.bat apps/${appName}/compress.js</echo>
+        <exec dir="${src}" executable="cmd" failonerror="true" failifexecutionfails="true">
+            <arg line="/c"/>
+            <arg line="js.bat"/>
+            <arg line="apps/${appName}/compress.js"/>
+        </exec>
+    </target>
+
+    <target name="compress-css">
+        <echo>Compressing css...</echo>
+        <echo>Executing: java -jar exec/yuicompressor-2.4.7.jar --type css -o '.css$:.min.css'
+            ${src}/stylesheets/*.css
+        </echo>
+        <exec dir="${root}" executable="cmd" failonerror="true" failifexecutionfails="true">
+            <arg line="/c"/>
+            <arg line="java"/>
+            <arg line="-jar"/>
+            <arg line="exec/yuicompressor-2.4.7.jar"/>
+            <arg line="--type"/>
+            <arg line="css"/>
+            <arg line="-o"/>
+            <arg line="'.css$:.min.css'"/>
+            <arg line="${src}/stylesheets/*.css"/>
+        </exec>
+    </target>
+
+
+    <target name="build-client" depends="compile-javascript,compress-css">
+        <echo>Making ${build} dir...</echo>
+        <mkdir dir="${build}"/>
+        <echo>Copying jmvc essential files...</echo>
+        <copy todir="${build}/jmvc" overwrite="true">
+            <fileset dir="${src}/jmvc">
+                <include name="include.js"/>
+            </fileset>
+        </copy>
+        <echo>Moving production.js...</echo>
+        <move todir="${build}/apps/${appName}" overwrite="true">
+            <fileset dir="${src}/apps/${appName}">
+                <include name="**/production.js"/>
+            </fileset>
+        </move>
+        <echo>Copying application js files...</echo>
+        <copy todir="${build}/apps/" overwrite="true">
+            <fileset dir="${src}/apps">
+                <include name="**/${appName}.js"/>
+            </fileset>
+        </copy>
+        <echo>Copying image files...</echo>
+        <copy todir="${build}/images" overwrite="true">
+            <fileset dir="${src}/images">
+                <include name="**/*.gif"/>
+                <include name="**/*.png"/>
+                <include name="**/*.jpg"/>
+            </fileset>
+        </copy>
+        <echo>Moving minified stylesheet files...</echo>
+        <move todir="${build}/stylesheets" overwrite="true">
+            <fileset dir="${src}/stylesheets">
+                <include name="**/*.min.css"/>
+            </fileset>
+            <mapper type="glob" from="*.min.css" to="*.css"/>
+        </move>
+        <echo>Copying engine files...</echo>
+        <copy todir="${build}/engines" overwrite="true">
+            <fileset dir="${src}/engines">
+                <include name="**/*.css"/>
+                <include name="**/*.gif"/>
+                <include name="**/*.png"/>
+            </fileset>
+        </copy>
+        <!--<copy file="${src}/apps/${appName}/index_production.html" tofile="${build}//main_1.html"/>-->
+    </target>
+
+    <target name="clean">
+        <echo>Deleting destination files...</echo>
+        <delete dir="${build}"/>
+    </target>
+</project>

@@ -1,0 +1,38 @@
+<form id="FrmBeamline" class="regular-form">
+    <fieldset>
+        <div class="title-wrap">
+            <strong class="label">Please enter beamline parameters into the following form:</strong>
+        </div>
+        <div class="form-box">
+            <div class="row">
+                <a title="Beamtime ID"><label for="_beamtimeID">Beamtime ID:</label></a><em>*</em>
+                <input type="text" name="_beamtimeID" id="_beamtimeID" class="text validate[required]">
+            </div>
+            <div class="row">
+                <label for="_groupName">Groupname:</label><em>*</em>
+                <input type="text" name="_groupName" id="_groupName" class="text validate[required]">
+            </div>
+            <div class="row">
+                <label for="_sampleHolderID">Sample Holder ID:</label><em>*</em>
+                <input type="text" name="_sampleHolderID" id="_sampleHolderID" class="text validate[required]">
+            </div>
+            <div class="row">
+                <label for="_sampleName">Sample Name:</label><em>*</em>
+                <input type="text" name="_sampleName" id="_sampleName" class="text validate[required]">
+            </div>
+            <div class="row">
+                <label for="_sampleDesc">Sample Description:</label><em>*</em>
+            </div>
+            <textarea name="_sampleDesc" id="_sampleDesc" cols="25" rows="5" class="validate[required]"></textarea>
+        </div>
+        <div class="ui-widget help-box">
+            <div class="ui-state-highlight ui-corner-all help-content">
+                <p>
+                    <span class="ui-icon ui-icon-info"></span>
+                    Here you can fill beamline parameters. Please ask your leader for more details...
+                </p>
+            </div>
+        </div>
+    </fieldset>
+    <input type="button" id="btnSave" value="Save">
+</form>

@@ -1,0 +1,21 @@
+{
+    "forms":[
+        {
+            "name":"Test readonly form",
+            "id":"frmReadonly",
+            "type":"fieldset",
+            "fields":[
+                {
+                    "name":"Readonly TRUE",
+                    "type":"string",
+                    "readonly":"true"
+                },
+                {
+                    "name":"Readonly FALSE",
+                    "type":"string",
+                    "readonly":"false"
+                }
+            ]
+        }
+    ]
+}
