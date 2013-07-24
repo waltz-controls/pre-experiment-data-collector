@@ -32,21 +32,10 @@ package wpn.hdri.web.frontend;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.ApplicationProperties;
 import wpn.hdri.web.backend.ApplicationServlet;
-import wpn.hdri.web.backend.BackendException;
-import wpn.hdri.web.backend.BaseServlet;
-import wpn.hdri.web.backend.RequestParameter;
-import wpn.hdri.web.data.Users;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -58,7 +47,7 @@ import java.util.concurrent.ThreadFactory;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 21.02.12
  */
-public class TangoServlet extends BaseServlet {
+public class TangoServlet extends GenericServlet {
     private final ExecutorService exec;
     public static final String APPLICATION_CONTEXT = "TangoServer.context";
     public static final String STORAGE = "TangoServer.storage";
@@ -84,7 +73,7 @@ public class TangoServlet extends BaseServlet {
         }));
     }
 
-    private Future<?> backgroundTask;
+    private volatile Future<?> backgroundTask;
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -103,20 +92,6 @@ public class TangoServlet extends BaseServlet {
         backgroundTask = exec.submit(new TangoDevice(tangoServerName, tangoInstanceName, tangoServerArguments));
     }
 
-    @Override
-    protected Collection<RequestParameter> getUsedRequestParameters() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    protected String doGetInternal(Users.User user, Map<RequestParameter, String> requestParameters, HttpServletRequest req) throws BackendException {
-        throw new BackendException("This operation is not supported by this implementation", new UnsupportedOperationException());
-    }
-
-    @Override
-    protected String doPostInternal(Users.User user, Map<RequestParameter, String> requestParameters, HttpServletRequest req) throws BackendException {
-        throw new BackendException("This operation is not supported by this implementation", new UnsupportedOperationException());
-    }
 
     @Override
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {

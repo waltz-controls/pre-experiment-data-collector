@@ -33,11 +33,10 @@ import org.apache.commons.beanutils.DynaBean;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.junit.Before;
 import org.junit.Test;
-import wpn.hdri.util.reflection.ReflectionUtils;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.UsefulTestConstants;
-import wpn.hdri.web.backend.CommonRequestParameters;
-import wpn.hdri.web.backend.RequestParameter;
+import wpn.hdri.web.backend.ApplicationServlet;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 import wpn.hdri.web.meta.MetaDataFactory;
 import wpn.hdri.web.meta.MetaDataHelpers;
@@ -45,9 +44,10 @@ import wpn.hdri.web.meta.json.JsonMetaSource;
 import wpn.hdri.web.meta.json.JsonStringFactory;
 import wpn.hdri.web.storage.Storage;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Field;
-import java.util.HashMap;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.mockito.Mockito.*;
 
@@ -61,43 +61,40 @@ public class SubmitDataHandlerTest {
     private Storage<DynaBean> mockStorage = mock(Storage.class);
 
     @Before
-    public void before() throws Exception{
+    public void before() throws Exception {
         instance = new SubmitDataHandler();
 
-        Field storage = ReflectionUtils.getDeclaredField("storage",SubmitDataHandler.class);
-        try{
-            storage.setAccessible(true);
-            storage.set(instance, mockStorage);
-        } finally {
-            storage.setAccessible(false);
-        }
+        ApplicationContext appCtx = new ApplicationContext(null, null, UsefulTestConstants.TEST_BEAMTIME_ID, mockStorage, null, metaDataHelpers);
 
-        Field applicationContext = ReflectionUtils.getDeclaredField("applicationContext",SubmitDataHandler.class);
-        try{
-            applicationContext.setAccessible(true);
-            applicationContext.set(instance, new ApplicationContext(null,null,UsefulTestConstants.TEST_BEAMTIME_ID, mockStorage,null, metaDataHelpers));
-        } finally {
-            applicationContext.setAccessible(false);
-        }
+        ServletContext ctx = mock(ServletContext.class);
+
+        doReturn(appCtx).when(ctx).getAttribute(ApplicationServlet.APPLICATION_CONTEXT);
+
+        ServletConfig config = mock(ServletConfig.class);
+        doReturn(ctx).when(config).getServletContext();
+
+        instance.doInitInternal(config);
     }
 
     @Test
-    public void testDoPostInternal_FreshDataSet() throws Exception{
-        HttpServletRequest req = mock(HttpServletRequest.class);
-
-        HashMap<RequestParameter, String> requestParameters = new HashMap<RequestParameter, String>();
-
-        requestParameters.put(CommonRequestParameters.DATA_SET_NAME,"test-data-set");
-        requestParameters.put(SubmitDataHandler.IS_OFFLINE_SUBMIT,"true");
-
+    public void testDoPostInternal_FreshDataSet() throws Exception {
         String encodedMeta = Base64.encode(UsefulTestConstants.TEST_META_DATA_JSON.getBytes());
-        requestParameters.put(SubmitDataHandler.META,encodedMeta);
 
         String encodedData = Base64.encode(UsefulTestConstants.TEST_DATA.getBytes());
-        requestParameters.put(CommonRequestParameters.DATA,encodedData);
 
-        instance.doPostInternal(Users.TEST_USER, requestParameters, req);
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        doReturn("test-data-set").when(req).getParameter("data-set-name");
+        doReturn("true").when(req).getParameter("is-offline");
+        doReturn(encodedMeta).when(req).getParameter("meta");
+        doReturn(encodedData).when(req).getParameter("data");
+        doReturn(this.getClass().getSimpleName()).when(req).getRemoteHost();
 
-        verify(mockStorage,atLeastOnce()).save(any(DynaBean.class),same(Users.TEST_USER),eq("test-data-set"),any(ApplicationContext.class));
+        doReturn(Users.TEST_USER.getName()).when(req).getRemoteUser();
+
+        HttpServletResponse res = mock(HttpServletResponse.class);
+
+        instance.doPostInternal(req, res);
+
+        verify(mockStorage, atLeastOnce()).save(any(DynaBean.class), any(User.class), eq("test-data-set"), any(ApplicationContext.class));
     }
 }

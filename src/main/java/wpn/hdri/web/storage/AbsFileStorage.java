@@ -30,7 +30,7 @@
 package wpn.hdri.web.storage;
 
 import wpn.hdri.web.ApplicationContext;
-import wpn.hdri.web.data.Users;
+import wpn.hdri.web.data.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +48,7 @@ public abstract class AbsFileStorage<T> implements Storage<T> {
     public AbsFileStorage() {
     }
 
-    public final void save(T data, Users.User user, String dataSetName, ApplicationContext ctx) throws StorageException {
+    public final void save(T data, User user, String dataSetName, ApplicationContext ctx) throws StorageException {
         try {
             File homeDir = ctx.getUserBeamtimeDir(user);
 
@@ -68,7 +68,7 @@ public abstract class AbsFileStorage<T> implements Storage<T> {
 
     protected abstract void saveInternal(T bean, File output) throws StorageException;
 
-    public final T load(Users.User user, String dataSetName, ApplicationContext ctx) throws StorageException {
+    public final T load(User user, String dataSetName, ApplicationContext ctx) throws StorageException {
         try {
             File homeDir = ctx.getUserBeamtimeDir(user);
 

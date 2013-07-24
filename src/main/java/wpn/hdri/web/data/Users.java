@@ -29,7 +29,6 @@
 
 package wpn.hdri.web.data;
 
-import net.jcip.annotations.Immutable;
 import net.jcip.annotations.ThreadSafe;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import wpn.hdri.web.ApplicationContext;
@@ -160,22 +159,4 @@ public class Users {
         return result;
     }
 
-    /**
-     * Represents user instance
-     * <p/>
-     * Created by khokhria
-     * on 29.12.11
-     */
-    @Immutable
-    public static class User {
-        private final String name;
-
-        private User(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
 }

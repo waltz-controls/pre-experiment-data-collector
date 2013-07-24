@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import wpn.hdri.ConcurrentUtils;
 import wpn.hdri.web.ApplicationContext;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 
 import java.util.concurrent.TimeUnit;
@@ -41,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.*;
-import static wpn.hdri.web.data.Users.User;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>

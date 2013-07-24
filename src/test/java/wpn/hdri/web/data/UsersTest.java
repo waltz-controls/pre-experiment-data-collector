@@ -36,7 +36,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static junit.framework.Assert.assertTrue;
-import static wpn.hdri.web.data.Users.User;
 
 /**
  * Created by khokhria

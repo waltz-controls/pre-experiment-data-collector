@@ -47,8 +47,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import static wpn.hdri.web.data.Users.User;
-
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 26.03.12
@@ -60,7 +58,6 @@ public class DataSets {
 
     /**
      * Creates new {@link DataSet} instance with empty values.
-     *
      *
      * @param user       a user to associated new DataSet with
      * @param meta
@@ -85,7 +82,6 @@ public class DataSets {
 
     /**
      * Creates new {@link DataSet} instance.
-     *
      *
      * @param user       a user to associated new DataSet with
      * @param meta
@@ -127,17 +123,15 @@ public class DataSets {
     /**
      * Creates new instance of {@link DataSet} with readonly set to true.
      *
-     *
      * @param dataSet
      * @return
      */
     public static void setReadonly(DataSet dataSet) {
-        dataSet.set(DataSet.READONLY,true);
+        dataSet.set(DataSet.READONLY, true);
     }
 
     /**
      * Creates new instance of {@link DataSet} with data replaced by newData.
-     *
      *
      * @param newData
      * @param dataSet
@@ -145,8 +139,8 @@ public class DataSets {
      */
     public static void update(DynaBean newData, DataSet dataSet) {
         try {
-            for(Map.Entry entry : (Set<Map.Entry>)PropertyUtils.describe(newData).entrySet()){
-                dataSet.set(String.valueOf(entry.getKey()),entry.getValue());
+            for (Map.Entry entry : (Set<Map.Entry>) PropertyUtils.describe(newData).entrySet()) {
+                dataSet.set(String.valueOf(entry.getKey()), entry.getValue());
             }
         } catch (IllegalAccessException e) {
             //TODO

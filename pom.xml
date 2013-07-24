@@ -171,6 +171,11 @@
             <artifactId>TangoApi</artifactId>
             <version>1.7</version>
         </dependency>
+        <dependency>
+            <groupId>su.clan.tla</groupId>
+            <artifactId>web</artifactId>
+            <version>0.0.3</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>PreExperimentDataCollector</finalName>

@@ -30,7 +30,7 @@
 package wpn.hdri.web.storage;
 
 import wpn.hdri.web.ApplicationContext;
-import wpn.hdri.web.data.Users;
+import wpn.hdri.web.data.User;
 
 import java.io.Closeable;
 
@@ -42,7 +42,7 @@ import java.io.Closeable;
  * @since 01.02.12
  */
 public interface Storage<T> extends Closeable {
-    void save(T data, Users.User user, String dataSetName, ApplicationContext ctx) throws StorageException;
+    void save(T data, User user, String dataSetName, ApplicationContext ctx) throws StorageException;
 
-    T load(Users.User user, String dataSetName, ApplicationContext ctx) throws StorageException;
+    T load(User user, String dataSetName, ApplicationContext ctx) throws StorageException;
 }

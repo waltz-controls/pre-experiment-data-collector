@@ -33,6 +33,7 @@ package wpn.hdri.web.backend;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 16.03.12
  */
+//TODO extend from ServletException
 public class BackendException extends Exception {
     public BackendException(String message, Throwable cause) {
         super(message, cause);

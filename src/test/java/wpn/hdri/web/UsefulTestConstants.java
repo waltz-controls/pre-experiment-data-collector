@@ -30,6 +30,7 @@
 package wpn.hdri.web;
 
 import wpn.hdri.web.data.BeamtimeId;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 import wpn.hdri.web.meta.MetaDataFactory;
 import wpn.hdri.web.meta.MetaDataHelpers;
@@ -44,35 +45,37 @@ public class UsefulTestConstants {
     private UsefulTestConstants() {
     }
 
-    public static final String TEST_DATA = "{\n" +
-            "test:{\n" +
-            "    string:'some value',\n" +
-            "    number:1234,\n" +
-            "    arr:[string1,string2]\n" +
-            "  }\n" +
-            "}";
+    public static final String TEST_DATA =
+            "{\n" +
+                    "test:{\n" +
+                    "    string:'some value',\n" +
+                    "    number:1234,\n" +
+                    "    arr:[string1,string2]\n" +
+                    "  }\n" +
+                    "}";
 
-    public static final String TEST_META_DATA_JSON = "{\n" +
-            "    \"forms\":[{\n" +
-            "        \"name\":\"Test form\",\n" +
-            "        \"id\":\"test\",\n" +
-            "        \"help\":\"Some text with hints\",\n" +
-            "        \"type\":\"fieldset\",\n" +
-            "        \"fields\":[\n" +
-            "                {\n" +
-            "                    \"name\":\"Test string\",\n" +
-            "                    \"id\":\"string\",\n" +
-            "                    \"description\":\"Field with string value\",\n" +
-            "                    \"type\":\"string\",\n" +
-            "                    \"validation\":\"required\"\n" +
-            "                },\n" +
-            "                {\n" +
-            "                    \"name\":\"Test number\",\n" +
-            "                    \"id\":\"number\",\n" +
-            "                    \"description\":\"Field with number value\",\n" +
-            "                    \"type\":\"number\",\n" +
-            "                    \"validation\":\"\"\n" +
-            //TODO support arrays in JsonMetaSource
+    public static final String TEST_META_DATA_JSON =
+            "{\n" +
+                    "    \"forms\":[{\n" +
+                    "        \"name\":\"Test form\",\n" +
+                    "        \"id\":\"test\",\n" +
+                    "        \"help\":\"Some text with hints\",\n" +
+                    "        \"type\":\"fieldset\",\n" +
+                    "        \"fields\":[\n" +
+                    "                {\n" +
+                    "                    \"name\":\"Test string\",\n" +
+                    "                    \"id\":\"string\",\n" +
+                    "                    \"description\":\"Field with string value\",\n" +
+                    "                    \"type\":\"string\",\n" +
+                    "                    \"validation\":\"required\"\n" +
+                    "                },\n" +
+                    "                {\n" +
+                    "                    \"name\":\"Test number\",\n" +
+                    "                    \"id\":\"number\",\n" +
+                    "                    \"description\":\"Field with number value\",\n" +
+                    "                    \"type\":\"number\",\n" +
+                    "                    \"validation\":\"\"\n" +
+                    //TODO support arrays in JsonMetaSource
 //            "                },\n" +
 //            "                {\n" +
 //            "                    \"name\":\"Test strings array\",\n" +
@@ -80,12 +83,12 @@ public class UsefulTestConstants {
 //            "                    \"description\":\"Field with array of string value\",\n" +
 //            "                    \"type\":\"file_multiply\",\n" +
 //            "                    \"validation\":\"\"\n" +
-            "                }\n" +
-            "        ]\n" +
-            "    }]\n" +
-            "}";
+                    "                }\n" +
+                    "        ]\n" +
+                    "    }]\n" +
+                    "}";
 
-    public static final Users.User TEST_USER = Users.TEST_USER;
+    public static final User TEST_USER = Users.TEST_USER;
     public static final BeamtimeId TEST_BEAMTIME_ID = new BeamtimeId("test-beamtime");
     public static final ApplicationContext NULL_APP_CTX = ApplicationContext.NULL;
     public static final MetaDataHelpers TEST_META_DATA_HELPER = new MetaDataHelpers(

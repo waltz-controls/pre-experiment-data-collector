@@ -78,6 +78,7 @@ import wpn.hdri.tango.util.TangoUtils;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 import wpn.hdri.web.frontend.TangoServlet;
 import wpn.hdri.web.meta.MetaData;
@@ -219,7 +220,7 @@ public class JsonDS extends DeviceImpl implements TangoConst {
                     return bld.toString();
                 }
 
-                private StringBuilder getRelativeUserUploadDirPath(ApplicationContext context, Users.User user) {
+                private StringBuilder getRelativeUserUploadDirPath(ApplicationContext context, User user) {
                     StringBuilder result = new StringBuilder();
 
                     result.append(context.getUserUploadDirRelativePath(user));
@@ -322,12 +323,12 @@ public class JsonDS extends DeviceImpl implements TangoConst {
     /**
      * initialized in {@link this#write_attr_hardware(java.util.Vector)}
      */
-    public Users.User getUser() {
-        Users.User user = Users.getUser(JsonDSAttr.CRT_USER_NAME.<String>toTangoAttribute().getCurrentValue(), false, context);
+    public User getUser() {
+        User user = Users.getUser(JsonDSAttr.CRT_USER_NAME.<String>toTangoAttribute().getCurrentValue(), false, context);
         return user;
     }
 
-    public void setUser(Users.User user) {
+    public void setUser(User user) {
         JsonDSAttr.CRT_USER_NAME.<String>toTangoAttribute().setCurrentValue(user.getName());
     }
 

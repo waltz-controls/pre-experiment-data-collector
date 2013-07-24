@@ -35,16 +35,13 @@ import org.apache.log4j.Logger;
 import wpn.hdri.util.base64.Base64InputStream;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.BackendException;
-import wpn.hdri.web.backend.RequestParameter;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
-import wpn.hdri.web.data.Users;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.meta.*;
 import wpn.hdri.web.meta.json.JsonMetaSource;
 import wpn.hdri.web.meta.json.JsonStringFactory;
-import wpn.hdri.web.storage.Storage;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
@@ -55,8 +52,8 @@ import java.util.Set;
  */
 public class OfflineSubmitHelper extends SubmitHelper {
     @Override
-    protected DataSet processSubmitInternal(Users.User user, Map<RequestParameter, String> requestParameters, HttpServletRequest req, String dataSetName, Storage<DynaBean> storage, ApplicationContext applicationContext, Logger log) throws BackendException {
-        MetaData meta = getMetaData(requestParameters, applicationContext);
+    protected DataSet processSubmitInternal(User user, SubmitDataHandler.Parameters requestParameters, String dataSetName, ApplicationContext applicationContext, Logger log) throws BackendException {
+        MetaData meta = getMetaData(requestParameters.meta, applicationContext);
         log.info("Using user submitted meta data:");
         //TODO add formatter for meta data to print it in different forms, aka toJson, toHtml etc
         for (MetaForm frm : meta.getForms()) {
@@ -67,7 +64,7 @@ public class OfflineSubmitHelper extends SubmitHelper {
             log.info("}");
         }
         try {
-            DynaBean values = getDataSetValues(requestParameters, meta, applicationContext);
+            DynaBean values = getDataSetValues(requestParameters.data, meta);
             log.info("Writing new values to data set:");
             try {
                 for (Map.Entry entry : (Set<Map.Entry>) PropertyUtils.describe(values).entrySet()) {
@@ -90,14 +87,13 @@ public class OfflineSubmitHelper extends SubmitHelper {
     /**
      * If meta parameter is passed - creates new {@link wpn.hdri.web.meta.MetaData} from the passed
      *
-     * @param requestParameters
+     * @param encoded
      * @param applicationContext
      * @return
      * @throws wpn.hdri.web.backend.BackendException
      *
      */
-    private MetaData getMetaData(Map<RequestParameter, String> requestParameters, ApplicationContext applicationContext) throws BackendException {
-        String encoded = requestParameters.get(SubmitDataHandler.META);
+    private MetaData getMetaData(String encoded, ApplicationContext applicationContext) throws BackendException {
         if (encoded == null) {
             throw new IllegalArgumentException("User has not submitted meta data.");
         }

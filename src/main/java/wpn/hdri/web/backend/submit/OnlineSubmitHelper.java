@@ -34,14 +34,11 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.BackendException;
-import wpn.hdri.web.backend.RequestParameter;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
-import wpn.hdri.web.data.Users;
-import wpn.hdri.web.storage.Storage;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.storage.StorageException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
@@ -52,11 +49,11 @@ import java.util.Set;
  */
 public class OnlineSubmitHelper extends SubmitHelper {
     @Override
-    protected DataSet processSubmitInternal(Users.User user, Map<RequestParameter, String> requestParameters, HttpServletRequest req, String dataSetName, Storage<DynaBean> storage, ApplicationContext applicationContext, Logger log) throws BackendException {
-        DataSet oldDataSet = load(user, dataSetName, storage, applicationContext);
+    protected DataSet processSubmitInternal(User user, SubmitDataHandler.Parameters requestParameters, String dataSetName, ApplicationContext applicationContext, Logger log) throws BackendException {
+        DataSet oldDataSet = load(user, dataSetName, applicationContext);
 
         if (!oldDataSet.isReadonly()) {
-            DynaBean values = getDataSetValues(requestParameters, oldDataSet.getMeta(), applicationContext);
+            DynaBean values = getDataSetValues(requestParameters.data, oldDataSet.getMeta());
             log.info("Writing new values to data set:");
             try {
                 for (Map.Entry entry : (Set<Map.Entry>) PropertyUtils.describe(values).entrySet()) {
@@ -80,14 +77,13 @@ public class OnlineSubmitHelper extends SubmitHelper {
      *
      * @param user
      * @param dataSetName
-     * @param storage
      * @param applicationContext @return
      * @throws wpn.hdri.web.backend.BackendException
      *
      */
-    private DataSet load(Users.User user, String dataSetName, Storage<DynaBean> storage, ApplicationContext applicationContext) throws BackendException {
+    private DataSet load(User user, String dataSetName, ApplicationContext applicationContext) throws BackendException {
         try {
-            DynaBean data = storage.load(user, dataSetName, applicationContext);
+            DynaBean data = applicationContext.getStorage().load(user, dataSetName, applicationContext);
             if (data == null) {
                 //TODO handle situation
                 throw new IllegalStateException("DataSet can not be null at this point.");
