@@ -45,6 +45,7 @@ import wpn.hdri.tango.proxy.TangoProxyWrapper;
 import wpn.hdri.tango.util.TangoUtils;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 import wpn.hdri.web.storage.StorageException;
 
@@ -120,7 +121,7 @@ public enum JsonDSCommand {
         @Override
         protected String[] executeInternal(JsonDS instance, String data, Logger log) throws DevFailed {
             try {
-                Users.User user = Users.getUser(data, false, instance.getContext());
+                User user = Users.getUser(data, false, instance.getContext());
                 Collection<String> result = DataSets.getUserDataSetNames(user, instance.getContext());
                 return result.toArray(new String[result.size()]);
             } catch (IOException e) {
@@ -137,7 +138,7 @@ public enum JsonDSCommand {
             String userName = args[0];
             String scanName = args[1];
 
-            Users.User user = Users.getUser(userName, false, instance.getContext());
+            User user = Users.getUser(userName, false, instance.getContext());
 
             instance.setUser(user);
             instance.setDataSetName(scanName);
@@ -162,7 +163,7 @@ public enum JsonDSCommand {
         protected Void executeInternal(JsonDS instance, String[] args, Logger logger) throws DevFailed {
             String userName = args[0];
             String scanName = args[1];
-            Users.User user = Users.getUser(userName, false, instance.getContext());
+            User user = Users.getUser(userName, false, instance.getContext());
             try {
                 DynaBean data = instance.getContext().getStorage().load(user, scanName, instance.getContext());
                 DataSet dataSet = DataSets.createDataSet(

@@ -29,13 +29,13 @@
 
 package wpn.hdri.web.backend;
 
+import su.clan.tla.web.backend.GetOnlyServlet;
 import wpn.hdri.util.servlet.ServletUtils;
-import wpn.hdri.web.data.Users;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Trivial implementation of the greetings page.
@@ -44,8 +44,12 @@ import java.util.Map;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 12.01.12
  */
-public final class IndexServlet extends ApplicationGetServlet {
+public final class IndexServlet extends GetOnlyServlet {
     private static final String JMVC_ROOT = "web-client";
+
+    @Override
+    protected void doInitInternal(ServletConfig config) throws ServletException {
+    }
 
     /**
      * Generates index page.
@@ -55,7 +59,7 @@ public final class IndexServlet extends ApplicationGetServlet {
      * @throws BackendException
      */
     @Override
-    protected String doGetInternal(Users.User user, Map<RequestParameter, String> requestParameters, HttpServletRequest req) throws BackendException {
+    protected String doGetInternal(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         String userName = req.getRemoteUser();
         String scheme = req.getScheme();
         String serverName = req.getServerName();
@@ -106,10 +110,5 @@ public final class IndexServlet extends ApplicationGetServlet {
         result.append("</html>\n");
 
         return result;
-    }
-
-    @Override
-    protected Collection<? extends RequestParameter> getUsedRequestParameters() {
-        return Collections.emptySet();
     }
 }

@@ -30,24 +30,38 @@
 package wpn.hdri.web.backend.jsonp;
 
 import org.apache.commons.collections.Transformer;
+import su.clan.tla.web.backend.json.JsonRequest;
+import su.clan.tla.web.backend.json.JsonpBaseServlet;
+import wpn.hdri.web.ApplicationContext;
+import wpn.hdri.web.backend.ApplicationServlet;
 import wpn.hdri.web.backend.BackendException;
-import wpn.hdri.web.backend.RequestParameter;
 import wpn.hdri.web.data.DataSets;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 /**
- * Supports only {@link JsonService#doFindAll(wpn.hdri.web.data.Users.User, java.util.Map, javax.servlet.http.HttpServletRequest)}
- * action.
+ * This servlet provide clients with data set names associated with the user.
+ * <p/>
+ * Supports only findAll action.
  *
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 26.03.12
  */
-public class DataSetNamesService extends JsonpBaseServlet<DataSetNamesService.DataSetName> {
+public class DataSetNamesService extends JsonpBaseServlet<DataSetNamesService.DataSetName, DataSetNamesService.Parameters> {
+    private volatile ApplicationContext appCtx;
+
+    @Override
+    protected void doInitInternal(ServletConfig config) throws ServletException {
+        super.doInitInternal(config);
+
+        appCtx = (ApplicationContext) config.getServletContext().getAttribute(ApplicationServlet.APPLICATION_CONTEXT);
+    }
+
     /**
      * DataSet name holder
      */
@@ -59,20 +73,19 @@ public class DataSetNamesService extends JsonpBaseServlet<DataSetNamesService.Da
         }
     }
 
-    public DataSetName doCreate(Users.User user, Map<RequestParameter, String> requestParameters, HttpServletRequest req) throws BackendException {
-        throw new BackendException("DataSetNameService does not support create action.", new UnsupportedOperationException());
+    public DataSetName create(JsonRequest<Parameters> req) throws ServletException {
+        throw new ServletException("DataSetNameService does not support create action.");
     }
 
     /**
-     * Returns a collection of the {@link DataSetName} names associated with the current {@link Users.User}
+     * Returns a collection of the {@link DataSetName} names associated with the current {@link wpn.hdri.web.data.User}
      *
-     * @param user              current User
-     * @param requestParameters
      * @param req
      * @return collection of the DataSet names
      * @throws BackendException
      */
-    public DataSetName[] doFindAll(Users.User user, Map<RequestParameter, String> requestParameters, HttpServletRequest req) throws BackendException {
+    public Collection<DataSetName> findAll(JsonRequest<Parameters> req) throws ServletException {
+        User user = Users.getUser(req.getRemoteUser(), true, appCtx);
         try {
             Collection<DataSetName> result =
                     //TODO optimize anonymous
@@ -88,12 +101,20 @@ public class DataSetNamesService extends JsonpBaseServlet<DataSetNamesService.Da
 
                             return result;
                         }
-                    }.transform(DataSets.getUserDataSetNames(user, getApplicationContext()));
+                    }.transform(DataSets.getUserDataSetNames(user, appCtx));
 
 
-            return result.toArray(new DataSetName[result.size()]);
+            return result;
         } catch (Exception e) {
-            throw new BackendException("Unable to load user's datasets [user:" + user.getName() + "]", e);
+            throw new ServletException("Unable to load user's datasets [user:" + user.getName() + "]", e);
         }
+    }
+
+    @Override
+    public DataSetName delete(JsonRequest<Parameters> req) throws ServletException {
+        throw new UnsupportedOperationException("This method is not supported in " + this.getClass());
+    }
+
+    public static class Parameters {
     }
 }

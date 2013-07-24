@@ -32,14 +32,13 @@ package wpn.hdri.web;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.io.FileUtils;
 import wpn.hdri.web.data.BeamtimeId;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.meta.MetaDataHelpers;
 import wpn.hdri.web.storage.Storage;
 
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
-
-import static wpn.hdri.web.data.Users.User;
 
 /**
  * Provides a number of useful methods to deal with agreed file structure on the server.

@@ -39,13 +39,13 @@ import wpn.hdri.web.backend.BackendException;
 import wpn.hdri.web.backend.CommonRequestParameters;
 import wpn.hdri.web.backend.RequestParameter;
 import wpn.hdri.web.data.DataSet;
-import wpn.hdri.web.data.Users;
-import wpn.hdri.web.storage.Storage;
+import wpn.hdri.web.data.User;
 
-import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -56,7 +56,7 @@ public class SubmitHelperTest {
     public void testGetDataValues() throws Exception {
         SubmitHelper instance = new SubmitHelper() {
             @Override
-            protected DataSet processSubmitInternal(Users.User user, Map<RequestParameter, String> requestParameters, HttpServletRequest req, String dataSetName, Storage<DynaBean> storage, ApplicationContext applicationContext, Logger log) throws BackendException {
+            protected DataSet processSubmitInternal(User user, SubmitDataHandler.Parameters requestParameters, String dataSetName, ApplicationContext applicationContext, Logger log) throws BackendException {
                 return null;
             }
         };
@@ -65,10 +65,12 @@ public class SubmitHelperTest {
         requestParameters.put(CommonRequestParameters.DATA, Base64.encode(UsefulTestConstants.TEST_DATA.getBytes(Charset.forName("utf-8"))));
 
         DynaBean result = instance.getDataSetValues(
-                requestParameters,
-                UsefulTestConstants.TEST_META_DATA_HELPER.createMetaData(),
-                UsefulTestConstants.NULL_APP_CTX);
+                requestParameters.get(CommonRequestParameters.DATA),
+                UsefulTestConstants.TEST_META_DATA_HELPER.createMetaData()
+        );
 
-
+        assertEquals("some value", result.get("string"));
+        assertEquals(1234, result.get("number"));
+        //TODO arr
     }
 }

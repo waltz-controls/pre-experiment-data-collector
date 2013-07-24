@@ -61,7 +61,7 @@ import java.util.*;
 public class DataSet implements JsonSerializable, Comparable<DataSet> {
     /*private*/ static final String READONLY = "readonly";
 
-    private final Users.User user;
+    private final User user;
     private final BeamtimeId beamtimeId;
     private final String id;
     private final long timestamp;
@@ -70,7 +70,7 @@ public class DataSet implements JsonSerializable, Comparable<DataSet> {
     //we need this field in order to pass it to the client
     private final boolean readonly;
 
-    DataSet(Users.User user, BeamtimeId beamtimeId, String id, MetaData meta, DynaBean data, long timestamp) {
+    DataSet(User user, BeamtimeId beamtimeId, String id, MetaData meta, DynaBean data, long timestamp) {
         this.user = user;
         this.beamtimeId = beamtimeId;
         this.id = id;
@@ -78,11 +78,11 @@ public class DataSet implements JsonSerializable, Comparable<DataSet> {
         this.data = data;
         this.timestamp = timestamp;
 
-        this.readonly = data.get(READONLY) != null ? get(READONLY,Boolean.class).booleanValue() : false;
+        this.readonly = data.get(READONLY) != null ? get(READONLY, Boolean.class).booleanValue() : false;
     }
 
-    public <T> void set(String name, T value){
-        data.set(name,value);
+    public <T> void set(String name, T value) {
+        data.set(name, value);
     }
 
     public <T> T get(String fldId) {
@@ -118,7 +118,7 @@ public class DataSet implements JsonSerializable, Comparable<DataSet> {
         return beamtimeId;
     }
 
-    public Users.User getUser() {
+    public User getUser() {
         return user;
     }
 
@@ -158,7 +158,7 @@ public class DataSet implements JsonSerializable, Comparable<DataSet> {
         return gson.toJsonTree(this);
     }
 
-    private class DynaBeanJsonDeSerializer implements JsonSerializer<DynaBean>,JsonDeserializer<DynaBean> {
+    private class DynaBeanJsonDeSerializer implements JsonSerializer<DynaBean>, JsonDeserializer<DynaBean> {
 
         @Override
         public DynaBean deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -170,8 +170,8 @@ public class DataSet implements JsonSerializable, Comparable<DataSet> {
             try {
                 JsonObject result = new JsonObject();
 
-                for(MetaForm frm : DataSet.this.meta.getForms()){
-                    result.add(frm.getId(),toJsonElement(frm,src));
+                for (MetaForm frm : DataSet.this.meta.getForms()) {
+                    result.add(frm.getId(), toJsonElement(frm, src));
                 }
 
                 return result;
@@ -184,25 +184,26 @@ public class DataSet implements JsonSerializable, Comparable<DataSet> {
             JsonObject result = new JsonObject();
 
             final Collection<String> frmFieldIds = new HashSet<String>();
-            for(MetaField fld : frm.getAllFields()){
+            for (MetaField fld : frm.getAllFields()) {
                 frmFieldIds.add(fld.getId());
             }
 
-            for(Map.Entry entry : new Iterable<Map.Entry>() {
+            for (Map.Entry entry : new Iterable<Map.Entry>() {
                 @Override
                 public Iterator<Map.Entry> iterator() {
                     try {
-                        return new FilterIterator(getPropertiesMap(src).entrySet().iterator(),new Predicate() {
+                        return new FilterIterator(getPropertiesMap(src).entrySet().iterator(), new Predicate() {
                             @Override
                             public boolean evaluate(Object o) {
                                 return frmFieldIds.contains(((Map.Entry) o).getKey());
                             }
-                    });
+                        });
                     } catch (Exception e) {
                         throw new JsonParseException(e);
                     }
-                }}){
-                addProperty(result,String.valueOf(entry.getKey()),entry.getValue());
+                }
+            }) {
+                addProperty(result, String.valueOf(entry.getKey()), entry.getValue());
             }
 
             return result;

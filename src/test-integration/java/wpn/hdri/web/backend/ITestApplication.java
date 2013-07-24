@@ -42,6 +42,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.data.BeamtimeId;
 import wpn.hdri.web.data.DataSet;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 import wpn.hdri.web.storage.SimpleSerializationStorage;
 import wpn.hdri.web.storage.Storage;
@@ -49,8 +50,6 @@ import wpn.hdri.util.reflection.ReflectionUtils;
 
 import java.io.File;
 import java.lang.reflect.Field;
-
-import static wpn.hdri.web.data.Users.*;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>

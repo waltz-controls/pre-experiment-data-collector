@@ -33,20 +33,19 @@ import net.jcip.annotations.ThreadSafe;
 import org.apache.commons.collections.keyvalue.UnmodifiableMapEntry;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.data.DataSets;
+import wpn.hdri.web.data.User;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.*;
 
-import static wpn.hdri.web.data.Users.User;
-
 /**
  * Wraps {@link Storage}. Actual type of <code>T</code> should implement .equals & .hashCode properly.
  * <p/>
- * Guarantees that {@link this#load(wpn.hdri.web.data.Users.User, String, wpn.hdri.web.ApplicationContext)}
+ * Guarantees that {@link this#load(wpn.hdri.web.data.User, String, wpn.hdri.web.ApplicationContext)}
  * will be called only once on the underlying Storage for the same key.
  * <p/>
- * Guarantees that {@link this#save(Object, wpn.hdri.web.data.Users.User, String, wpn.hdri.web.ApplicationContext)}
+ * Guarantees that {@link this#save(Object, wpn.hdri.web.data.User, String, wpn.hdri.web.ApplicationContext)}
  * will always store new value. This is a workaround for {@link DataSets#update(org.apache.commons.beanutils.DynaBean, wpn.hdri.web.data.DataSet)}
  * method.
  * <p/>

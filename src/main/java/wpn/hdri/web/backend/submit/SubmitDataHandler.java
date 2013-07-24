@@ -30,20 +30,19 @@
 package wpn.hdri.web.backend.submit;
 
 import org.apache.log4j.Logger;
+import su.clan.tla.web.backend.BackendHelper;
+import su.clan.tla.web.backend.PostOnlyServlet;
 import wpn.hdri.util.servlet.ServletUtils;
-import wpn.hdri.web.backend.ApplicationPostServlet;
+import wpn.hdri.web.ApplicationContext;
+import wpn.hdri.web.backend.ApplicationServlet;
 import wpn.hdri.web.backend.BackendException;
-import wpn.hdri.web.backend.RequestParameter;
+import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Map;
-
-import static wpn.hdri.web.backend.CommonRequestParameters.DATA;
-import static wpn.hdri.web.backend.CommonRequestParameters.DATA_SET_NAME;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Handles main submit request from the user.
@@ -52,38 +51,63 @@ import static wpn.hdri.web.backend.CommonRequestParameters.DATA_SET_NAME;
  * @since 25.01.12
  */
 //TODO replace with jsp
-public final class SubmitDataHandler extends ApplicationPostServlet {
-    public static final RequestParameter META = new RequestParameter() {
-        @Override
-        public String getAlias() {
-            return "meta";
-        }
-    };
-    public static final RequestParameter IS_OFFLINE_SUBMIT = new RequestParameter() {
-        @Override
-        public String getAlias() {
-            return "is-offline";
-        }
-    };
-
+public final class SubmitDataHandler extends PostOnlyServlet {
     private static final Logger LOG = Logger.getLogger(SubmitDataHandler.class);
+
+    private volatile ApplicationContext appCtx;
+
+    @Override
+    protected void doInitInternal(ServletConfig config) throws ServletException {
+        appCtx = (ApplicationContext) config.getServletContext().getAttribute(ApplicationServlet.APPLICATION_CONTEXT);
+    }
 
     private final SubmitHelper offlineHelper = new OfflineSubmitHelper();
     private final SubmitHelper onlineHelper = new OnlineSubmitHelper();
 
     //TODO refactor: data set should encapsulate meta entirely
     @Override
-    protected String doPostInternal(Users.User user, Map<RequestParameter, String> requestParameters, HttpServletRequest req) throws BackendException {
-        LOG.info("Processing submit request from " + user.getName() + "@" + req.getRemoteHost());
-        boolean offlineSubmit = Boolean.parseBoolean(requestParameters.get(IS_OFFLINE_SUBMIT));
+    protected String doPostInternal(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+        //offline user directly goes here, so it is ok if we create a new one
+        User user = Users.getUser(req.getRemoteUser(), true, appCtx);
+        Parameters params = BackendHelper.parseRequest(Parameters.class, req);
+        boolean offlineSubmit = Boolean.parseBoolean(params.isOfflineParam);
 
-        if (offlineSubmit) {
-            offlineHelper.processSubmit(user, requestParameters, req, getStorage(), getApplicationContext(), LOG);
-        } else {
-            onlineHelper.processSubmit(user, requestParameters, req, getStorage(), getApplicationContext(), LOG);
+        LOG.info("Processing submit request from " + user.getName() + "@" + req.getRemoteHost());
+        try {
+            if (offlineSubmit) {
+                offlineHelper.processSubmit(user, params, appCtx, LOG);
+            } else {
+                onlineHelper.processSubmit(user, params, appCtx, LOG);
+            }
+            LOG.info("Finish processing submit request from " + user.getName() + "@" + req.getRemoteHost());
+            return getSuccessHtml(req).toString();
+        } catch (BackendException e) {
+            LOG.error("Finish processing submit request from " + user.getName() + "@" + req.getRemoteHost(), e);
+            return getFailureHtml(req, e).toString();
         }
-        LOG.info("Finish processing submit request from " + user.getName() + "@" + req.getRemoteHost());
-        return getSuccessHtml(req).toString();
+    }
+
+    //TODO ThreadLocal StringBuilder
+    private StringBuilder getFailureHtml(HttpServletRequest req, BackendException e) {
+        StringBuilder result = new StringBuilder();
+
+        result.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n")
+                .append("        \"http://www.w3.org/TR/html4/loose.dtd\">\n")
+                .append("<html>\n")
+                .append("<head>\n")
+                .append("    <title>Failure</title>\n")
+                .append("</head>\n")
+                .append("<body>\n")
+                .append("    <h3>Unfortunately your data has not been uploaded.</h3>")
+                .append("    <h3>Reason:</h3><p>")
+                .append(e.getMessage())
+                .append("        <br/>caused by:")
+                .append(e.getCause().getMessage())
+                .append("</p></body>\n")
+                .append("</html>");
+
+
+        return result;
     }
 
     private StringBuilder getSuccessHtml(HttpServletRequest req) {
@@ -115,12 +139,14 @@ public final class SubmitDataHandler extends ApplicationPostServlet {
         return result;
     }
 
-    @Override
-    protected Collection<? extends RequestParameter> getUsedRequestParameters() {
-        Collection<RequestParameter> requestParameters = new HashSet<RequestParameter>();
-        requestParameters.addAll(EnumSet.of(DATA, DATA_SET_NAME));
-        requestParameters.add(META);
-        requestParameters.add(IS_OFFLINE_SUBMIT);
-        return requestParameters;
+    public static class Parameters {
+        @su.clan.tla.web.backend.RequestParameter("data")
+        public String data;
+        @su.clan.tla.web.backend.RequestParameter("data-set-name")
+        public String dataSetName;
+        @su.clan.tla.web.backend.RequestParameter("meta")
+        public String meta;
+        @su.clan.tla.web.backend.RequestParameter("is-offline")
+        public String isOfflineParam;
     }
 }
