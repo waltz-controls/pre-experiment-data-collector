@@ -32,7 +32,7 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-    <display-name>Kommunikationenplatform</display-name>
+    <display-name>PreExperiment Data Collector</display-name>
     <distributable/>
     <servlet>
         <servlet-name>ApplicationServlet</servlet-name>
@@ -46,12 +46,20 @@
         <display-name>DataSets</display-name>
         <description>Provides info about DataSets.</description>
         <servlet-class>wpn.hdri.web.backend.jsonp.DataSetsService</servlet-class>
+        <init-param>
+            <param-name>request.scheme</param-name>
+            <param-value>wpn.hdri.web.backend.jsonp.DataSetsService$Parameters</param-value>
+        </init-param>
     </servlet>
     <servlet>
         <servlet-name>DataSetNames</servlet-name>
         <display-name>DataSetNames</display-name>
         <description>Provides info about DataSetNames.</description>
         <servlet-class>wpn.hdri.web.backend.jsonp.DataSetNamesService</servlet-class>
+        <init-param>
+            <param-name>request.scheme</param-name>
+            <param-value>wpn.hdri.web.backend.jsonp.DataSetNamesService$Parameters</param-value>
+        </init-param>
     </servlet>
     <servlet>
         <servlet-name>UploadHandler</servlet-name>
