@@ -66,6 +66,10 @@
         <display-name>UploadHandler</display-name>
         <description>Handles user's upload actions</description>
         <servlet-class>wpn.hdri.web.backend.upload.UploadHandler</servlet-class>
+        <init-param>
+            <param-name>request.scheme</param-name>
+            <param-value>wpn.hdri.web.backend.upload.UploadHandler$Parameters</param-value>
+        </init-param>
     </servlet>
     <servlet>
         <servlet-name>SubmitDataHandler</servlet-name>

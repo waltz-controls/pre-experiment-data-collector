@@ -73,8 +73,8 @@ public class DataSetNamesService extends JsonpBaseServlet<DataSetNamesService.Da
         }
     }
 
-    public DataSetName create(JsonRequest<Parameters> req) throws ServletException {
-        throw new ServletException("DataSetNameService does not support create action.");
+    public DataSetName create(JsonRequest<Parameters> req) {
+        throw new UnsupportedOperationException("DataSetNameService does not support create action.");
     }
 
     /**
@@ -84,7 +84,7 @@ public class DataSetNamesService extends JsonpBaseServlet<DataSetNamesService.Da
      * @return collection of the DataSet names
      * @throws BackendException
      */
-    public Collection<DataSetName> findAll(JsonRequest<Parameters> req) throws ServletException {
+    public Collection<DataSetName> findAll(JsonRequest<Parameters> req) {
         User user = Users.getUser(req.getRemoteUser(), true, appCtx);
         try {
             Collection<DataSetName> result =
@@ -106,12 +106,12 @@ public class DataSetNamesService extends JsonpBaseServlet<DataSetNamesService.Da
 
             return result;
         } catch (Exception e) {
-            throw new ServletException("Unable to load user's datasets [user:" + user.getName() + "]", e);
+            throw new RuntimeException("Unable to load user's datasets [user:" + user.getName() + "]", e);
         }
     }
 
     @Override
-    public DataSetName delete(JsonRequest<Parameters> req) throws ServletException {
+    public DataSetName delete(JsonRequest<Parameters> req) {
         throw new UnsupportedOperationException("This method is not supported in " + this.getClass());
     }
 

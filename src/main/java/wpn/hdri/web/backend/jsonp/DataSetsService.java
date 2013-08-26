@@ -35,7 +35,6 @@ import su.clan.tla.web.backend.json.JsonRequest;
 import su.clan.tla.web.backend.json.JsonpBaseServlet;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.ApplicationServlet;
-import wpn.hdri.web.backend.BackendException;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
 import wpn.hdri.web.data.User;
@@ -68,9 +67,8 @@ public final class DataSetsService extends JsonpBaseServlet<DataSet, DataSetsSer
      *
      * @param req
      * @return a new DataSet
-     * @throws BackendException
      */
-    public DataSet create(JsonRequest<Parameters> req) throws BackendException {
+    public DataSet create(JsonRequest<Parameters> req) {
         try {
             MetaData meta = appCtx.getMetaDataHelper().createMetaData();
             User user = Users.getUser(req.getRemoteUser(), false, appCtx);
@@ -81,12 +79,12 @@ public final class DataSetsService extends JsonpBaseServlet<DataSet, DataSetsSer
 
             return dataSet;
         } catch (Exception e) {
-            throw new BackendException("An attempt to create DataSet has failed:" + e.getMessage(), e);
+            throw new RuntimeException("An attempt to create DataSet has failed:" + e.getMessage(), e);
         }
     }
 
     @Override
-    public DataSet delete(JsonRequest<Parameters> req) throws Exception {
+    public DataSet delete(JsonRequest<Parameters> req) {
         //TODO
         throw new UnsupportedOperationException("This method is not supported in " + this.getClass());
     }
@@ -96,9 +94,8 @@ public final class DataSetsService extends JsonpBaseServlet<DataSet, DataSetsSer
      *
      * @param req
      * @return a collection of the found DataSets
-     * @throws BackendException
      */
-    public Collection<DataSet> findAll(JsonRequest<Parameters> req) throws BackendException {
+    public Collection<DataSet> findAll(JsonRequest<Parameters> req) {
         User user = Users.getUser(req.getRemoteUser(), false, appCtx);
         try {
             Collection<DataSet> result = new LinkedHashSet<DataSet>();
@@ -113,7 +110,7 @@ public final class DataSetsService extends JsonpBaseServlet<DataSet, DataSetsSer
 
             return result;
         } catch (Exception e) {
-            throw new BackendException("Unable to load user's datasets [user:" + user.getName() + "]", e);
+            throw new RuntimeException("Unable to load user's datasets [user:" + user.getName() + "]", e);
         }
     }
 

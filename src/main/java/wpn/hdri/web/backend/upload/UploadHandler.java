@@ -90,7 +90,7 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Uploa
     @Override
     //TODO dirty hack with overriding doPost
     protected String doPostInternal(HttpServletRequest req, HttpServletResponse res) throws ServletException {
-        return super.doGetInternal(req, res);
+        return doGetInternal(req, res);
     }
 
     @Override
@@ -122,12 +122,12 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Uploa
         }
     }
 
-    public UploadedDocument create(JsonRequest<Parameters> req) throws BackendException {
+    public UploadedDocument create(JsonRequest<Parameters> req) {
         throw new UnsupportedOperationException("This method is not supported in " + this.getClass());
     }
 
     @Override
-    public UploadedDocument delete(JsonRequest<Parameters> req) throws Exception {
+    public UploadedDocument delete(JsonRequest<Parameters> req) {
         throw new UnsupportedOperationException("This method is not supported in " + this.getClass());
     }
 
@@ -139,7 +139,7 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Uploa
      * @return an array of the UploadedDocuments
      * @throws BackendException
      */
-    public Collection<UploadedDocument> findAll(JsonRequest<Parameters> req) throws Exception {
+    public Collection<UploadedDocument> findAll(JsonRequest<Parameters> req) {
         User user = Users.getUser(req.getRemoteUser(), false, appCtx);
         try {
             List<UploadedDocument> documents = new ArrayList<UploadedDocument>();
@@ -164,12 +164,13 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Uploa
             }
 
             return documents;
+            //TODO log and properly handle exceptions
         } catch (FileUploadException e) {
-            throw new BackendException("Unable to upload file.", e);
+            throw new RuntimeException("Unable to upload file.", e);
         } catch (IOException e) {
-            throw new BackendException("Unable to get user's upload dir [user:" + user.getName() + "].", e);
+            throw new RuntimeException("Unable to get user's upload dir [user:" + user.getName() + "].", e);
         } catch (Exception e) {
-            throw new BackendException("Unable to write file.", e);
+            throw new RuntimeException("Unable to write file.", e);
         }
     }
 

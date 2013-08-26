@@ -36,11 +36,12 @@ include.engines(
 );
 include.plugins(
     'controller', 'controller/scaffold',
+    'WEF/patches/controller',
     'view', 'view/helpers',
     'dom/element',
     'io/ajax',
     'model/jsonp', 'model/validations',
-    'model_patch', 'remote_model_patch',
+    'WEF/patches/model/jsonp',
     'my_view_helpers',
     'prototypes', 'reflection'
 );
