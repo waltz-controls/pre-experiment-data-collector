@@ -36,8 +36,6 @@ import org.junit.Test;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.UsefulTestConstants;
 import wpn.hdri.web.backend.BackendException;
-import wpn.hdri.web.backend.CommonRequestParameters;
-import wpn.hdri.web.backend.RequestParameter;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.User;
 
@@ -61,11 +59,11 @@ public class SubmitHelperTest {
             }
         };
 
-        Map<RequestParameter, String> requestParameters = new HashMap<RequestParameter, String>();
-        requestParameters.put(CommonRequestParameters.DATA, Base64.encode(UsefulTestConstants.TEST_DATA.getBytes(Charset.forName("utf-8"))));
+        Map<String, String> requestParameters = new HashMap<String, String>();
+        requestParameters.put("data", Base64.encode(UsefulTestConstants.TEST_DATA.getBytes(Charset.forName("utf-8"))));
 
         DynaBean result = instance.getDataSetValues(
-                requestParameters.get(CommonRequestParameters.DATA),
+                requestParameters.get("data"),
                 UsefulTestConstants.TEST_META_DATA_HELPER.createMetaData()
         );
 
