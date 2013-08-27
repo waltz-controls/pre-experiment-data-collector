@@ -50,6 +50,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 12.03.12
  */
+//TODO load users at startup
 @ThreadSafe
 public class Users {
     public static final User TEST_USER = new User("Test");

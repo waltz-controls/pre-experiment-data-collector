@@ -8,6 +8,7 @@ import net.jcip.annotations.Immutable;
  * Created by khokhria
  * on 29.12.11
  */
+//TODO remove
 @Immutable
 public class User {
     private final String name;

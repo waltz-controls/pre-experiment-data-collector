@@ -39,6 +39,7 @@ import net.jcip.annotations.Immutable;
  * @since 01.03.12
  */
 @Immutable
+//TODO remove
 public class BeamtimeId {
     private final String value;
 

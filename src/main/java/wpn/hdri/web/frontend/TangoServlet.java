@@ -43,24 +43,17 @@ import java.util.concurrent.ThreadFactory;
 
 /**
  * Tango frontend servlet. Initializes JsonDS Tango server.
+ * <p/>
+ * Implementation guarantees that only only Tango instance will be started.
  *
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 21.02.12
  */
 public class TangoServlet extends GenericServlet {
-    private final ExecutorService exec;
-    public static final String APPLICATION_CONTEXT = "TangoServer.context";
-    public static final String STORAGE = "TangoServer.storage";
+    private static final ExecutorService EXEC;
 
-    TangoServlet(ExecutorService exec) {
-        this.exec = exec;
-    }
-
-    /**
-     * This is used by servlet container
-     */
-    public TangoServlet() {
-        this(Executors.newSingleThreadExecutor(new ThreadFactory() {
+    static {
+        EXEC = Executors.newSingleThreadExecutor(new ThreadFactory() {
             private final ThreadFactory factory = Executors.defaultThreadFactory();
 
             public Thread newThread(Runnable r) {
@@ -70,17 +63,18 @@ public class TangoServlet extends GenericServlet {
                 t.setName("PreExperimentDataCollector Tango frontend");
                 return t;
             }
-        }));
+        });
     }
 
-    private volatile Future<?> backgroundTask;
+    private static volatile boolean STARTED;
+    private static volatile Future<?> TANGO_SERVER;
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        if (STARTED) return;
 
         ApplicationContext applicationContext = (ApplicationContext) config.getServletContext().getAttribute(ApplicationServlet.APPLICATION_CONTEXT);
-        //TODO we should consider how to avoid this dirty hack with System.property
-        System.getProperties().put(APPLICATION_CONTEXT, applicationContext);
+        TangoDevice.setContext(applicationContext);
 
         ApplicationProperties properties = applicationContext.getApplicationProperties();
 
@@ -89,7 +83,8 @@ public class TangoServlet extends GenericServlet {
 
         String[] tangoServerArguments = properties.tangoServerArguments.isEmpty() ? new String[0] : properties.tangoServerArguments.split(",");
 
-        backgroundTask = exec.submit(new TangoDevice(tangoServerName, tangoInstanceName, tangoServerArguments));
+        TANGO_SERVER = EXEC.submit(new TangoDevice(tangoInstanceName, tangoServerArguments));
+        STARTED = true;
     }
 
 
@@ -97,7 +92,7 @@ public class TangoServlet extends GenericServlet {
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         PrintWriter writer = res.getWriter();
         writer.write("Tango server is alive:");
-        writer.write(String.valueOf(backgroundTask != null && !backgroundTask.isDone() && !backgroundTask.isCancelled()));
+        writer.write(String.valueOf(TANGO_SERVER != null && !TANGO_SERVER.isDone() && !TANGO_SERVER.isCancelled()));
     }
 
     public String getServletInfo() {
@@ -105,7 +100,8 @@ public class TangoServlet extends GenericServlet {
     }
 
     public void destroy() {
-        backgroundTask.cancel(true);
-        exec.shutdownNow();
+        TANGO_SERVER.cancel(true);
+        EXEC.shutdownNow();
+        STARTED = false;
     }
 }

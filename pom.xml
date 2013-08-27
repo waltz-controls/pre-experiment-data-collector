@@ -167,9 +167,9 @@
             <version>11.0.2</version>
         </dependency>
         <dependency>
-            <groupId>hzg.wpn</groupId>
-            <artifactId>TangoApi</artifactId>
-            <version>1.7</version>
+            <groupId>org.tango</groupId>
+            <artifactId>JTangoServer</artifactId>
+            <version>1.0.1-alpha</version>
         </dependency>
         <dependency>
             <groupId>su.clan.tla</groupId>
