@@ -42,6 +42,24 @@
                     "validation":"required",
                     "visibility":"web",
                     "readonly":false
+                },
+                {
+                    "name":"A readonly field",
+                    "id":"readOnly",
+                    "type":"text",
+                    "description":"A text field",
+                    "validation":"",
+                    "visibility":"web",
+                    "readonly":true
+                },
+                {
+                    "name":"A tango-only field",
+                    "id":"tangoOnly",
+                    "type":"text",
+                    "description":"A text field",
+                    "validation":"",
+                    "visibility":"tango",
+                    "readonly":false
                 }
             ]
         },
