@@ -86,46 +86,66 @@ public class TangoDevice implements Runnable {
         this.manager = manager;
     }
 
-    @Attribute
-    private volatile String userName;//dummy field because JTango does not support custom types
     private volatile User user;
-
-    public void setUserName(String userName) {
-        this.user = Users.getUser(userName, false, CTX);
-    }
-
-    public String getUserName() {
-        return user.getName();
-    }
-
-    @Attribute
-    private volatile String dataSetName;//dummy field because JTango does not support custom types
     private volatile DataSet dataSet;
 
-    public void setDataSetName(String dataSetName) throws Exception {
-        DynaBean data = CTX.getStorage().load(user, dataSetName, CTX);
-        this.dataSet = createDataSet(
-                user, CTX.getMetaDataHelper().getMetaData(), CTX.getBeamtimeId(), dataSetName, data);
+    @Status
+    private volatile String status;
+
+    public String getStatus() {
+        return "USER:" + ((user == null) ? "NULL" : user.getName()) +
+                ";DATA_SET:" + ((dataSet == null) ? "NULL" : dataSet.getId());
     }
 
-    public String getDataSetName() {
-        return dataSet.getId();
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Command
+    @StateMachine(endState = DeviceState.ON)
+    public void reset() {
+        user = null;
+        dataSet = null;
+    }
+
+    @Command
+    public void newUser(String userName) {
+        user = Users.getUser(userName, true, CTX);
+    }
+
+    @Command
+    public void loadUser(String userName) {
+        user = Users.getUser(userName, false, CTX);
+        if (user == null)
+            throw new IllegalStateException("User[" + userName + "] does not exist!");
+    }
+
+    @Command
+    @StateMachine(endState = DeviceState.RUNNING)
     public void newDataSet(String name) throws Exception {
         if (user == null)
-            throw new IllegalStateException("Can not load data set names for null user. Set userName first.");
+            throw new IllegalStateException("User is null! Create or load user first.");
 
         this.dataSet = DataSets.createDataSet(user, CTX.getMetaDataHelper().getMetaData(), CTX.getBeamtimeId(), name);
 
         CTX.getStorage().save(dataSet.getData(), user, dataSet.getId(), CTX);
     }
 
-    @Command(name = "showAllDataSetNames")
-    public String[] getAllDataSets() throws Exception {
+    @Command
+    @StateMachine(endState = DeviceState.RUNNING)
+    public void loadDataSet(String name) throws Exception {
         if (user == null)
-            throw new IllegalStateException("Can not load data set names for null user. Set userName first.");
+            throw new IllegalStateException("User is null! Create or load user first.");
+        DynaBean data = CTX.getStorage().load(user, name, CTX);
+        this.dataSet = createDataSet(
+                user, CTX.getMetaDataHelper().getMetaData(), CTX.getBeamtimeId(), name, data);
+    }
+
+    @Command(name = "showAllDataSetNames")
+    public String[] getAllDataSets(String userName) throws Exception {
+        User user = Users.getUser(userName, false, CTX);
+        if (user == null)
+            throw new IllegalStateException("Can not load data set names for non-existing user[" + userName + "].");
         return getUserDataSetNames(user, CTX).toArray(new String[0]);
     }
 
@@ -141,7 +161,7 @@ public class TangoDevice implements Runnable {
     }
 
     @Init
-    @StateMachine(endState = DeviceState.RUNNING)
+    @StateMachine(endState = DeviceState.ON)
     public void init() throws Exception {
         if (CTX == null) throw new IllegalStateException("ApplicationContext is not yet initialized!");
 
