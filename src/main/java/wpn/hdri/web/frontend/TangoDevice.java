@@ -44,6 +44,7 @@ import org.tango.server.dynamic.DynamicManager;
 import org.tango.utils.DevFailedUtils;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.data.DataSet;
+import wpn.hdri.web.data.DataSets;
 import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 import wpn.hdri.web.meta.MetaData;
@@ -109,6 +110,16 @@ public class TangoDevice implements Runnable {
 
     public String getDataSetName() {
         return dataSet.getId();
+    }
+
+    @Command
+    public void newDataSet(String name) throws Exception {
+        if (user == null)
+            throw new IllegalStateException("Can not load data set names for null user. Set userName first.");
+
+        this.dataSet = DataSets.createDataSet(user, CTX.getMetaDataHelper().getMetaData(), CTX.getBeamtimeId(), name);
+
+        CTX.getStorage().save(dataSet.getData(), user, dataSet.getId(), CTX);
     }
 
     @Command(name = "showAllDataSetNames")
