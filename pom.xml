@@ -39,7 +39,7 @@
         users. Prior the experiment the users have to fill out the form. In this form there are several fields that
         describes the ongoing experiment (samples, purposes etc.)
     </description>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <packaging>war</packaging>
 
