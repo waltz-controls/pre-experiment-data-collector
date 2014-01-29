@@ -31,7 +31,7 @@ package wpn.hdri.web.backend.submit;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.LazyDynaBean;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import wpn.hdri.util.base64.Base64InputStream;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.BackendException;

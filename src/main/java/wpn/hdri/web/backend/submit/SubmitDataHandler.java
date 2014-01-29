@@ -29,7 +29,8 @@
 
 package wpn.hdri.web.backend.submit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import su.clan.tla.web.backend.BackendHelper;
 import su.clan.tla.web.backend.PostOnlyServlet;
 import wpn.hdri.util.servlet.ServletUtils;
@@ -52,7 +53,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 //TODO replace with jsp
 public final class SubmitDataHandler extends PostOnlyServlet {
-    private static final Logger LOG = Logger.getLogger(SubmitDataHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SubmitDataHandler.class);
 
     private volatile ApplicationContext appCtx;
 

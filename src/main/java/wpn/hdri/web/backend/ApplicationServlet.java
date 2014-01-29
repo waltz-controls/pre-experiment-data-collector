@@ -31,7 +31,8 @@ package wpn.hdri.web.backend;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import wpn.hdri.properties.PropertiesFactory;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.ApplicationProperties;
@@ -57,7 +58,7 @@ import java.util.Properties;
  * @since 08.03.12
  */
 public final class ApplicationServlet extends GenericServlet {
-    private static final Logger log = Logger.getLogger(ApplicationServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(ApplicationServlet.class);
 
     public static final String APPLICATION_CONTEXT = ApplicationContext.class.getSimpleName() + ".context";
 

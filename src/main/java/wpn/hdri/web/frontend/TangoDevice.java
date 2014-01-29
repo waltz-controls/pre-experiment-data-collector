@@ -32,7 +32,8 @@ package wpn.hdri.web.frontend;
 import fr.esrf.Tango.AttrWriteType;
 import fr.esrf.Tango.DevFailed;
 import org.apache.commons.beanutils.DynaBean;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tango.DeviceState;
 import org.tango.server.ServerManager;
 import org.tango.server.StateMachineBehavior;
@@ -55,8 +56,7 @@ import static wpn.hdri.web.data.DataSets.*;
 
 @Device
 public class TangoDevice implements Runnable {
-    //TODO migrate to slf4j and integrate with Tango logging
-    private static final Logger log = Logger.getLogger(TangoDevice.class);
+    private static final Logger log = LoggerFactory.getLogger(TangoDevice.class);
 
     private static volatile ApplicationContext CTX;
 

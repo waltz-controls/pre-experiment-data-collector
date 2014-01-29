@@ -139,7 +139,7 @@ public class DataSets {
      */
     public static void update(DynaBean newData, DataSet dataSet) {
         try {
-            for (Map.Entry entry : (Set<Map.Entry>) PropertyUtils.describe(newData).entrySet()) {
+            for (Map.Entry<String, Object> entry : PropertyUtils.describe(newData).entrySet()) {
                 dataSet.set(String.valueOf(entry.getKey()), entry.getValue());
             }
         } catch (IllegalAccessException e) {

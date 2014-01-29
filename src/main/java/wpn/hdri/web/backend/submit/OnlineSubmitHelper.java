@@ -31,7 +31,7 @@ package wpn.hdri.web.backend.submit;
 
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.BackendException;
 import wpn.hdri.web.data.DataSet;
@@ -41,7 +41,6 @@ import wpn.hdri.web.storage.StorageException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -56,8 +55,8 @@ public class OnlineSubmitHelper extends SubmitHelper {
             DynaBean values = getDataSetValues(requestParameters.data, oldDataSet.getMeta());
             log.info("Writing new values to data set:");
             try {
-                for (Map.Entry entry : (Set<Map.Entry>) PropertyUtils.describe(values).entrySet()) {
-                    log.info(String.valueOf(entry.getKey()) + "=" + String.valueOf(entry.getValue()));
+                for (Map.Entry<String, Object> entry : PropertyUtils.describe(values).entrySet()) {
+                    log.info(entry.getKey() + "=" + String.valueOf(entry.getValue()));
                 }
             } catch (IllegalAccessException e) {
                 log.error("Ag-rh", e);

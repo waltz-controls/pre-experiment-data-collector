@@ -30,9 +30,9 @@
 package wpn.hdri.web.backend.submit;
 
 import org.apache.commons.beanutils.DynaBean;
-import org.apache.log4j.Logger;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.junit.Test;
+import org.slf4j.Logger;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.UsefulTestConstants;
 import wpn.hdri.web.backend.BackendException;
