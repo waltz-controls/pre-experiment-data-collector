@@ -6,11 +6,14 @@ import com.google.gson.JsonIOException;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.DynaProperty;
 import org.apache.commons.beanutils.LazyDynaClass;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +44,7 @@ public class Meta {
     public static final String FRM_FIELDS = "fields";
 
     private final Path pathToYaml;
-    private final YamlParser parser = new YamlParser();
+    private final Yaml parser = new Yaml();
     private final Gson gson = new GsonBuilder()
             .serializeNulls()
             .create();
@@ -56,7 +59,7 @@ public class Meta {
 
     public void load() throws IOException {
         //TODO validate yaml
-        yaml.set(parser.parse(pathToYaml));
+        yaml.set(parser.load(Files.newBufferedReader(pathToYaml, Charset.defaultCharset())));
     }
 
     /**
