@@ -30,7 +30,7 @@
 package wpn.hdri.web.frontend;
 
 import hzg.wpn.hdri.predator.ApplicationContext;
-import wpn.hdri.web.ApplicationProperties;
+import hzg.wpn.hdri.predator.ApplicationProperties;
 import wpn.hdri.web.backend.ApplicationServlet;
 
 import javax.servlet.*;

@@ -6,7 +6,6 @@ import hzg.wpn.util.properties.PropertiesHelper;
 import org.apache.commons.beanutils.DynaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import wpn.hdri.web.ApplicationProperties;
 import wpn.hdri.web.storage.SimpleSerializationStorage;
 import wpn.hdri.web.storage.Storage;
 

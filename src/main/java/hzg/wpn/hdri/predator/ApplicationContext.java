@@ -32,7 +32,6 @@ package hzg.wpn.hdri.predator;
 import hzg.wpn.hdri.predator.meta.Meta;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.io.FileUtils;
-import wpn.hdri.web.ApplicationProperties;
 import wpn.hdri.web.data.User;
 import wpn.hdri.web.storage.Storage;
 
