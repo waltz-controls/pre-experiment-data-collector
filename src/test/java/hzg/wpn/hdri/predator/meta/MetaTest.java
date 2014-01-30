@@ -19,7 +19,6 @@ public class MetaTest {
     @Test
     public void testExtractDynaClass() throws Exception {
         Meta instance = new Meta(pathToYaml);
-        instance.load();
         DynaClass result = instance.extractDynaClass();
         //TODO assert
     }
@@ -27,7 +26,6 @@ public class MetaTest {
     @Test
     public void testWriteAsJson() throws Exception {
         Meta instance = new Meta(pathToYaml);
-        instance.load();
         try (BufferedWriter out =
                      Files.newBufferedWriter(pathToYaml.getParent().resolve("Meta.json"), Charset.defaultCharset())) {
             instance.writeAsJson(out);

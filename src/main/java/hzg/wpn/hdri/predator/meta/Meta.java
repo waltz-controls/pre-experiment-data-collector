@@ -47,14 +47,10 @@ public class Meta {
     private final Gson gson = new GsonBuilder()
             .serializeNulls()
             .create();
-    private Object yaml = null;
+    private final Object yaml;
 
-    public Meta(Path pathToYaml) {
+    public Meta(Path pathToYaml) throws IOException {
         this.pathToYaml = pathToYaml;
-    }
-
-    public void load() throws IOException {
-        //TODO validate yaml
         yaml = parser.load(Files.newBufferedReader(pathToYaml, Charset.defaultCharset()));
     }
 

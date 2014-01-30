@@ -31,14 +31,16 @@ public class ApplicationLoader implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        initializeLoginProperties();
+        String realPath = sce.getServletContext().getRealPath("/");
+
+        initializeLoginProperties(realPath);
 
         initializeApplicationContext(sce.getServletContext());
     }
 
-    private void initializeLoginProperties() {
+    private void initializeLoginProperties(String realPath) {
         try {
-            Properties loginProperties = PropertiesHelper.loadProperties(Paths.get(LOGIN_PROPERTIES));
+            Properties loginProperties = PropertiesHelper.loadProperties(Paths.get(realPath, LOGIN_PROPERTIES));
 
             for (Map.Entry<Object, Object> entry : loginProperties.entrySet()) {
                 System.getProperties().put(entry.getKey(), entry.getValue());
@@ -55,20 +57,21 @@ public class ApplicationLoader implements ServletContextListener {
      * @param servletContext
      */
     private void initializeApplicationContext(ServletContext servletContext) {
+        String realPath = servletContext.getRealPath("/");
+        String contextPath = servletContext.getContextPath();
         try {
-            Properties properties = PropertiesHelper.loadProperties(Paths.get(APPLICATION_PROPERTIES));
+            Properties properties = PropertiesHelper.loadProperties(Paths.get(realPath, APPLICATION_PROPERTIES));
 
-            PropertiesFactory<ApplicationProperties> factory = new PropertiesFactory<ApplicationProperties>(properties, ApplicationProperties.class);
+            PropertiesFactory<ApplicationProperties> factory = new PropertiesFactory<>(properties, ApplicationProperties.class);
             ApplicationProperties appProperties = factory.createType();
 
             String beamtimeId = appProperties.beamtimeId;
 
             Storage storage = new SimpleSerializationStorage();
 
-            Meta meta = new Meta(Paths.get(META_YAML));
+            Meta meta = new Meta(Paths.get(realPath, META_YAML));
             DynaClass dataClass = meta.extractDynaClass();
-            String realPath = servletContext.getRealPath("/");
-            String contextPath = servletContext.getContextPath();
+
 
             ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass);
             servletContext.setAttribute(ApplicationContext.APPLICATION_CONTEXT, context);
