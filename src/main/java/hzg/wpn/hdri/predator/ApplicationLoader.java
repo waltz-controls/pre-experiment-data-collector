@@ -26,9 +26,10 @@ public class ApplicationLoader implements ServletContextListener {
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationLoader.class);
 
     public static final String APPLICATION_CONTEXT = "predator.context";
-    public static final String LOGIN_PROPERTIES = "login.properties";
-    public static final String APPLICATION_PROPERTIES = "application.properties";
-    public static final String META_YAML = "meta.yaml";
+    public static final String WEB_INF = "WEB-INF/";
+    public static final String LOGIN_PROPERTIES = WEB_INF + "login.properties";
+    public static final String APPLICATION_PROPERTIES = WEB_INF + "application.properties";
+    public static final String META_YAML = WEB_INF + "meta.yaml";
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
