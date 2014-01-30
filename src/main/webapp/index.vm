@@ -19,17 +19,12 @@
     </div>
 </div>
 <script language="javascript" type="text/javascript">
-    "ApplicationContext = {
-    userName  :'$userName',
-            scheme
-    :
-    '$scheme',
-            serverName
-    :
-    '$serverName',
-            port
-    : $portNumber,
-    domain    :'$url'
+    ApplicationContext = {
+        userName  : '$user',
+        scheme    : '$scheme',
+        serverName: '$serverName',
+        port      : $portNumber,
+        domain    : '$url'
     }
 </script>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>

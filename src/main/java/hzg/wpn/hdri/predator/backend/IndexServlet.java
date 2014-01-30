@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Properties;
 
 /**
  * Trivial implementation of the greetings page.
@@ -53,7 +54,9 @@ public final class IndexServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        Velocity.init();
+        Properties p = new Properties();
+        p.setProperty("file.resource.loader.path", getServletContext().getRealPath("/"));
+        Velocity.init(p);
     }
 
     @Override
