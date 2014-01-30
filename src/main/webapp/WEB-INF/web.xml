@@ -35,7 +35,7 @@
     <display-name>PreExperiment Data Collector</display-name>
     <distributable/>
     <listener>
-        <listener-class>hzg.wpn.hdri.web.predator.ApplicationLoader</listener-class>
+        <listener-class>hzg.wpn.hdri.predator.ApplicationLoader</listener-class>
     </listener>
     <servlet>
         <servlet-name>ApplicationServlet</servlet-name>
