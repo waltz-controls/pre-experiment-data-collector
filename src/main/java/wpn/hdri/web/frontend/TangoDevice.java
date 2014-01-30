@@ -31,6 +31,7 @@ package wpn.hdri.web.frontend;
 
 import fr.esrf.Tango.AttrWriteType;
 import fr.esrf.Tango.DevFailed;
+import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.meta.MetaData;
 import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
 import hzg.wpn.hdri.predator.meta.MetaField;
@@ -46,7 +47,6 @@ import org.tango.server.attribute.AttributeValue;
 import org.tango.server.attribute.IAttributeBehavior;
 import org.tango.server.dynamic.DynamicManager;
 import org.tango.utils.DevFailedUtils;
-import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
 import wpn.hdri.web.data.User;
@@ -128,7 +128,7 @@ public class TangoDevice implements Runnable {
 
         this.dataSet = DataSets.createDataSet(user, CTX.getMetaDataHelper().getMetaData(), CTX.getBeamtimeId(), name);
 
-        CTX.getStorage().save(dataSet.getData(), user, dataSet.getId(), CTX);
+        CTX.getStorage().save(dataSet.getData(), CTX);
     }
 
     @Command
@@ -136,7 +136,7 @@ public class TangoDevice implements Runnable {
     public void loadDataSet(String name) throws Exception {
         if (user == null)
             throw new IllegalStateException("User is null! Create or load user first.");
-        DynaBean data = CTX.getStorage().load(user, name, CTX);
+        DynaBean data = CTX.getStorage().load(name, CTX);
         this.dataSet = createDataSet(
                 user, CTX.getMetaDataHelper().getMetaData(), CTX.getBeamtimeId(), name, data);
     }
@@ -194,7 +194,7 @@ public class TangoDevice implements Runnable {
                     update(fld.getId(), value.getValue(), dataSet);
 
                     try {
-                        CTX.getStorage().save(dataSet.getData(), TangoDevice.this.user, dataSet.getId(), CTX);
+                        CTX.getStorage().save(dataSet.getData(), CTX);
                     } catch (Exception e) {
                         DevFailedUtils.throwDevFailed(e);
                     }

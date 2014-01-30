@@ -29,10 +29,10 @@
 
 package wpn.hdri.web.backend.submit;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
-import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.BackendException;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
@@ -82,7 +82,7 @@ public class OnlineSubmitHelper extends SubmitHelper {
      */
     private DataSet load(User user, String dataSetName, ApplicationContext applicationContext) throws BackendException {
         try {
-            DynaBean data = applicationContext.getStorage().load(user, dataSetName, applicationContext);
+            DynaBean data = applicationContext.getStorage().load(dataSetName, applicationContext);
             if (data == null) {
                 //TODO handle situation
                 throw new IllegalStateException("DataSet can not be null at this point.");

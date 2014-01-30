@@ -32,6 +32,7 @@ package wpn.hdri.web.backend;
 import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
+import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.util.reflection.ReflectionUtils;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.*;
@@ -40,7 +41,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.data.BeamtimeId;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.User;
@@ -101,7 +101,7 @@ public class ITestApplication {
 //        webDriver.get(WEBAPP_URL);
         webDriver.get("http://" + USERNAME + ":" + PASS + "@localhost:" + PORT + CONTEXT);
 
-        ctx = new ApplicationContext(REAL_PATH + "/", CONTEXT, new BeamtimeId("test-beamtime"), null, null, null);
+        ctx = new ApplicationContext(REAL_PATH + "/", CONTEXT, new BeamtimeId("test-beamtime"), null, null, meta, dataClass);
     }
 
     private WebDriver createFireFoxDriver() {
@@ -179,7 +179,7 @@ public class ITestApplication {
         Storage<DataSet> storage = new SimpleSerializationStorage<DataSet>();
 
 
-        DataSet result = storage.load(TEST_USER, "test-data-set-1", ctx);
+        DataSet result = storage.load("test-data-set-1", ctx);
     }
 
     @After

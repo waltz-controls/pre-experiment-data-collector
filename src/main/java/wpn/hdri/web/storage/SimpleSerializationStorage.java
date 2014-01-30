@@ -29,9 +29,12 @@
 
 package wpn.hdri.web.storage;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.DynaBean;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 
 /**
  * Saves and loads data instance.
@@ -40,58 +43,45 @@ import java.io.*;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 23.02.12
  */
-public final class SimpleSerializationStorage<T> extends AbsFileStorage<T> {
-    @Override
-    protected String getExtension() {
-        return BINARY_FILE_EXTENSION;
-    }
+public final class SimpleSerializationStorage implements Storage {
+    public static final String BINARY_FILE_EXTENSION = ".dat";
 
-    protected void saveInternal(T bean, File output) throws StorageException {
+    /**
+     * Saves the bean instance as binary serialized java object
+     *
+     * @param bean
+     * @param root
+     * @throws IOException
+     */
+    public void save(DynaBean bean, Path root) throws IOException {
+        String name = null;
         try {
-            ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
-
-            try {
-                oos.writeObject(bean);
-            } finally {
-                IOUtils.closeQuietly(oos);
-            }
-        } catch (FileNotFoundException e) {
-            throw new StorageException("Unable to locate file to store data in:" + output.getAbsolutePath(), e);
-        } catch (IOException e) {
-            throw new StorageException("Data serialization attempt failed.", e);
+            name = BeanUtils.getProperty(bean, "name");
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new IOException(e);
+        }
+        Path output = root.resolve(name + BINARY_FILE_EXTENSION);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(output.toFile())))) {
+            oos.writeObject(bean);
         }
     }
 
     /**
      * Loads data set from a file or returns null if file does not exists.
      *
-     * @param input file to read from
+     * @param dataSetName file to read from
+     * @param root        path to user's dir
      * @return object of type T or null
-     * @throws StorageException if read file attempt failed.
+     * @throws IOException if read file attempt failed.
      */
-    protected T loadInternal(File input) throws StorageException {
-        if(!input.exists()){
-            return null;
-        }
-        try {
-            ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(input)));
+    public DynaBean load(String dataSetName, Path root) throws IOException {
+        Path input = root.resolve(dataSetName + BINARY_FILE_EXTENSION);
+        try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(input.toFile())))) {
+            Object o = ois.readObject();
 
-            try {
-                Object o = ois.readObject();
-
-                return (T) o;
-            } finally {
-                IOUtils.closeQuietly(ois);
-            }
-        } catch (IOException e) {
-            throw new StorageException("Can not read from file:" + input.getAbsolutePath(), e);
+            return (DynaBean) o;
         } catch (ClassNotFoundException e) {
-            throw new StorageException("Data deserialization attempt failed.", e);
+            throw new IOException(e);
         }
-    }
-
-    @Override
-    public void close() {
-
     }
 }

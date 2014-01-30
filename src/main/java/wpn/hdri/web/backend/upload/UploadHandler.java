@@ -29,6 +29,7 @@
 
 package wpn.hdri.web.backend.upload;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.util.servlet.ServletUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -36,7 +37,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import su.clan.tla.web.backend.json.JsonBaseServlet;
 import su.clan.tla.web.backend.json.JsonRequest;
-import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.ApplicationServlet;
 import wpn.hdri.web.backend.BackendException;
 import wpn.hdri.web.data.UploadedDocument;

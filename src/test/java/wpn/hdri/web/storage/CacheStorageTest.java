@@ -29,11 +29,11 @@
 
 package wpn.hdri.web.storage;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import wpn.hdri.ConcurrentUtils;
-import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 
@@ -67,13 +67,13 @@ public class CacheStorageTest {
     public void testSaveLoad() throws Exception {
         TestData data = new TestData();
 
-        instance.save(data, Users.TEST_USER, "test-save-load", ApplicationContext.NULL);
+        instance.save(data, ApplicationContext.NULL);
 
-        verify(mock).save(data, Users.TEST_USER, "test-save-load", ApplicationContext.NULL);
+        verify(mock).save(data, ApplicationContext.NULL);
 
-        TestData result = instance.load(Users.TEST_USER, "test-save-load", ApplicationContext.NULL);
+        TestData result = instance.load("test-save-load", ApplicationContext.NULL);
 
-        verify(mock, never()).load(Users.TEST_USER, "test-save-load", ApplicationContext.NULL);
+        verify(mock, never()).load("test-save-load", ApplicationContext.NULL);
 
         assertEquals("ABC", result.string);
         assertEquals(1234, result.number);
@@ -85,21 +85,21 @@ public class CacheStorageTest {
         instance = new CacheStorage<TestData>(mock, 100, 100, TimeUnit.MILLISECONDS);
 
         //save data several times
-        instance.save(new TestData(), Users.TEST_USER, "test-cleanup", ApplicationContext.NULL);
-        instance.save(new TestData(), Users.TEST_USER, "test-cleanup", ApplicationContext.NULL);
-        instance.save(new TestData(), Users.TEST_USER, "test-cleanup", ApplicationContext.NULL);
+        instance.save(new TestData(), ApplicationContext.NULL);
+        instance.save(new TestData(), ApplicationContext.NULL);
+        instance.save(new TestData(), ApplicationContext.NULL);
 
-        verify(mock).save(new TestData(), Users.TEST_USER, "test-cleanup", ApplicationContext.NULL);
+        verify(mock).save(new TestData(), ApplicationContext.NULL);
         //await until cache is cleaned up
         Thread.sleep(500);
 
         //save data several times more
-        instance.save(new TestData(), Users.TEST_USER, "test-cleanup", ApplicationContext.NULL);
-        instance.save(new TestData(), Users.TEST_USER, "test-cleanup", ApplicationContext.NULL);
-        instance.save(new TestData(), Users.TEST_USER, "test-cleanup", ApplicationContext.NULL);
+        instance.save(new TestData(), ApplicationContext.NULL);
+        instance.save(new TestData(), ApplicationContext.NULL);
+        instance.save(new TestData(), ApplicationContext.NULL);
 
         //save should be called for the second time as instance.cachedValues is now empty
-        verify(mock, times(2)).save(new TestData(), Users.TEST_USER, "test-cleanup", ApplicationContext.NULL);
+        verify(mock, times(2)).save(new TestData(), ApplicationContext.NULL);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class CacheStorageTest {
                 new TestData(), Users.TEST_USER, "test-data", ApplicationContext.NULL);
 
         //underlying load method should be called only once
-        verify(mock).save(new TestData(), Users.TEST_USER, "test-data", ApplicationContext.NULL);
+        verify(mock).save(new TestData(), ApplicationContext.NULL);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class CacheStorageTest {
                 Users.TEST_USER, "test-data", ApplicationContext.NULL);
 
         //underlying load method should be called only once
-        verify(mock).load(Users.TEST_USER, "test-data", ApplicationContext.NULL);
+        verify(mock).load("test-data", ApplicationContext.NULL);
     }
 
     @Test
@@ -127,12 +127,12 @@ public class CacheStorageTest {
         TestData data = new TestData();
 
         //store data
-        instance.save(data, Users.TEST_USER, "test-data", ApplicationContext.NULL);
-        verify(mock).save(data, Users.TEST_USER, "test-data", ApplicationContext.NULL);
+        instance.save(data, ApplicationContext.NULL);
+        verify(mock).save(data, ApplicationContext.NULL);
 
         //load should return cached value
-        TestData loaded1 = instance.load(Users.TEST_USER, "test-data", ApplicationContext.NULL);
-        verify(mock, never()).load(Users.TEST_USER, "test-data", ApplicationContext.NULL);
+        TestData loaded1 = instance.load("test-data", ApplicationContext.NULL);
+        verify(mock, never()).load("test-data", ApplicationContext.NULL);
 
         assertEquals("ABC", loaded1.string);
         assertEquals(1234, loaded1.number);
@@ -143,12 +143,12 @@ public class CacheStorageTest {
         //change data and store
         //this simulates DataSets.update use case
         data.string = "qwerty";
-        instance.save(data, Users.TEST_USER, "test-data", ApplicationContext.NULL);
+        instance.save(data, ApplicationContext.NULL);
         //underlying save second invocation
-        verify(mock, times(2)).save(data, Users.TEST_USER, "test-data", ApplicationContext.NULL);
+        verify(mock, times(2)).save(data, ApplicationContext.NULL);
 
-        TestData loaded2 = instance.load(Users.TEST_USER, "test-data", ApplicationContext.NULL);
-        verify(mock, never()).load(Users.TEST_USER, "test-data", ApplicationContext.NULL);
+        TestData loaded2 = instance.load("test-data", ApplicationContext.NULL);
+        verify(mock, never()).load("test-data", ApplicationContext.NULL);
 
         assertEquals("qwerty", loaded2.string);
     }

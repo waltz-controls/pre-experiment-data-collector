@@ -29,12 +29,12 @@
 
 package wpn.hdri.web.backend.jsonp;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.meta.MetaData;
 import org.apache.commons.beanutils.DynaBean;
 import su.clan.tla.web.backend.RequestParameter;
 import su.clan.tla.web.backend.json.JsonRequest;
 import su.clan.tla.web.backend.json.JsonpBaseServlet;
-import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.ApplicationServlet;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
@@ -75,7 +75,7 @@ public final class DataSetsService extends JsonpBaseServlet<DataSet, DataSetsSer
             String id = req.getParameters().dataSetName;
             DataSet dataSet = DataSets.createDataSet(user, meta, appCtx.getBeamtimeId(), id);
 
-            appCtx.getStorage().save(dataSet.getData(), user, id, appCtx);
+            appCtx.getStorage().save(dataSet.getData(), appCtx);
 
             return dataSet;
         } catch (Exception e) {
@@ -102,7 +102,7 @@ public final class DataSetsService extends JsonpBaseServlet<DataSet, DataSetsSer
 
 
             for (String dataSetName : DataSets.getUserDataSetNames(user, appCtx)) {
-                DynaBean data = appCtx.getStorage().load(user, dataSetName, appCtx);
+                DynaBean data = appCtx.getStorage().load(dataSetName, appCtx);
                 DataSet dataSet = DataSets.createDataSet(user, appCtx.getMetaDataHelper().getMetaData(),
                         appCtx.getBeamtimeId(), dataSetName, data);
                 result.add(dataSet);

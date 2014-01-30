@@ -29,10 +29,10 @@
 
 package wpn.hdri.web.backend.jsonp;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import org.apache.commons.collections.Transformer;
 import su.clan.tla.web.backend.json.JsonRequest;
 import su.clan.tla.web.backend.json.JsonpBaseServlet;
-import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.ApplicationServlet;
 import wpn.hdri.web.backend.BackendException;
 import wpn.hdri.web.data.DataSets;

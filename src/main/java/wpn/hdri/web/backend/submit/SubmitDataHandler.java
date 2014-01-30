@@ -29,12 +29,12 @@
 
 package wpn.hdri.web.backend.submit;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.util.servlet.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import su.clan.tla.web.backend.BackendHelper;
 import su.clan.tla.web.backend.PostOnlyServlet;
-import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.ApplicationServlet;
 import wpn.hdri.web.backend.BackendException;
 import wpn.hdri.web.data.User;

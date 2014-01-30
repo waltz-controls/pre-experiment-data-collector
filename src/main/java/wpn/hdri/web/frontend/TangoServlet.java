@@ -29,7 +29,7 @@
 
 package wpn.hdri.web.frontend;
 
-import wpn.hdri.web.ApplicationContext;
+import hzg.wpn.hdri.predator.ApplicationContext;
 import wpn.hdri.web.ApplicationProperties;
 import wpn.hdri.web.backend.ApplicationServlet;
 

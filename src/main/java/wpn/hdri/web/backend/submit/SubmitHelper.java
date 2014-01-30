@@ -29,6 +29,7 @@
 
 package wpn.hdri.web.backend.submit;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.meta.MetaData;
 import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
 import hzg.wpn.hdri.predator.meta.MetaField;
@@ -40,7 +41,6 @@ import hzg.wpn.util.base64.Base64InputStream;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.LazyDynaBean;
 import org.slf4j.Logger;
-import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.backend.BackendException;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.User;
@@ -110,7 +110,7 @@ public abstract class SubmitHelper {
 
     private void save(User user, DataSet newDataSet, ApplicationContext applicationContext) throws BackendException {
         try {
-            applicationContext.getStorage().save(newDataSet.getData(), user, newDataSet.getId(), applicationContext);
+            applicationContext.getStorage().save(newDataSet.getData(), applicationContext);
         } catch (StorageException e) {
             throw new BackendException("An attempt to store dataset failed.", e);
         }

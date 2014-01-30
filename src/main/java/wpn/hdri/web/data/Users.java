@@ -29,9 +29,9 @@
 
 package wpn.hdri.web.data;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import net.jcip.annotations.ThreadSafe;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import wpn.hdri.web.ApplicationContext;
 
 import java.io.File;
 import java.io.FileFilter;

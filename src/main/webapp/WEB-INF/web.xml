@@ -38,13 +38,6 @@
         <listener-class>hzg.wpn.hdri.predator.ApplicationLoader</listener-class>
     </listener>
     <servlet>
-        <servlet-name>ApplicationServlet</servlet-name>
-        <display-name>ApplicationServlet</display-name>
-        <description>Main servlet. Loads at startup and initializes essential items of the application.</description>
-        <servlet-class>wpn.hdri.web.backend.ApplicationServlet</servlet-class>
-        <load-on-startup>0</load-on-startup>
-    </servlet>
-    <servlet>
         <servlet-name>DataSets</servlet-name>
         <display-name>DataSets</display-name>
         <description>Provides info about DataSets.</description>
@@ -122,10 +115,6 @@
     <servlet-mapping>
         <servlet-name>TangoServlet</servlet-name>
         <url-pattern>/frontend/tango</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ApplicationServlet</servlet-name>
-        <url-pattern>/backend/application</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

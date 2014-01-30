@@ -29,10 +29,10 @@
 
 package wpn.hdri.web.storage;
 
-import wpn.hdri.web.ApplicationContext;
-import wpn.hdri.web.data.User;
+import org.apache.commons.beanutils.DynaBean;
 
-import java.io.Closeable;
+import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * Represents storage layer of the application.
@@ -41,8 +41,8 @@ import java.io.Closeable;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 01.02.12
  */
-public interface Storage<T> extends Closeable {
-    void save(T data, User user, String dataSetName, ApplicationContext ctx) throws StorageException;
+public interface Storage {
+    void save(DynaBean data, Path root) throws IOException;
 
-    T load(User user, String dataSetName, ApplicationContext ctx) throws StorageException;
+    DynaBean load(String dataSetName, Path root) throws IOException;
 }

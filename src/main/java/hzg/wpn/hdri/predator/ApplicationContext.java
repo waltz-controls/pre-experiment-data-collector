@@ -27,12 +27,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-package wpn.hdri.web;
+package hzg.wpn.hdri.predator;
 
-import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
-import org.apache.commons.beanutils.DynaBean;
+import hzg.wpn.hdri.predator.meta.Meta;
+import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.io.FileUtils;
-import wpn.hdri.web.data.BeamtimeId;
+import wpn.hdri.web.ApplicationProperties;
 import wpn.hdri.web.data.User;
 import wpn.hdri.web.storage.Storage;
 
@@ -50,14 +50,15 @@ import java.io.IOException;
  * @since 13.03.12
  */
 public class ApplicationContext {
-    public static final ApplicationContext NULL = new ApplicationContext(null, null, null, null, null, null);
+    public static final ApplicationContext NULL = new ApplicationContext(null, null, null, null, null, null, null);
 
     private final String realPath;
     private final String contextPath;
-    private final BeamtimeId beamtimeId;
-    private final Storage<DynaBean> storage;
+    private final String beamtimeId;
+    private final Storage storage;
     private final ApplicationProperties properties;
-    private final MetaDataHelpers helper;
+    private final Meta meta;
+    private final DynaClass dataClass;
 
     /**
      * @param realPath    ends with '/'
@@ -65,15 +66,17 @@ public class ApplicationContext {
      * @param beamtimeId
      * @param storage
      * @param properties
-     * @param helper
+     * @param meta
+     * @param dataClass
      */
-    public ApplicationContext(String realPath, String contextPath, BeamtimeId beamtimeId, Storage<DynaBean> storage, ApplicationProperties properties, MetaDataHelpers helper) {
+    public ApplicationContext(String realPath, String contextPath, String beamtimeId, Storage storage, ApplicationProperties properties, Meta meta, DynaClass dataClass) {
         this.realPath = realPath;
         this.contextPath = contextPath;
         this.beamtimeId = beamtimeId;
         this.storage = storage;
         this.properties = properties;
-        this.helper = helper;
+        this.meta = meta;
+        this.dataClass = dataClass;
     }
 
 
@@ -83,15 +86,22 @@ public class ApplicationContext {
      *
      * @return beamtimeId
      */
-    public BeamtimeId getBeamtimeId() {
+    public String getBeamtimeId() {
         return beamtimeId;
     }
 
     /**
-     * @return metaDataHelper
+     * @return meta is a wrapper for the yaml description
      */
-    public MetaDataHelpers getMetaDataHelper() {
-        return helper;
+    public Meta getMeta() {
+        return meta;
+    }
+
+    /**
+     * @return a DynaClass that defines data set and it is also a factory for a new DynaBean instances
+     */
+    public DynaClass getDataClass() {
+        return dataClass;
     }
 
     /**
@@ -99,7 +109,7 @@ public class ApplicationContext {
      *
      * @return storage
      */
-    public Storage<DynaBean> getStorage() {
+    public Storage getStorage() {
         return storage;
     }
 
@@ -188,7 +198,7 @@ public class ApplicationContext {
      * @throws IOException if creation attempt failed
      */
     public File getUserBeamtimeDir(User user) throws IOException {
-        File beamtime = new File(getUserHomeDir(user), beamtimeId.getValue());
+        File beamtime = new File(getUserHomeDir(user), beamtimeId);
 
         if (!beamtime.exists()) {
             FileUtils.forceMkdir(beamtime);

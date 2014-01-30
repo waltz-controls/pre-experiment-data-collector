@@ -26,7 +26,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
-package wpn.hdri.web.auth;
+package hzg.wpn.hdri.predator.auth;
 
 import com.sun.security.auth.module.Krb5LoginModule;
 import org.apache.catalina.realm.GenericPrincipal;

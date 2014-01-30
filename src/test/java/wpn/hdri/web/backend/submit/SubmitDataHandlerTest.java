@@ -29,6 +29,7 @@
 
 package wpn.hdri.web.backend.submit;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.meta.MetaDataFactory;
 import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
 import hzg.wpn.hdri.predator.meta.json.JsonMetaSource;
@@ -37,10 +38,8 @@ import org.apache.commons.beanutils.DynaBean;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.junit.Before;
 import org.junit.Test;
-import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.UsefulTestConstants;
 import wpn.hdri.web.backend.ApplicationServlet;
-import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 import wpn.hdri.web.storage.Storage;
 
@@ -64,7 +63,7 @@ public class SubmitDataHandlerTest {
     public void before() throws Exception {
         instance = new SubmitDataHandler();
 
-        ApplicationContext appCtx = new ApplicationContext(null, null, UsefulTestConstants.TEST_BEAMTIME_ID, mockStorage, null, metaDataHelpers);
+        ApplicationContext appCtx = new ApplicationContext(null, null, UsefulTestConstants.TEST_BEAMTIME_ID, mockStorage, null, meta, dataClass);
 
         ServletContext ctx = mock(ServletContext.class);
 
@@ -95,6 +94,6 @@ public class SubmitDataHandlerTest {
 
         instance.doPostInternal(req, res);
 
-        verify(mockStorage, atLeastOnce()).save(any(DynaBean.class), any(User.class), eq("test-data-set"), any(ApplicationContext.class));
+        verify(mockStorage, atLeastOnce()).save(any(DynaBean.class), any(ApplicationContext.class));
     }
 }

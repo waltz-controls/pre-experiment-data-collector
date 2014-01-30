@@ -29,6 +29,7 @@
 
 package wpn.hdri.web;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.meta.MetaDataFactory;
 import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
 import hzg.wpn.hdri.predator.meta.json.JsonMetaSource;
