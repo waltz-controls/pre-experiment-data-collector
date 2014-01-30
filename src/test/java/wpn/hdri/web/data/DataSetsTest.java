@@ -29,13 +29,11 @@
 
 package wpn.hdri.web.data;
 
+import hzg.wpn.hdri.predator.meta.MetaField;
+import hzg.wpn.hdri.predator.meta.MetaForm;
 import org.junit.Before;
 import org.junit.Test;
-import wpn.hdri.web.meta.MetaField;
-import wpn.hdri.web.meta.MetaForm;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 import static wpn.hdri.web.UsefulTestConstants.*;
 
 /**

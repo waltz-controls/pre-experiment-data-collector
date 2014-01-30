@@ -1,4 +1,4 @@
-package wpn.hdri.web.meta;
+package hzg.wpn.hdri.predator.meta;
 
 import org.apache.commons.beanutils.DynaClass;
 import org.junit.Test;

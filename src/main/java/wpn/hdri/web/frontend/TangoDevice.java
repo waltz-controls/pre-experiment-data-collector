@@ -31,6 +31,9 @@ package wpn.hdri.web.frontend;
 
 import fr.esrf.Tango.AttrWriteType;
 import fr.esrf.Tango.DevFailed;
+import hzg.wpn.hdri.predator.meta.MetaData;
+import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
+import hzg.wpn.hdri.predator.meta.MetaField;
 import org.apache.commons.beanutils.DynaBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +51,6 @@ import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
 import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
-import wpn.hdri.web.meta.MetaData;
-import wpn.hdri.web.meta.MetaDataHelpers;
-import wpn.hdri.web.meta.MetaField;
 
 import static wpn.hdri.web.data.DataSets.*;
 

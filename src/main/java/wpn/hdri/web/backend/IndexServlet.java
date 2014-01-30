@@ -29,8 +29,8 @@
 
 package wpn.hdri.web.backend;
 
+import hzg.wpn.util.servlet.ServletUtils;
 import su.clan.tla.web.backend.GetOnlyServlet;
-import wpn.hdri.util.servlet.ServletUtils;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

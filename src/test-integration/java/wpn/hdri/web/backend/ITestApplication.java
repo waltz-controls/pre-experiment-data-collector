@@ -32,6 +32,7 @@ package wpn.hdri.web.backend;
 import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
+import hzg.wpn.util.reflection.ReflectionUtils;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.*;
 import org.openqa.selenium.By;
@@ -46,7 +47,6 @@ import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
 import wpn.hdri.web.storage.SimpleSerializationStorage;
 import wpn.hdri.web.storage.Storage;
-import wpn.hdri.util.reflection.ReflectionUtils;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -99,15 +99,15 @@ public class ITestApplication {
 //        webDriver = createFireFoxDriver();
 
 //        webDriver.get(WEBAPP_URL);
-        webDriver.get("http://"+USERNAME+":"+PASS+"@localhost:"+PORT+CONTEXT);
+        webDriver.get("http://" + USERNAME + ":" + PASS + "@localhost:" + PORT + CONTEXT);
 
-        ctx = new ApplicationContext(REAL_PATH + "/",CONTEXT,new BeamtimeId("test-beamtime"), null, null, null);
+        ctx = new ApplicationContext(REAL_PATH + "/", CONTEXT, new BeamtimeId("test-beamtime"), null, null, null);
     }
 
     private WebDriver createFireFoxDriver() {
         FirefoxProfile profile = new FirefoxProfile();
         profile.setPreference("network.http.phishy-userpass-length", 255);
-        profile.setPreference("network.automatic-ntlm-auth.trusted-uris","localhost");
+        profile.setPreference("network.automatic-ntlm-auth.trusted-uris", "localhost");
 
         return new FirefoxDriver(profile);
     }
@@ -118,7 +118,7 @@ public class ITestApplication {
         //BASIC authentication workaround
         Field webClientField = ReflectionUtils.getDeclaredField("webClient", HtmlUnitDriver.class);
 
-        try{
+        try {
             webClientField.setAccessible(true);
             WebClient webClient = (WebClient) webClientField.get(webDriver);
 
@@ -177,7 +177,6 @@ public class ITestApplication {
 
 
         Storage<DataSet> storage = new SimpleSerializationStorage<DataSet>();
-
 
 
         DataSet result = storage.load(TEST_USER, "test-data-set-1", ctx);

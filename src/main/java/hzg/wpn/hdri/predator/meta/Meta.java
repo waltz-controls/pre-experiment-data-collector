@@ -1,4 +1,4 @@
-package wpn.hdri.web.meta;
+package hzg.wpn.hdri.predator.meta;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Wraps yaml description
@@ -48,10 +47,7 @@ public class Meta {
     private final Gson gson = new GsonBuilder()
             .serializeNulls()
             .create();
-    private final AtomicReference<Object> yaml =
-            new AtomicReference<>(null);
-    private final AtomicReference<DynaClass> clazz =
-            new AtomicReference<>(null);
+    private Object yaml = null;
 
     public Meta(Path pathToYaml) {
         this.pathToYaml = pathToYaml;
@@ -59,7 +55,7 @@ public class Meta {
 
     public void load() throws IOException {
         //TODO validate yaml
-        yaml.set(parser.load(Files.newBufferedReader(pathToYaml, Charset.defaultCharset())));
+        yaml = parser.load(Files.newBufferedReader(pathToYaml, Charset.defaultCharset()));
     }
 
     /**
@@ -72,7 +68,7 @@ public class Meta {
      */
     //TODO cache result
     public DynaClass extractDynaClass() {
-        if (yaml.get() == null) throw new IllegalStateException("Yaml was not loaded yet.");
+        if (yaml == null) throw new IllegalStateException("Yaml was not loaded yet.");
 
         LazyDynaClass result = new LazyDynaClass("MetaData", null, new DynaProperty[]{
                 new DynaProperty("user", String.class),
@@ -82,7 +78,7 @@ public class Meta {
 
 
         //assume that yaml has been properly validated and loaded
-        for (Map<String, Object> frm : (List<Map<String, Object>>) yaml.get()) {
+        for (Map<String, Object> frm : (List<Map<String, Object>>) yaml) {
             extractFields(result, frm);
         }
 

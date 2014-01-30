@@ -29,11 +29,11 @@
 
 package wpn.hdri.web;
 
+import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.io.FileUtils;
 import wpn.hdri.web.data.BeamtimeId;
 import wpn.hdri.web.data.User;
-import wpn.hdri.web.meta.MetaDataHelpers;
 import wpn.hdri.web.storage.Storage;
 
 import javax.servlet.ServletContext;

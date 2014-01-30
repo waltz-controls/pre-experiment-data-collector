@@ -29,7 +29,7 @@
 
 package wpn.hdri.web;
 
-import wpn.hdri.properties.Property;
+import hzg.wpn.util.properties.Property;
 
 /**
  * Application properties container.

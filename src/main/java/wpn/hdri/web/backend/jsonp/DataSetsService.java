@@ -29,6 +29,7 @@
 
 package wpn.hdri.web.backend.jsonp;
 
+import hzg.wpn.hdri.predator.meta.MetaData;
 import org.apache.commons.beanutils.DynaBean;
 import su.clan.tla.web.backend.RequestParameter;
 import su.clan.tla.web.backend.json.JsonRequest;
@@ -39,7 +40,6 @@ import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
 import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
-import wpn.hdri.web.meta.MetaData;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

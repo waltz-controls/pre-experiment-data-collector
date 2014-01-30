@@ -27,9 +27,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-package wpn.hdri.properties;
+package hzg.wpn.util.properties;
 
-import wpn.hdri.util.reflection.ReflectionUtils;
+import hzg.wpn.util.reflection.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.Properties;

@@ -29,15 +29,15 @@
 
 package wpn.hdri.web.backend;
 
+import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
+import hzg.wpn.util.properties.PropertiesFactory;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import wpn.hdri.properties.PropertiesFactory;
 import wpn.hdri.web.ApplicationContext;
 import wpn.hdri.web.ApplicationProperties;
 import wpn.hdri.web.data.BeamtimeId;
-import wpn.hdri.web.meta.MetaDataHelpers;
 import wpn.hdri.web.storage.CacheStorage;
 import wpn.hdri.web.storage.Storage;
 import wpn.hdri.web.storage.StorageFactory;

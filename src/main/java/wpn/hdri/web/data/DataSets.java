@@ -29,6 +29,9 @@
 
 package wpn.hdri.web.data;
 
+import hzg.wpn.hdri.predator.meta.MetaData;
+import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
+import hzg.wpn.hdri.predator.meta.MetaField;
 import org.apache.commons.beanutils.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
@@ -36,9 +39,6 @@ import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import wpn.hdri.web.ApplicationContext;
-import wpn.hdri.web.meta.MetaData;
-import wpn.hdri.web.meta.MetaDataHelpers;
-import wpn.hdri.web.meta.MetaField;
 import wpn.hdri.web.storage.AbsFileStorage;
 
 import java.io.File;

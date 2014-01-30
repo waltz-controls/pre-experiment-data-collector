@@ -29,13 +29,13 @@
 
 package wpn.hdri.web;
 
+import hzg.wpn.hdri.predator.meta.MetaDataFactory;
+import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
+import hzg.wpn.hdri.predator.meta.json.JsonMetaSource;
+import hzg.wpn.hdri.predator.meta.json.JsonStringFactory;
 import wpn.hdri.web.data.BeamtimeId;
 import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
-import wpn.hdri.web.meta.MetaDataFactory;
-import wpn.hdri.web.meta.MetaDataHelpers;
-import wpn.hdri.web.meta.json.JsonMetaSource;
-import wpn.hdri.web.meta.json.JsonStringFactory;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>

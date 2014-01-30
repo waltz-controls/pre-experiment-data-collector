@@ -27,7 +27,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-package wpn.hdri.util.servlet;
+package hzg.wpn.util.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;

@@ -27,7 +27,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-package wpn.hdri.util.base64;
+package hzg.wpn.util.base64;
 
 import java.io.IOException;
 import java.io.InputStream;
