@@ -30,6 +30,7 @@
 package wpn.hdri.web.backend.submit;
 
 import hzg.wpn.hdri.predator.ApplicationContext;
+import hzg.wpn.hdri.predator.storage.StorageException;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -37,7 +38,6 @@ import wpn.hdri.web.backend.BackendException;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.DataSets;
 import wpn.hdri.web.data.User;
-import wpn.hdri.web.storage.StorageException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;

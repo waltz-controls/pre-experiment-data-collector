@@ -1,13 +1,13 @@
 package hzg.wpn.hdri.predator;
 
 import hzg.wpn.hdri.predator.meta.Meta;
+import hzg.wpn.hdri.predator.storage.SimpleSerializationStorage;
+import hzg.wpn.hdri.predator.storage.Storage;
 import hzg.wpn.util.properties.PropertiesFactory;
 import hzg.wpn.util.properties.PropertiesHelper;
 import org.apache.commons.beanutils.DynaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import wpn.hdri.web.storage.SimpleSerializationStorage;
-import wpn.hdri.web.storage.Storage;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

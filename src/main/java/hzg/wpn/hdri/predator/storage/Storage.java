@@ -27,7 +27,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-package wpn.hdri.web.storage;
+package hzg.wpn.hdri.predator.storage;
 
 import org.apache.commons.beanutils.DynaBean;
 

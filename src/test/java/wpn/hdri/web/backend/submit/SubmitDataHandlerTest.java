@@ -34,6 +34,7 @@ import hzg.wpn.hdri.predator.meta.MetaDataFactory;
 import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
 import hzg.wpn.hdri.predator.meta.json.JsonMetaSource;
 import hzg.wpn.hdri.predator.meta.json.JsonStringFactory;
+import hzg.wpn.hdri.predator.storage.Storage;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.junit.Before;
@@ -41,7 +42,6 @@ import org.junit.Test;
 import wpn.hdri.web.UsefulTestConstants;
 import wpn.hdri.web.backend.ApplicationServlet;
 import wpn.hdri.web.data.Users;
-import wpn.hdri.web.storage.Storage;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;

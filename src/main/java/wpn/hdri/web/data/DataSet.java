@@ -45,7 +45,7 @@ import java.util.*;
 
 /**
  * Represents collected data associated with user.
- * Instances of this class are stored in permanent storage defined by {@link wpn.hdri.web.storage.Storage} class
+ * Instances of this class are stored in permanent storage defined by {@link hzg.wpn.hdri.predator.storage.Storage} class
  * specified in application.properties.
  * Currently instances are stored as serialized Java objects in files named by {@link this#id}, e.g.
  * <p/>
@@ -55,7 +55,7 @@ import java.util.*;
  * </code>
  *
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
- * @see wpn.hdri.web.storage.SimpleSerializationStorage implementation.
+ * @see hzg.wpn.hdri.predator.storage.SimpleSerializationStorage implementation.
  * @since 26.03.12
  */
 @NotThreadSafe

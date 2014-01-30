@@ -30,10 +30,10 @@
 package hzg.wpn.hdri.predator;
 
 import hzg.wpn.hdri.predator.meta.Meta;
+import hzg.wpn.hdri.predator.storage.Storage;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.io.FileUtils;
 import wpn.hdri.web.data.User;
-import wpn.hdri.web.storage.Storage;
 
 import javax.servlet.ServletContext;
 import java.io.File;

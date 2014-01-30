@@ -33,6 +33,8 @@ import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import hzg.wpn.hdri.predator.ApplicationContext;
+import hzg.wpn.hdri.predator.storage.SimpleSerializationStorage;
+import hzg.wpn.hdri.predator.storage.Storage;
 import hzg.wpn.util.reflection.ReflectionUtils;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.*;
@@ -45,8 +47,6 @@ import wpn.hdri.web.data.BeamtimeId;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.User;
 import wpn.hdri.web.data.Users;
-import wpn.hdri.web.storage.SimpleSerializationStorage;
-import wpn.hdri.web.storage.Storage;
 
 import java.io.File;
 import java.lang.reflect.Field;

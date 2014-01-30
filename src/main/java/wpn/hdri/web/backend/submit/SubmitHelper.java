@@ -37,6 +37,7 @@ import hzg.wpn.hdri.predator.meta.MetaForm;
 import hzg.wpn.hdri.predator.meta.core.MetaStructure;
 import hzg.wpn.hdri.predator.meta.json.JsonMetaSource;
 import hzg.wpn.hdri.predator.meta.json.JsonStringFactory;
+import hzg.wpn.hdri.predator.storage.StorageException;
 import hzg.wpn.util.base64.Base64InputStream;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.LazyDynaBean;
@@ -44,7 +45,6 @@ import org.slf4j.Logger;
 import wpn.hdri.web.backend.BackendException;
 import wpn.hdri.web.data.DataSet;
 import wpn.hdri.web.data.User;
-import wpn.hdri.web.storage.StorageException;
 
 import java.util.ArrayList;
 import java.util.List;

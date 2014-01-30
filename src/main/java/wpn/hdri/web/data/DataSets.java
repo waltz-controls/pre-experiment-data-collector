@@ -33,13 +33,13 @@ import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.meta.MetaData;
 import hzg.wpn.hdri.predator.meta.MetaDataHelpers;
 import hzg.wpn.hdri.predator.meta.MetaField;
+import hzg.wpn.hdri.predator.storage.AbsFileStorage;
 import org.apache.commons.beanutils.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-import wpn.hdri.web.storage.AbsFileStorage;
 
 import java.io.File;
 import java.io.FileFilter;
