@@ -30,7 +30,6 @@
 package hzg.wpn.hdri.predator.backend.upload;
 
 import hzg.wpn.hdri.predator.ApplicationContext;
-import hzg.wpn.hdri.predator.backend.BackendException;
 import hzg.wpn.hdri.predator.data.UploadedDocument;
 import hzg.wpn.hdri.predator.data.User;
 import hzg.wpn.hdri.predator.data.Users;
@@ -136,7 +135,6 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Uploa
      *
      * @param req
      * @return an array of the UploadedDocuments
-     * @throws BackendException
      */
     public Collection<UploadedDocument> findAll(JsonRequest<Parameters> req) {
         User user = Users.getUser(req.getRemoteUser(), false, appCtx);
