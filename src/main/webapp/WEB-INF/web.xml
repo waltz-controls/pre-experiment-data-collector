@@ -41,30 +41,30 @@
         <servlet-name>DataSets</servlet-name>
         <display-name>DataSets</display-name>
         <description>Provides info about DataSets.</description>
-        <servlet-class>wpn.hdri.web.backend.jsonp.DataSetsService</servlet-class>
+        <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.DataSetsService</servlet-class>
         <init-param>
             <param-name>request.scheme</param-name>
-            <param-value>wpn.hdri.web.backend.jsonp.DataSetsService$Parameters</param-value>
+            <param-value>hzg.wpn.hdri.predator.backend.jsonp.DataSetsService$Parameters</param-value>
         </init-param>
     </servlet>
     <servlet>
         <servlet-name>DataSetNames</servlet-name>
         <display-name>DataSetNames</display-name>
         <description>Provides info about DataSetNames.</description>
-        <servlet-class>wpn.hdri.web.backend.jsonp.DataSetNamesService</servlet-class>
+        <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.DataSetNamesService</servlet-class>
         <init-param>
             <param-name>request.scheme</param-name>
-            <param-value>wpn.hdri.web.backend.jsonp.DataSetNamesService$Parameters</param-value>
+            <param-value>hzg.wpn.hdri.predator.backend.jsonp.DataSetNamesService$Parameters</param-value>
         </init-param>
     </servlet>
     <servlet>
         <servlet-name>UploadHandler</servlet-name>
         <display-name>UploadHandler</display-name>
         <description>Handles user's upload actions</description>
-        <servlet-class>wpn.hdri.web.backend.upload.UploadHandler</servlet-class>
+        <servlet-class>hzg.wpn.hdri.predator.backend.upload.UploadHandler</servlet-class>
         <init-param>
             <param-name>request.scheme</param-name>
-            <param-value>wpn.hdri.web.backend.upload.UploadHandler$Parameters</param-value>
+            <param-value>hzg.wpn.hdri.predator.backend.upload.UploadHandler$Parameters</param-value>
         </init-param>
     </servlet>
     <servlet>
@@ -73,15 +73,15 @@
         <description>saves the user's data to the local storage. The local storage implementation is defined by the
             initialization parameter
         </description>
-        <servlet-class>wpn.hdri.web.backend.submit.SubmitDataHandler</servlet-class>
+        <servlet-class>hzg.wpn.hdri.predator.backend.submit.SubmitDataHandler</servlet-class>
         <init-param>
             <param-name>submit.data.handler.storage.class</param-name>
-            <param-value>wpn.hdri.web.backend.storage.SimpleJsonStorage</param-value>
+            <param-value>hzg.wpn.hdri.predator.backend.storage.SimpleJsonStorage</param-value>
         </init-param>
     </servlet>
     <servlet>
         <servlet-name>IndexServlet</servlet-name>
-        <servlet-class>wpn.hdri.web.backend.IndexServlet</servlet-class>
+        <servlet-class>hzg.wpn.hdri.predator.backend.IndexServlet</servlet-class>
         <init-param>
             <param-name>web-client.context.path</param-name>
             <param-value>web-client</param-value>
@@ -89,7 +89,7 @@
     </servlet>
     <servlet>
         <servlet-name>TangoServlet</servlet-name>
-        <servlet-class>wpn.hdri.web.frontend.TangoServlet</servlet-class>
+        <servlet-class>hzg.wpn.hdri.predator.frontend.TangoServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>

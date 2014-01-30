@@ -24,7 +24,6 @@ import java.util.Properties;
 public class ApplicationLoader implements ServletContextListener {
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationLoader.class);
 
-    public static final String APPLICATION_CONTEXT = "predator.context";
     public static final String WEB_INF = "WEB-INF/";
     public static final String LOGIN_PROPERTIES = WEB_INF + "login.properties";
     public static final String APPLICATION_PROPERTIES = WEB_INF + "application.properties";
@@ -72,7 +71,7 @@ public class ApplicationLoader implements ServletContextListener {
             String contextPath = servletContext.getContextPath();
 
             ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass);
-            servletContext.setAttribute(APPLICATION_CONTEXT, context);
+            servletContext.setAttribute(ApplicationContext.APPLICATION_CONTEXT, context);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

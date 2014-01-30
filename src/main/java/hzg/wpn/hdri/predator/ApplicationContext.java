@@ -29,11 +29,11 @@
 
 package hzg.wpn.hdri.predator;
 
+import hzg.wpn.hdri.predator.data.User;
 import hzg.wpn.hdri.predator.meta.Meta;
 import hzg.wpn.hdri.predator.storage.Storage;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.io.FileUtils;
-import wpn.hdri.web.data.User;
 
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -50,6 +50,7 @@ import java.io.IOException;
  */
 public class ApplicationContext {
     public static final ApplicationContext NULL = new ApplicationContext(null, null, null, null, null, null, null);
+    public static final String APPLICATION_CONTEXT = "predator.context";
 
     private final String realPath;
     private final String contextPath;
