@@ -33,14 +33,13 @@ import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import hzg.wpn.hdri.predator.ApplicationContext;
-import hzg.wpn.hdri.predator.data.BeamtimeId;
-import hzg.wpn.hdri.predator.data.DataSet;
 import hzg.wpn.hdri.predator.data.User;
 import hzg.wpn.hdri.predator.data.Users;
 import hzg.wpn.hdri.predator.storage.SimpleSerializationStorage;
 import hzg.wpn.hdri.predator.storage.Storage;
 import hzg.wpn.util.reflection.ReflectionUtils;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.commons.beanutils.DynaBean;
 import org.junit.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -101,7 +100,7 @@ public class ITestApplication {
 //        webDriver.get(WEBAPP_URL);
         webDriver.get("http://" + USERNAME + ":" + PASS + "@localhost:" + PORT + CONTEXT);
 
-        ctx = new ApplicationContext(REAL_PATH + "/", CONTEXT, new BeamtimeId("test-beamtime"), null, null, meta, dataClass);
+        ctx = new ApplicationContext(REAL_PATH + "/", CONTEXT, "test-beamtime", null, null, null, null);
     }
 
     private WebDriver createFireFoxDriver() {
@@ -176,10 +175,10 @@ public class ITestApplication {
         webDriver.findElement(By.name("submit")).click();
 
 
-        Storage<DataSet> storage = new SimpleSerializationStorage<DataSet>();
+        Storage storage = new SimpleSerializationStorage();
 
 
-        DataSet result = storage.load("test-data-set-1", ctx);
+        DynaBean result = storage.load("test-data-set-1", null);
     }
 
     @After

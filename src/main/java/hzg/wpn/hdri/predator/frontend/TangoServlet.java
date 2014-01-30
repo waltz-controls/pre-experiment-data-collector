@@ -73,7 +73,7 @@ public class TangoServlet extends GenericServlet {
         if (STARTED) return;
 
         ApplicationContext applicationContext = (ApplicationContext) config.getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
-        TangoDevice.setContext(applicationContext);
+//        TangoDevice.setContext(applicationContext);
 
         ApplicationProperties properties = applicationContext.getApplicationProperties();
 
@@ -82,7 +82,7 @@ public class TangoServlet extends GenericServlet {
 
         String[] tangoServerArguments = properties.tangoServerArguments.isEmpty() ? new String[0] : properties.tangoServerArguments.split(",");
 
-        TANGO_SERVER = EXEC.submit(new TangoDevice(tangoInstanceName, tangoServerArguments));
+        TANGO_SERVER = EXEC.submit(new TangoDevice(/*tangoInstanceName, tangoServerArguments*/));
         STARTED = true;
     }
 

@@ -33,8 +33,8 @@ import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.LazyDynaBean;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Paths;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
@@ -46,15 +46,15 @@ import static org.junit.Assert.assertArrayEquals;
 public class SimpleSerializationStorageTest {
     @Test
     public void testSave_LoadInternal() throws Exception {
-        SimpleSerializationStorage<DynaBean> instance = new SimpleSerializationStorage<DynaBean>();
+        SimpleSerializationStorage instance = new SimpleSerializationStorage();
 
         DynaBean expected = createTestData();
 
         DynaBean data = createTestData();
 
-        instance.saveInternal(data, new File("/test"));
+        instance.save(data, Paths.get("/test"));
 
-        DynaBean result = instance.loadInternal(new File("/test"));
+        DynaBean result = instance.load("test-data", Paths.get("/test"));
 
         assertEquals(expected.get("string"), result.get("string"));
         assertEquals(expected.get("number"), result.get("number"));
@@ -65,6 +65,7 @@ public class SimpleSerializationStorageTest {
 
     private DynaBean createTestData() {
         DynaBean data = new LazyDynaBean();
+        data.set("name", "test-data");
         data.set("bool", true);
         data.set("number", 1234);
         data.set("string", "Hello World!");
