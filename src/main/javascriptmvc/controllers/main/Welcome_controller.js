@@ -4,10 +4,10 @@ WelcomeController = MVC.Controller.Stateful.extend('Welcome',
 /* @Prototype */
 {
     init:function(){
-        this._super(MVC.$E('frmWelcome'));
+        this._super(MVC.$E('frmWelcome'));//must not be null
     },
     toHtml:function(){
-        return this.render();
+        return this.render({action:'toHtml'});//action name is being set when method is invoked through delegator
     }
 }
 );

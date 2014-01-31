@@ -9,7 +9,7 @@ MainController = MVC.Controller.extend('main',
 /* @Prototype */
 {
     load:function(params){
-        this._Class.toggleLoading();
+        this.Class.toggleLoading();
 
         var welcome = new WelcomeController();
         document.getElementById("example-2").innerHTML = welcome.toHtml();
