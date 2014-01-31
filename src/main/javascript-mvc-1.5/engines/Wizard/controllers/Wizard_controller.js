@@ -33,26 +33,26 @@
 WizardEngine = MVC.Controller.Stateful.extend('Wizard',
     /* @Prototype */
     {
-        title:"Basic Wizard With Progress Bar",
-        $element:null, //jQuery object that contains wizard wrapper
-        options:null,
-        isInitialized:false,
-        forms:[],
-        defaultOptions:{
-            submit:".submit",
-            afterSelect:function (event, state) {
+        title                  : "Basic Wizard With Progress Bar",
+        $element               : null, //jQuery object that contains wizard wrapper
+        options                : null,
+        isInitialized          : false,
+        forms                  : [],
+        defaultOptions         : {
+            submit       : ".submit",
+            afterSelect  : function (event, state) {
                 $("#progressbar").progressbar("value", state.percentComplete);
                 $("#location").text("(" + state.stepsComplete + "/" + state.stepsPossible + ")");
             },
-            stepsWrapper:"#wizard-steps",
-            afterForward:function (event, state) {
+            stepsWrapper : "#wizard-steps",
+            afterForward : function (event, state) {
                 if (window.location.hash) {
                     window.location.hash = "#" + state.stepIndex;//+ "@" + elementId;
                 } else {
                     window.location += "#" + state.stepIndex;//+ "@" + elementId;
                 }
             },
-            afterBackward:function (event, state) {
+            afterBackward: function (event, state) {
                 if (window.location.hash) {
                     window.location.hash = "#" + state.stepIndex;//+ "@" + elementId;
                 } else {
@@ -60,7 +60,7 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
                 }
             }
         },
-        submitHandler:function (params) {
+        submitHandler          : function (params) {
             Controller.publish("Wizard.submit", params);
         },
         /**
@@ -71,7 +71,7 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
          * @param options
          * @param submitHandler custom handler for submit button
          */
-        init:function (elementId, title, options, submitHandler) {
+        init                   : function (elementId, title, options, submitHandler) {
             if (!document.getElementById(elementId)) {
                 throw 'Wizard#init(elementId,options): elementId can not be null';
             }
@@ -113,13 +113,13 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
          *
          * @param data an array of form objects: {id,toHtml()}. Overrides this instance forms collection.
          */
-        initialize:function (data) {
+        initialize             : function (data) {
             //TODO validate forms compatibility
             this.forms = data || this.forms;
 
             this.render({
-                to:this.element,
-                action:'initialize'
+                to    : this.element,
+                action: 'initialize'
             });
 
             $("#progressbar").progressbar();
@@ -130,17 +130,17 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
             this.isInitialized = true;
             return this;
         },
-        "button.forward click":function (params) {
+        "button.forward click" : function (params) {
             if (!this.isInitialized) {
                 throw "Wizard instance was not initialized. Call Wizard.initialize(data) first."
             }
         },
-        "button.backward click":function (params) {
+        "button.backward click": function (params) {
             if (!this.isInitialized) {
                 throw "Wizard instance was not initialized. Call Wizard.initialize(data) first."
             }
         },
-        "button.submit click":function (params) {
+        "button.submit click"  : function (params) {
             if (!this.isInitialized) {
                 throw "Wizard instance was not initialized. Call Wizard.initialize(data) first."
             }
@@ -153,8 +153,9 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
          *
          * @param form {id,toHtml()}
          */
-        addForm:function (form) {
-            //TODO validate form for compatibility
+        addForm                : function (form) {
+            if (typeof form["toHtml"] != 'function')
+                throw "form does not have toHtml function";
             this.forms.push(form);
             return this;
         }
