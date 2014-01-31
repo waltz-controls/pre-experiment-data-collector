@@ -35,7 +35,7 @@
 MainController = MVC.Controller.extend('main',
     /* @Static */
     {
-        toggleLoading:function () {
+        toggleLoading  : function () {
             $('#loading-box').toggle();
             $('#example-2').toggle();
         },
@@ -44,16 +44,16 @@ MainController = MVC.Controller.extend('main',
          *
          * @param meta
          */
-        processMetaData:function (meta, values) {
+        processMetaData: function (meta, values) {
             var wizard = new WizardEngine("Wizard", "Tomography Pre Experiment Data Wizard", {
-                beforeForward:function (event, state) {
+                beforeForward: function (event, state) {
                     var currentStep = state.step.prevObject.get(state.stepIndex - 1);
                     var currentForm = $(currentStep);
 
                     var isValid = currentForm.validationEngine('validate');
                     if (isValid) {
                         //storing the data in the model object
-                        Wrapped.publish("update", { element:currentForm });
+                        Wrapped.publish("update", { element: currentForm });
                         //allow user to move forward
                         return true;
                     } else {
@@ -61,7 +61,7 @@ MainController = MVC.Controller.extend('main',
                         return false;
                     }
                 },
-                afterForward:function (event, state) {
+                afterForward : function (event, state) {
                     //workaround for Jquery-ui accordion height set to zero issue
                     //see http://forum.jquery.com/topic/accordion-height-set-to-zero-issue
                     //"You must have the accordion visible when the height is calculated" [Scott Gonzales].
@@ -72,7 +72,7 @@ MainController = MVC.Controller.extend('main',
                          * @param event
                          * @param ui
                          */
-                        create:function (event, ui) {
+                        create: function (event, ui) {
                             var id = $('h3[tabindex=0]', $(this)).attr('choice-id');
                             $('#' + id, $(this)).val(true);
 
@@ -87,7 +87,7 @@ MainController = MVC.Controller.extend('main',
                          * @param event
                          * @param ui
                          */
-                        change:function (event, ui) {
+                        change: function (event, ui) {
                             $('#' + ui.oldHeader.attr('choice-id'), ui.oldContent).val(false);
 
                             $('#' + ui.newHeader.attr('choice-id'), ui.newContent).val(true);
@@ -98,8 +98,8 @@ MainController = MVC.Controller.extend('main',
 
             $.each(meta.forms, function (i, frm) {
                 wizard.addForm({
-                    id:frm.id,
-                    toHtml:function () {
+                    id    : frm.id,
+                    toHtml: function () {
                         return MVC.View.Helpers.prototype.printForm(i, frm, values);
                     }
                 });
@@ -107,20 +107,20 @@ MainController = MVC.Controller.extend('main',
 
 
             wizard.addForm({
-                id:"frmDataSubmit",
-                toHtml:function () {
-                    return new View({ url:'views/main/wizard.form.submit.ejs' }).render();
+                id    : "frmDataSubmit",
+                toHtml: function () {
+                    return new View({ url: 'views/main/wizard.form.submit.ejs' }).render();
                 }
             }).initialize();
 
             $.each(meta.forms, function (i, form) {
                 if (form.type == 'upload') {
                     //                    new FileUpload(form.id,{data:form});
-                    Controller.publish("FileUpload.initialize", { data:form });
+                    Controller.publish("FileUpload.initialize", { data: form });
                     var frmValues = values[form.id];
                     $.each(form.fields, function (ii, fld) {
                         var data = frmValues[fld.id] ? frmValues[fld.id].split(';') : [];
-                        Controller.publish("FileUpload.add_file_names", { id:form.id, data:data });
+                        Controller.publish("FileUpload.add_file_names", { id: form.id, data: data });
                     });
                 }
             });
@@ -139,24 +139,19 @@ MainController = MVC.Controller.extend('main',
     },
     /* @Prototype */
     {
-        load:function (params) {
-            //make an json request to the server and retrieve user name
-            //UserInfo.create({}, function(newUser) {
-            //    $('#mainframe').html("<p>Hello , " + newUser.name + " !!!</p>");
-            //});
+        load                      : function (params) {
+            //TODO create wizard with welcome form (displays all datasets)
+            //TODO request meta and add it to wizard
+            //TODO end review form to the wizard
+            //TODO initialize wizard
 
-            //$('#mainframe').html(new View({view_url:'main/Wizard.ejs'}).render());
-
-            //render views of the forms
-
-//        this.Class.toggleLoading();
 
             DataSetName.find_all({}, {
-                onSuccess:function (data) {
+                onSuccess: function (data) {
                     MainController.toggleLoading();
-                    DataSetName.publish("find_all", { data:data });
+                    DataSetName.publish("find_all", { data: data });
                 },
-                onFailure:function (data) {
+                onFailure: function (data) {
                     //TODO request timeouted
                     alert("Request timeouts.");
                 }
@@ -167,7 +162,7 @@ MainController = MVC.Controller.extend('main',
          *
          * @param params
          */
-        "Wizard.submit subscribe":function (params) {
+        "Wizard.submit subscribe" : function (params) {
             var frm = $('#frmDataSubmit');
 
             var data = DataSet.store.find_one(ApplicationContext.crtDataSetId).data.attributes();
@@ -185,11 +180,11 @@ MainController = MVC.Controller.extend('main',
 
             frm.submit();
         },
-        "ul.icons li.add click":function (params) {
+        "ul.icons li.add click"   : function (params) {
             var el = params.element;
 
         },
-        "ul.icons li.remove click":function (params) {
+        "ul.icons li.remove click": function (params) {
             var el = params.element;
         }
     }
