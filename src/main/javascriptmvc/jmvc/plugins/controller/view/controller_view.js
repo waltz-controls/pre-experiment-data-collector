@@ -92,7 +92,7 @@ MVC.Controller.prototype.
     }
     else {
         var convert = function (url) {
-            var url = MVC.String.include(url, '/') ? url.split('/').join('/_') : controller_name + '/' + url;
+            var url = MVC.String.include(url, '/') ? url.split('/').join('/_') : MVC.app_name + '/' + controller_name + '/' + url;
             var url = url + MVC.View.ext;
             return url;
         };
