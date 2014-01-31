@@ -83,7 +83,7 @@ form, fieldset {
     height: 139px;
     padding: 6px 10px 25px;
     margin: 25px;
-    background: url(../images/hzg_rgb_mitzusatz_in_e_300dpi.png) no-repeat 0 0;
+    background: url(../../images/hzg_rgb_mitzusatz_in_e_300dpi.png) no-repeat 0 0;
 }
 
 .header:after {
@@ -215,7 +215,7 @@ label.error {
     vertical-align: middle;
     width: 100px;
     height: 100px;
-    background: url(../images/ajax-loader.gif) no-repeat 0 0;
+    background: url(../../images/ajax-loader.gif) no-repeat 0 0;
 }
 
 .required {
