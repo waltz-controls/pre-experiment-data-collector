@@ -9,10 +9,9 @@ MainController = MVC.Controller.extend('main',
 /* @Prototype */
 {
     load:function(params){
-        this.Class.toggleLoading();
-
         WelcomeStep.create({},{
             onComplete:function(instance){
+                MainController.toggleLoading();
                 document.getElementById("example-2").innerHTML = instance.toHtml();
             },
             onFailure:function(instance){
@@ -20,6 +19,8 @@ MainController = MVC.Controller.extend('main',
             }
         });
 
+        //TODO load meta and parse it to forms
+        //TODO put all forms to wizard
     }
 }
 );
