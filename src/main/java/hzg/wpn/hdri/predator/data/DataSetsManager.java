@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -28,28 +30,33 @@ public class DataSetsManager {
         this.storage = storage;
     }
 
-    public Iterable<String> getUserDataSetNames(String user) throws IOException {
+    public Iterable<String> getUserDataSetNames(String user) {
         Path pathToHomeUser = pathToHome.resolve(user);
 
         //TODO cache
 
-        DirectoryStream<Path> ds = Files.newDirectoryStream(pathToHomeUser, new DirectoryStream.Filter<Path>() {
-            @Override
-            public boolean accept(Path entry) throws IOException {
-                return Files.isRegularFile(entry);
-            }
-        });
+        try {
+            DirectoryStream<Path> ds = Files.newDirectoryStream(pathToHomeUser, new DirectoryStream.Filter<Path>() {
+                @Override
+                public boolean accept(Path entry) throws IOException {
+                    return Files.isRegularFile(entry);
+                }
+            });
 
-        return Iterables.transform(ds,new Function<Path,String>(){
-            @Override
-            public String apply(@Nullable Path input) {
-                return input.getFileName().toString();
-            }
-        });
+            return Iterables.transform(ds,new Function<Path,String>(){
+                @Override
+                public String apply(@Nullable Path input) {
+                    return input.getFileName().toString();
+                }
+            });
+        } catch (IOException e) {
+            LOG.error("Can not load user dir[" + e.getMessage() + "]");
+            return Collections.emptyList();
+        }
     }
 
 
-    public Iterable<DynaBean> getUserDataSets(String user) throws IOException {
+    public Iterable<DynaBean> getUserDataSets(String user) {
         final Path pathToHomeUser = pathToHome.resolve(user);
 
         Iterable<String> names = getUserDataSetNames(user);
