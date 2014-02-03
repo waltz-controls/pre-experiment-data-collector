@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="JavaScriptMVC ant utilities" basedir=".">
     <property environment="env"/>
-    <property name="application.name" value="app"/>
+    <property name="application.name" value="main"/>
     <property name="dir.build" value="../build"/>
     <property name="dir.target" value="../main/webapp/jmvc_root"/>
 

@@ -29,6 +29,7 @@
 
 package hzg.wpn.hdri.predator;
 
+import hzg.wpn.hdri.predator.data.DataSetsManager;
 import hzg.wpn.hdri.predator.data.User;
 import hzg.wpn.hdri.predator.meta.Meta;
 import hzg.wpn.hdri.predator.storage.Storage;
@@ -49,7 +50,6 @@ import java.io.IOException;
  * @since 13.03.12
  */
 public class ApplicationContext {
-    public static final ApplicationContext NULL = new ApplicationContext(null, null, null, null, null, null, null);
     public static final String APPLICATION_CONTEXT = "predator.context";
 
     private final String realPath;
@@ -59,6 +59,7 @@ public class ApplicationContext {
     private final ApplicationProperties properties;
     private final Meta meta;
     private final DynaClass dataClass;
+    private final DataSetsManager manager;
 
     /**
      * @param realPath    ends with '/'
@@ -68,8 +69,9 @@ public class ApplicationContext {
      * @param properties
      * @param meta
      * @param dataClass
+     * @param manager
      */
-    public ApplicationContext(String realPath, String contextPath, String beamtimeId, Storage storage, ApplicationProperties properties, Meta meta, DynaClass dataClass) {
+    public ApplicationContext(String realPath, String contextPath, String beamtimeId, Storage storage, ApplicationProperties properties, Meta meta, DynaClass dataClass, DataSetsManager manager) {
         this.realPath = realPath;
         this.contextPath = contextPath;
         this.beamtimeId = beamtimeId;
@@ -77,6 +79,7 @@ public class ApplicationContext {
         this.properties = properties;
         this.meta = meta;
         this.dataClass = dataClass;
+        this.manager = manager;
     }
 
 
@@ -102,6 +105,10 @@ public class ApplicationContext {
      */
     public DynaClass getDataClass() {
         return dataClass;
+    }
+
+    public DataSetsManager getManager(){
+        return manager;
     }
 
     /**

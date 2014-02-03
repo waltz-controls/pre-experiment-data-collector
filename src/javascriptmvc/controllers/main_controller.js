@@ -11,8 +11,15 @@ MainController = MVC.Controller.extend('main',
     load:function(params){
         this.Class.toggleLoading();
 
-        var welcome = new WelcomeController();
-        document.getElementById("example-2").innerHTML = welcome.toHtml();
+        WelcomeStep.create({},{
+            onComplete:function(instance){
+                document.getElementById("example-2").innerHTML = instance.toHtml();
+            },
+            onFailure:function(instance){
+                alert(instance.errors);
+            }
+        });
+
     }
 }
 );

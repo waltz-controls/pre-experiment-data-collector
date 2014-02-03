@@ -1,5 +1,6 @@
 package hzg.wpn.hdri.predator;
 
+import hzg.wpn.hdri.predator.data.DataSetsManager;
 import hzg.wpn.hdri.predator.meta.Meta;
 import hzg.wpn.hdri.predator.storage.SimpleSerializationStorage;
 import hzg.wpn.hdri.predator.storage.Storage;
@@ -73,7 +74,9 @@ public class ApplicationLoader implements ServletContextListener {
             DynaClass dataClass = meta.extractDynaClass();
 
 
-            ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass);
+            DataSetsManager manager = new DataSetsManager();
+
+            ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass, manager);
             servletContext.setAttribute(ApplicationContext.APPLICATION_CONTEXT, context);
         } catch (Exception e) {
             throw new RuntimeException(e);

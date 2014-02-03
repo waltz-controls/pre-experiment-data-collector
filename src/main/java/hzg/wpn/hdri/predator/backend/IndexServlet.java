@@ -50,7 +50,7 @@ import java.util.Properties;
  * @since 12.01.12
  */
 public final class IndexServlet extends HttpServlet {
-    private static final String JMVC_ROOT = "web-client";
+    private static final String JMVC_ROOT = "jmvc_root";
 
     @Override
     public void init() throws ServletException {

@@ -40,8 +40,6 @@ import hzg.wpn.util.properties.Property;
 public final class ApplicationProperties {
     @Property(name = "beamtime.id")
     public String beamtimeId;
-    @Property(name = "data.storage.class")
-    public String storageClassName;
     @Property(name = "tango.server.class")
     public String tangoServerClassName;
     @Property(name = "tango.server.name")

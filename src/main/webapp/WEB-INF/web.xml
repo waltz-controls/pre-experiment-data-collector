@@ -38,13 +38,12 @@
         <listener-class>hzg.wpn.hdri.predator.ApplicationLoader</listener-class>
     </listener>
     <servlet>
-        <servlet-name>DataSets</servlet-name>
-        <display-name>DataSets</display-name>
-        <description>Provides info about DataSets.</description>
-        <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.DataSetsService</servlet-class>
+        <servlet-name>WelcomeServlet</servlet-name>
+        <display-name>WelcomeServlet</display-name>
+        <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.WelcomeServlet</servlet-class>
         <init-param>
             <param-name>request.scheme</param-name>
-            <param-value>hzg.wpn.hdri.predator.backend.jsonp.DataSetsService$Parameters</param-value>
+            <param-value>hzg.wpn.hdri.predator.backend.jsonp.WelcomeServlet$Request</param-value>
         </init-param>
     </servlet>
     <servlet>
@@ -93,12 +92,8 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>DataSetNames</servlet-name>
-        <url-pattern>/backend/DataSetNames.json</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DataSets</servlet-name>
-        <url-pattern>/backend/DataSets.json</url-pattern>
+        <servlet-name>WelcomeServlet</servlet-name>
+        <url-pattern>/WelcomeSteps.json</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UploadHandler</servlet-name>

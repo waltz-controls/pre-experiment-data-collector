@@ -11,7 +11,7 @@ include.plugins(
 );
 
 include(function(){ //runs after prior includes are loaded
-include.models();
+include.models('main/WelcomeStep');
 include.controllers('main','main/Welcome');
 include.views();
 });

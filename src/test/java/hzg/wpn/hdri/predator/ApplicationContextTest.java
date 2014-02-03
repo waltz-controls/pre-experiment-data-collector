@@ -40,7 +40,7 @@ import static junit.framework.Assert.assertEquals;
 public class ApplicationContextTest {
     @Test
     public void testGetUserUploadDirRelativePath() throws Exception {
-        ApplicationContext ctx = new ApplicationContext(null, "/some", null, null, null, null, null);
+        ApplicationContext ctx = new ApplicationContext(null, "/some", null, null, null, null, null, null);
 
         StringBuilder result = ctx.getUserUploadDirRelativePath(UsefulTestConstants.TEST_USER);
 
@@ -49,7 +49,7 @@ public class ApplicationContextTest {
 
     @Test
     public void testGetUserUploadDirPath() throws Exception {
-        ApplicationContext ctx = new ApplicationContext("/some/", null, null, null, null, null, null);
+        ApplicationContext ctx = new ApplicationContext("/some/", null, null, null, null, null, null, null);
 
         StringBuilder result = ctx.getUserUploadDirPath(UsefulTestConstants.TEST_USER);
 
