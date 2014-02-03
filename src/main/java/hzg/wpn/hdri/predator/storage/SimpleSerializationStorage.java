@@ -75,7 +75,7 @@ public final class SimpleSerializationStorage implements Storage {
      * @throws IOException if read file attempt failed.
      */
     public DynaBean load(String dataSetName, Path root) throws IOException {
-        Path input = root.resolve(dataSetName + BINARY_FILE_EXTENSION);
+        Path input = root.resolve(dataSetName);
         try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(input.toFile())))) {
             Object o = ois.readObject();
 
