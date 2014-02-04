@@ -38,8 +38,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import su.clan.tla.web.backend.json.JsonBaseServlet;
-import su.clan.tla.web.backend.json.JsonRequest;
+import org.bitbucket.ingvord.web.json.JsonBaseServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -63,7 +62,7 @@ import static hzg.wpn.hdri.predator.backend.upload.Thumbnails.TIF;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 06.01.12
  */
-public final class UploadHandler extends JsonBaseServlet<UploadedDocument, UploadHandler.Parameters> {
+public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Void> {
     private static final String TMP_DIR_PATH = System.getProperty("java.io.tmpdir");
     private final ThreadLocal<List<FileItem>> items = new ThreadLocal<List<FileItem>>();
     private final ThreadLocal<StringBuilder> url = new ThreadLocal<StringBuilder>();
@@ -72,32 +71,30 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Uploa
     private volatile ServletFileUpload uploadHandler;
 
     @Override
-    protected void doInitInternal(ServletConfig config) throws ServletException {
-
+    public void init() throws ServletException {
         DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
         fileItemFactory.setSizeThreshold(1024 * 1024);//1MB
         //the following is not necessary due to default implementation
         //fileItemFactory.setRepository(new File(TMP_DIR_PATH));
+        ServletConfig config = getServletConfig();
 
         uploadHandler = new ServletFileUpload(fileItemFactory);
         appCtx = (ApplicationContext) config.getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
-
-        super.doInitInternal(config);
     }
 
     @Override
     //TODO dirty hack with overriding doPost
-    protected String doPostInternal(HttpServletRequest req, HttpServletResponse res) throws ServletException {
-        return doGetInternal(req, res);
+    protected String doPostInternal(HttpServletRequest req, HttpServletResponse res, Void params) throws ServletException {
+        return doGetInternal(req, res, params);
     }
 
     @Override
-    protected String doGetInternal(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+    protected String doGetInternal(HttpServletRequest req, HttpServletResponse res, Void params) throws ServletException {
         try {
             items.set(uploadHandler.parseRequest(req));
             requestUrl.set(req.getRequestURL());
             url.set(getUrl(req));
-            return super.doGetInternal(req, res);
+            return super.doGetInternal(req, res, params);
         } catch (FileUploadException e) {
             //TODO process exception - ensure client is aware
             throw new ServletException(e);
@@ -120,15 +117,6 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Uploa
         }
     }
 
-    public UploadedDocument create(JsonRequest<Parameters> req) {
-        throw new UnsupportedOperationException("This method is not supported in " + this.getClass());
-    }
-
-    @Override
-    public UploadedDocument delete(JsonRequest<Parameters> req) {
-        throw new UnsupportedOperationException("This method is not supported in " + this.getClass());
-    }
-
     /**
      * Stores files from the request and returns an array of the {@link UploadedDocument}s.
      * This array is essential for proper UI show the uploaded files.
@@ -136,7 +124,7 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Uploa
      * @param req
      * @return an array of the UploadedDocuments
      */
-    public Collection<UploadedDocument> findAll(JsonRequest<Parameters> req) {
+    public Collection<UploadedDocument> find_all(HttpServletRequest req, HttpServletResponse res, Void params) throws ServletException{
         User user = Users.getUser(req.getRemoteUser(), false, appCtx);
         try {
             List<UploadedDocument> documents = new ArrayList<UploadedDocument>();
@@ -163,15 +151,11 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Uploa
             return documents;
             //TODO log and properly handle exceptions
         } catch (FileUploadException e) {
-            throw new RuntimeException("Unable to upload file.", e);
+            throw new ServletException("Unable to upload file.", e);
         } catch (IOException e) {
-            throw new RuntimeException("Unable to get user's upload dir [user:" + user.getName() + "].", e);
+            throw new ServletException("Unable to get user's upload dir [user:" + user.getName() + "].", e);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to write file.", e);
+            throw new ServletException("Unable to write file.", e);
         }
-    }
-
-    public static class Parameters {
-
     }
 }

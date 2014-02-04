@@ -1,24 +1,26 @@
 package hzg.wpn.hdri.predator.backend.jsonp;
 
 import com.google.common.base.Function;
+
 import com.google.common.collect.Iterables;
 import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.data.DataSetsManager;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
 import org.apache.commons.beanutils.DynaBean;
-import su.clan.tla.web.backend.json.JsonRequest;
-import su.clan.tla.web.backend.json.JsonpBaseServlet;
+import org.bitbucket.ingvord.web.json.JsonpBaseServlet;
 
 import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 03.02.14
  */
-public class WelcomeServlet extends JsonpBaseServlet<WelcomeServlet.Response,WelcomeServlet.Request> {
+public class WelcomeServlet extends JsonpBaseServlet<WelcomeServlet.Response,Void> {
     @Override
-    public Response create(JsonRequest<Request> req) {
+    public Response create(HttpServletRequest req, HttpServletResponse res, Void params) {
         ApplicationContext ctx = (ApplicationContext)getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
         DataSetsManager manager = ctx.getManager();
         Response response = new Response();
@@ -34,22 +36,8 @@ public class WelcomeServlet extends JsonpBaseServlet<WelcomeServlet.Response,Wel
             return response;
     }
 
-    @Override
-    public Response delete(JsonRequest<Request> req) {
-        throw new UnsupportedOperationException("This method is not supported in " + this.getClass());
-    }
-
-    @Override
-    public Collection<Response> findAll(JsonRequest<Request> req) {
-        throw new UnsupportedOperationException("This method is not supported in " + this.getClass());
-    }
-
     public static class Response {
         private String[] data;
         private String[] errors;
-    }
-
-    public static class Request{
-
     }
 }

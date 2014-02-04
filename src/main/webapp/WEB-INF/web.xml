@@ -41,20 +41,11 @@
         <servlet-name>WelcomeServlet</servlet-name>
         <display-name>WelcomeServlet</display-name>
         <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.WelcomeServlet</servlet-class>
-        <init-param>
-            <param-name>request.scheme</param-name>
-            <param-value>hzg.wpn.hdri.predator.backend.jsonp.WelcomeServlet$Request</param-value>
-        </init-param>
     </servlet>
     <servlet>
-        <servlet-name>DataSetNames</servlet-name>
-        <display-name>DataSetNames</display-name>
-        <description>Provides info about DataSetNames.</description>
-        <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.DataSetNamesService</servlet-class>
-        <init-param>
-            <param-name>request.scheme</param-name>
-            <param-value>hzg.wpn.hdri.predator.backend.jsonp.DataSetNamesService$Parameters</param-value>
-        </init-param>
+        <servlet-name>MetaServlet</servlet-name>
+        <display-name>MetaServlet</display-name>
+        <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.MetaServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UploadHandler</servlet-name>
@@ -94,6 +85,10 @@
     <servlet-mapping>
         <servlet-name>WelcomeServlet</servlet-name>
         <url-pattern>/WelcomeSteps.json</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MetaServlet</servlet-name>
+        <url-pattern>/WizardSteps.json</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UploadHandler</servlet-name>

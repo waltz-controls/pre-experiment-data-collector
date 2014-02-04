@@ -6,7 +6,7 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
 {
     domain: ApplicationContext.domain,
     attributes:{
-        datasets:'string[]'
+        data:'string[]'
     },
     view:'views/main/WelcomeStep.ejs'
 },

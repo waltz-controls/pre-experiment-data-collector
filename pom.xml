@@ -168,9 +168,9 @@
             <version>1.0.1-alpha</version>
         </dependency>
         <dependency>
-            <groupId>su.clan.tla</groupId>
-            <artifactId>web</artifactId>
-            <version>0.0.5</version>
+            <groupId>org.bitbucket.ingvord</groupId>
+            <artifactId>web-engine</artifactId>
+            <version>0.0.7</version>
         </dependency>
     </dependencies>
     <build>
