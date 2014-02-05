@@ -1,4 +1,4 @@
-WelcomeController = MVC.Controller.extend('frmWelcome',
+WelcomeController = MVC.Controller.extend('WizardStep_frmWelcome',
 /* @Static */
 {},
 /* @Prototype */

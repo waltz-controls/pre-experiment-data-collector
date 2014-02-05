@@ -9,15 +9,14 @@ WizardController = MVC.Controller.extend('Wizard',
     newWizardEngine:function(){
         this.wizard = new WizardEngine("Wizard","PreExperiment Data Collector",{
             beforeForward: function (event, state) {
+                if(state.stepIndex == 1) return true;//skip welcome step
                 var currentStep = state.step.prevObject.get(state.stepIndex - 1);
-                var $currentForm = $(currentStep);
+                var wizardStep = WizardStep.find_by_element(currentStep);
 
-                var isValid = $currentForm.validationEngine('validate');
+                var isValid = wizardStep.validate();
                 if (isValid) {
                     //storing the data in the model object
-                    //TODO get model and call its update method
-                    //Wrapped.publish("update", { element: $currentForm });
-                    //TODO save model
+                    wizardStep.update();
                     //allow user to move forward
                     return true;
                 } else {

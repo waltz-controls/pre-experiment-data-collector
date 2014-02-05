@@ -8,17 +8,34 @@ MainController = MVC.Controller.extend('main',
     toggleLoading  : function () {
         $('#loading-box').toggle();
         $('#example-2').toggle();
+    },
+    onLoaded:function(){
+        if(!this.isLoaded.welcome) return;
+        if(!this.isLoaded.main) return;
+
+        try{
+            WizardController.initialize();
+        }catch(e){
+            alert(e.message);
+        }
+
+        //initialize validation engine for each form
+        //we need to call it after wizard has been initialized
+        $('.regular-form').validationEngine();
+
+        this.toggleLoading();
     }
 },
 /* @Prototype */
 {
-    load:function(params){
+    load:function(){
         var wizard = WizardController.newWizardEngine();
 
         WelcomeStep.create({},{
             onComplete:function(instance){
                 wizard.addForm(instance);
-                OpenAjax.hub.publish("WelcomeStep.loaded", instance);
+                MainController.isLoaded.welcome = true;
+                MainController.onLoaded();
             },
             onFailure:function(instance){
                 alert(instance.errors);
@@ -30,7 +47,8 @@ MainController = MVC.Controller.extend('main',
                 for(var i = 0, size = instances.length; i < size; ++i){
                     wizard.addForm(instances[i]);
                 }
-                OpenAjax.hub.publish("WizardSteps.loaded", instances);
+                MainController.isLoaded.main = true;
+                MainController.onLoaded();
             },
             onFailure:function(instances){
                 alert(instances[0].errors);
@@ -38,26 +56,6 @@ MainController = MVC.Controller.extend('main',
         });
 
         //TODO add final step
-    },
-    "WelcomeStep.loaded subscribe":function(data){
-        this.Class.isLoaded.welcome = true;
-        this.onLoaded();
-    },
-    "WizardSteps.loaded subscribe":function(data){
-        this.Class.isLoaded.main = true;
-        this.onLoaded();
-    },
-    onLoaded:function(){
-        if(!this.Class.isLoaded.welcome) return;
-        if(!this.Class.isLoaded.main) return;
-
-        try{
-            WizardController.initialize();
-        }catch(e){
-            alert(e.message);
-        }
-
-        this.Class.toggleLoading();
     }
 }
 );

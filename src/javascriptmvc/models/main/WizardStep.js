@@ -31,14 +31,24 @@ WizardStep = MVC.Model.JsonP.extend('WizardStep',
             this.values[fld.id] = null;
         }
     },
-    updateValues:function(values){
-        for(var v in values){
-            if(this.values.hasOwnProperty(v))
-                this.values[v] = values[v];
-        }
+    /**
+     * Updates this values and sends them to the server
+     */
+    update:function(){
+        //TODO if we create a dedicated model for each fld we can store $ wrapper there
+        //TODO additionally this code will be much clear
+        $.each(this.fields,MVC.Function.bind(function(ndx,fld){
+            this.values[fld.id] = $(MVC.$E(fld.id)).val();
+        }),this);
+        WizardStep.update(this.id,this.values/*,callback that will show notification*/);
     },
-    save:function(cbs){
-        //TODO send to server
+    /**
+     *
+     * @returns {boolean}
+     */
+    validate:function(){
+        var $this = $(this.element());
+        return $this.validationEngine('validate');
     },
     toHtml:function(){
         return new View({url:this.Class.view.replace("###",this.type)}).render(this,WizardStepViewHelpers);

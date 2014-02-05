@@ -12,8 +12,12 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
 },
 /* @Prototype */
 {
+    /**
+     *
+     * @returns {HTML}
+     */
     toHtml:function(){
-        return new View({url:this.Class.view}).render(this.attributes());
+        return new View({url:this.Class.view}).render(this);
     }
 }
 );
