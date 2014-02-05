@@ -11,7 +11,6 @@ MVC.JsonP = function (url, options) {
     this.options.parameters = this.options.parameters || {};
     this.error_timeout = this.options.error_timeout * 1000 || 1000 * 70;
     this.send();
-
 }
 
 MVC.JsonP.prototype = {

@@ -107,6 +107,59 @@ MVC.Model.JsonP = MVC.Model.extend(
                 //include(url+MVC.Object.to_query_string(params)+'&'+Math.random());
             }
         },
+        update:function(id,attributes,cbs){
+            var callbacks = this._clean_callbacks(cbs);
+            var callback = callbacks.onSuccess;
+            var params = {};
+
+            params[this.id] = id;
+            MVC.Object.extend(params,attributes);
+
+            this.add_standard_params(params, 'update');
+
+            var klass = this, className = this.className,
+                url = this.update_url ? this.update_url + "?" : this.domain + '/' + this.plural_controller_name + '.json?';
+            var tll = this.top_level_length(params, url);
+            var result = this.seperate(params[this.controller_name], tll, this.controller_name);
+            var postpone_params = result.postpone, send_params = result.send;
+
+            if (!callback) callback = (function () {
+            });
+
+            params['_method'] = 'POST';
+
+            if (result.send_in_parts) {
+                params[this.controller_name] = send_params;
+                params['_mutlirequest'] = 'true';
+
+                new MVC.JsonP(url, {
+                    parameters: params,
+                    onComplete: MVC.Function.bind(this.parts_create_callback(params, callback, postpone_params), this),
+                    onFailure : callback.onFailure,
+                    method    : 'post'
+                });
+
+                /*klass.createCallback = ;
+                 params[this.controller_name] = send_params;
+                 params['_mutlirequest'] = 'true';
+                 clearTimeout(this.remove_scripts_timer);
+                 include(url+MVC.Object.to_query_string(params)+'&'+Math.random());*/
+
+            } else {
+                params['_mutlirequest'] = null;
+
+                new MVC.JsonP(url, {
+                    parameters: params,
+                    onComplete: MVC.Function.bind(this.single_create_callback(callback), this),
+                    onFailure : callback.onFailure,
+                    method    : 'post'
+                });
+
+
+                //clearTimeout(this.remove_scripts_timer);
+                //include(url+MVC.Object.to_query_string(params)+'&'+Math.random());
+            }
+        },
         parts_create_callback  : function (params, callback, postpone_params) {
             return function (callback_params) {
                 if (!callback_params.id) throw 'Your server must callback with the id of the object.  It is used for the next request';

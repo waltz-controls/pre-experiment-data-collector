@@ -48,6 +48,11 @@
         <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.MetaServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DataServlet</servlet-name>
+        <display-name>DataServlet</display-name>
+        <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.DataServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UploadHandler</servlet-name>
         <display-name>UploadHandler</display-name>
         <description>Handles user's upload actions</description>
@@ -89,6 +94,10 @@
     <servlet-mapping>
         <servlet-name>MetaServlet</servlet-name>
         <url-pattern>/WizardSteps.json</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DataServlet</servlet-name>
+        <url-pattern>/Data.json</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UploadHandler</servlet-name>

@@ -37,10 +37,23 @@ WizardStep = MVC.Model.JsonP.extend('WizardStep',
     update:function(){
         //TODO if we create a dedicated model for each fld we can store $ wrapper there
         //TODO additionally this code will be much clear
-        $.each(this.fields,MVC.Function.bind(function(ndx,fld){
-            this.values[fld.id] = $(MVC.$E(fld.id)).val();
-        }),this);
-        WizardStep.update(this.id,this.values/*,callback that will show notification*/);
+        var me = this;
+        $.each(this.fields,function(ndx,fld){
+            me.values[fld.id] = $(MVC.$E(fld.id)).val();
+        });
+        //TODO pass actual data set name instead of 'test'
+        var options = {};
+        options.parameters = {
+            //data set name
+            name:"test",
+            action:"update"
+        };
+        MVC.Object.extend(options.parameters, this.values);
+        options.onComplete = function(){
+            //TODO show notification
+        }
+
+        new MVC.JsonP(ApplicationContext.domain + "/Data.json",options);
     },
     /**
      *

@@ -103,7 +103,7 @@ MVC.Native.Object.to_query_string.worker = function (obj, name) {
                     var nice_val = encodeURIComponent(value[i].toString());
                     parts2.push(newer_name + '=' + nice_val);
                 }
-            } else if (typeof value != 'object') {
+            } else if (value && typeof value != 'object') {
                 var nice_val = encodeURIComponent(value.toString());
                 var newer_name = encodeURIComponent(name ? name + '[' + thing + ']' : thing);
                 parts2.push(newer_name + '=' + nice_val);

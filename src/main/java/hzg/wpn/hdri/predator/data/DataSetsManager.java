@@ -1,8 +1,11 @@
 package hzg.wpn.hdri.predator.data;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import hzg.wpn.hdri.predator.storage.Storage;
+import hzg.wpn.util.beanutils.BeanUtilsHelper;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +75,15 @@ public class DataSetsManager {
                     LOG.error("Can not load data set[" + input + "]", e);
                     return null;
                 }
+            }
+        });
+    }
+
+    public DynaBean getUserDataSet(final String user, final String dataSetName) {
+        return Iterables.find(getUserDataSets(user), new Predicate<DynaBean>() {
+            @Override
+            public boolean apply(@Nullable DynaBean input) {
+                return BeanUtilsHelper.getProperty(input, "name", String.class).equalsIgnoreCase(dataSetName);
             }
         });
     }

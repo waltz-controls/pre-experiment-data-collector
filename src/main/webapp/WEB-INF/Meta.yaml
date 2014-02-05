@@ -22,7 +22,7 @@
     id  : fldDouble
     type: double
     description: A double field
-    validation : required,custom[double]
+    validation : required,custom[number]
     visibility : web
     readonly   : false
   - name: A text field
