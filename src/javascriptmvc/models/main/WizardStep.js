@@ -41,6 +41,6 @@ WizardStep = MVC.Model.JsonP.extend('WizardStep',
         //TODO send to server
     },
     toHtml:function(){
-        return new View({url:this.Class.view.replace("###",this.type)}).render(this.attributes(),WizardStepViewHelpers);
+        return new View({url:this.Class.view.replace("###",this.type)}).render(this,WizardStepViewHelpers);
     }
 });
