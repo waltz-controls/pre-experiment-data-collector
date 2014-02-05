@@ -9,23 +9,22 @@ WizardStep = MVC.Model.JsonP.extend('WizardStep',
         id:"string",
         help:"text",
         label:"string",
-        type:"string"
+        type:"string",
+        fields:"Object[]",
+        values:"Object"
     },
-    view:'views/main/WizardStep.ejs'
+    view:'views/main/wizard.step.###.ejs'
 },
 /* @Prototype */
 {
-    fields:[],
-    set_fields:function(v){
-        this.fields = v;
-    },
-    values:{},
     /**
      * [Constructor]
      * @param proto
      */
     init:function(proto){
         this._super(proto);
+
+        this.values = {};
 
         for(var i = 0, size = this.fields.length; i<size; ++i){
             var fld = this.fields[i];
@@ -42,6 +41,6 @@ WizardStep = MVC.Model.JsonP.extend('WizardStep',
         //TODO send to server
     },
     toHtml:function(){
-        return new View({url:this.Class.view}).render(this.attributes());
+        return new View({url:this.Class.view.replace("###",this.type)}).render(this.attributes(),WizardStepViewHelpers);
     }
 });
