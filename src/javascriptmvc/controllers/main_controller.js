@@ -1,7 +1,6 @@
 MainController = MVC.Controller.extend('main',
 /* @Static */
 {
-    wizard:null,
     isLoaded:{
         welcome:false,
         main:false//main part of the wizard defined in yaml on the server
@@ -14,7 +13,7 @@ MainController = MVC.Controller.extend('main',
 /* @Prototype */
 {
     load:function(params){
-        var wizard = this.Class.wizard = new WizardEngine("Wizard","PreExperiment Data Collector",{},{});
+        var wizard = WizardController.newWizardEngine();
 
         WelcomeStep.create({},{
             onComplete:function(instance){
@@ -53,7 +52,7 @@ MainController = MVC.Controller.extend('main',
         if(!this.Class.isLoaded.main) return;
 
         try{
-            this.Class.wizard.initialize();
+            WizardController.initialize();
         }catch(e){
             alert(e.message);
         }
