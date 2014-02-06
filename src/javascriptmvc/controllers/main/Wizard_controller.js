@@ -59,6 +59,9 @@ WizardController = MVC.Controller.extend('Wizard',
                         $('#' + ui.newHeader.attr('choice-id'), ui.newContent).val(true);
                     }
                 });
+
+                //load all values and display them
+                //TODO if next step is the last one call update
             }
         });
         return this.wizard;

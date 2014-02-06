@@ -10,6 +10,8 @@ MainController = MVC.Controller.extend('main',
             $('#example-2').toggle();
         },
         onLoaded     : function () {
+            WizardController.wizard.addForm(new FinalStep());
+
             try {
                 WizardController.initialize();
             } catch (e) {
@@ -51,9 +53,6 @@ MainController = MVC.Controller.extend('main',
                     alert(instance.errors);
                 }
             });
-
-
-            //TODO add final step
         }
     }
 );

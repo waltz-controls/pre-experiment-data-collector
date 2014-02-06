@@ -40,6 +40,11 @@ WizardStep = MVC.Model.JsonP.extend('WizardStep',
         var me = this;
         $.each(this.fields,function(ndx,fld){
             me.values[fld.id] = $(MVC.$E(fld.id)).val();
+            //multichoice special case
+            if(fld.fields)
+                $.each(fld.fields,function(ndx,fld){
+                    me.values[fld.id] = $(MVC.$E(fld.id)).val();
+                });
         });
         //TODO pass actual data set name instead of 'test'
         var options = {};
