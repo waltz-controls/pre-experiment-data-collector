@@ -77,8 +77,6 @@ public class DataServlet extends JsonpBaseServlet<Object,DataServlet.Request> {
         if(data == null)
             throw new ServletException("Can not find data set[" + params.dataSetName + "] for user[" + user + "]");
         try {
-
-            //TODO fill in data
             BeanUtils.populate(data,req.getParameterMap());
             manager.save(data);
         } catch (IllegalAccessException|InvocationTargetException|IOException e) {
