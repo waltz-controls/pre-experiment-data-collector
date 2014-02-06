@@ -11,9 +11,8 @@ import org.bitbucket.ingvord.web.json.JsonpBaseServlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Paths;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -23,7 +22,28 @@ import java.util.NoSuchElementException;
 public class DataServlet extends JsonpBaseServlet<Void,Void> {
     @Override
     protected Void create(HttpServletRequest req, HttpServletResponse res, Void params) throws ServletException {
-        //TODO
+        String user = req.getRemoteUser();
+        if(user == null){
+            throw new ServletException("User is null");
+        }
+        String dataSetName = req.getParameter("name");
+        if(dataSetName == null){
+            throw new ServletException("DataSet name is null");
+        }
+
+        ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
+        DataSetsManager manager = applicationContext.getManager();
+
+        DynaBean data = manager.newDataSet(user,dataSetName);
+        if(data == null)
+            throw new ServletException("Can not create new dataset");
+
+        try {
+            manager.save(data);
+        } catch (IOException e) {
+            throw new ServletException("Can not save data!", e);
+        }
+
         return null;
     }
 

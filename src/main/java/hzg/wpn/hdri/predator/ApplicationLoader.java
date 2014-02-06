@@ -75,7 +75,7 @@ public class ApplicationLoader implements ServletContextListener {
             DynaClass dataClass = meta.extractDynaClass();
 
 
-            DataSetsManager manager = new DataSetsManager(Paths.get(realPath, HOME), storage);
+            DataSetsManager manager = new DataSetsManager(beamtimeId, Paths.get(realPath, HOME), dataClass, storage);
 
             ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass, manager);
             servletContext.setAttribute(ApplicationContext.APPLICATION_CONTEXT, context);

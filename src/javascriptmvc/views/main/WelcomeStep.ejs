@@ -4,7 +4,31 @@
             <strong class="label">Welcome</strong>
         </div>
         <div class="form-box">
-            //TODO print dataset names
+            <% for(var i = 0, size = data.length ; i<size; ++i){ %>
+            <div class="row">
+            <input type="radio" name="datasets" value="<%= data[i]%>">
+            <input type="text" value="<%= data[i]%>" />
+            </input>
+                </div>
+            <% } %>
+            <div class="row">
+                <input type="radio" name="datasets" value="new">
+                <input type="text" value="Type name"/>
+                </input>
+            </div>
+            <div class="row">
+                <span>
+                <label for="tmplName">
+                Use as template:
+                </label>
+                <select id="tmplName">
+                <% for(var i = 0, size = data.length ; i<size; ++i){ %>
+                    <option value="<%= data[i]%>"><%= data[i]%></option>
+                <% } %>
+                </select>
+
+                </span>
+            </div>
         </div>
         <div class="ui-widget help-box">
             <div class="ui-state-highlight ui-corner-all help-content">

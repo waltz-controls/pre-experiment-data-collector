@@ -7,15 +7,16 @@ import hzg.wpn.hdri.predator.storage.Storage;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.DynaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -25,11 +26,15 @@ import java.util.Collections;
 public class DataSetsManager {
     private static final Logger LOG = LoggerFactory.getLogger(DataSetsManager.class);
 
+    private final String beamtimeId;
     private final Path pathToHome;
+    private final DynaClass dataSetClass;
     private final Storage storage;
 
-    public DataSetsManager(Path pathToHome, Storage storage) {
+    public DataSetsManager(String beamtimeId, Path pathToHome, DynaClass dataSetClass, Storage storage) {
+        this.beamtimeId = beamtimeId;
         this.pathToHome = pathToHome;
+        this.dataSetClass = dataSetClass;
         this.storage = storage;
     }
 
@@ -86,5 +91,31 @@ public class DataSetsManager {
                 return BeanUtilsHelper.getProperty(input, "name", String.class).equalsIgnoreCase(dataSetName);
             }
         });
+    }
+
+    /**
+     *
+     * @param user
+     * @param dataSetName
+     * @return a newly created instance or null
+     */
+    public DynaBean newDataSet(String user, String dataSetName) {
+        try {
+            DynaBean result = dataSetClass.newInstance();
+            BeanUtils.setProperty(result,"user",user);
+            BeanUtils.setProperty(result,"name",dataSetName);
+            BeanUtils.setProperty(result,"beamtimeId",beamtimeId);
+
+            return result;
+        } catch (InvocationTargetException|IllegalAccessException|InstantiationException e) {
+            return null;
+        }
+    }
+
+    public void save(DynaBean data) throws IOException {
+        String user = BeanUtilsHelper.getProperty(data,"user",String.class);
+
+        final Path pathToHomeUser = pathToHome.resolve(user);
+        storage.save(data,pathToHomeUser);
     }
 }
