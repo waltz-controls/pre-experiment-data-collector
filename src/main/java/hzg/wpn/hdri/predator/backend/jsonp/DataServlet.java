@@ -19,6 +19,21 @@ import java.lang.reflect.InvocationTargetException;
  * @since 05.02.14
  */
 public class DataServlet extends JsonpBaseServlet<Object,DataServlet.Request> {
+    /**
+     * This methods implements the following:
+     * if there is a template name differs from 'none' try to load data set defined by the template name
+     * otherwise try to load data set defined by data-set-name
+     * if resulting data set is null create a new one
+     *
+     * despite the data set is just has been created or loaded set its name to data-set-name
+     * save data set
+     *
+     * @param req
+     * @param res
+     * @param params
+     * @return
+     * @throws ServletException
+     */
     @Override
     protected Object create(HttpServletRequest req, HttpServletResponse res, DataServlet.Request params) throws ServletException {
         String user = req.getRemoteUser();
