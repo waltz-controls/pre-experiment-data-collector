@@ -37,11 +37,15 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
                 name:dataSetName,
                 template:template
             },
-            onComplete:function(){
-                //TODO show notification
+            //update UI with values
+            onComplete:function(data){
+                for(var v in data){
+                    $(MVC.$E(v)).val(data[v]);
+                }
             }
         };
         new MVC.JsonP(this.Class.domain + "/Data.json",options);
+        //set global data set name
         kDataSetName = ApplicationContext["data-set-name"] = dataSetName;
     },
     /**

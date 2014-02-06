@@ -2,11 +2,10 @@ package hzg.wpn.hdri.predator.backend.jsonp;
 
 import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.data.DataSetsManager;
-import hzg.wpn.hdri.predator.storage.Storage;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.DynaBeanPropertyMapDecorator;
 import org.bitbucket.ingvord.web.RequestParameter;
-import org.bitbucket.ingvord.web.json.JsonSerializable;
 import org.bitbucket.ingvord.web.json.JsonpBaseServlet;
 
 import javax.servlet.ServletException;
@@ -14,15 +13,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.NoSuchElementException;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 05.02.14
  */
-public class DataServlet extends JsonpBaseServlet<Void,DataServlet.Request> {
+public class DataServlet extends JsonpBaseServlet<Object,DataServlet.Request> {
     @Override
-    protected Void create(HttpServletRequest req, HttpServletResponse res, DataServlet.Request params) throws ServletException {
+    protected Object create(HttpServletRequest req, HttpServletResponse res, DataServlet.Request params) throws ServletException {
         String user = req.getRemoteUser();
         if(user == null){
             throw new ServletException("User is null");
@@ -31,21 +29,28 @@ public class DataServlet extends JsonpBaseServlet<Void,DataServlet.Request> {
         ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
         DataSetsManager manager = applicationContext.getManager();
 
-        DynaBean data = manager.newDataSet(user,params.dataSetName);
+        String dataSetNameToLoad = !"none".equals(params.templateName) ? params.templateName : params.dataSetName;
+        DynaBean data = manager.getUserDataSet(user, dataSetNameToLoad);
+
         if(data == null)
-            throw new ServletException("Can not create new dataset");
+            data = manager.newDataSet(user,params.dataSetName);
+
+        if(data == null)
+            throw new ServletException("Can not create a new dataset");
 
         try {
+            //set new name
+            data.set("name",params.dataSetName);
             manager.save(data);
         } catch (IOException e) {
             throw new ServletException("Can not save data!", e);
         }
 
-        return null;
+        return new DynaBeanPropertyMapDecorator(data);
     }
 
     @Override
-    protected Void update(HttpServletRequest req, HttpServletResponse res, DataServlet.Request params) throws ServletException {
+    protected Object update(HttpServletRequest req, HttpServletResponse res, DataServlet.Request params) throws ServletException {
         String user = req.getRemoteUser();
         if(user == null){
             throw new ServletException("User is null");
@@ -53,18 +58,19 @@ public class DataServlet extends JsonpBaseServlet<Void,DataServlet.Request> {
 
         ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
         DataSetsManager manager = applicationContext.getManager();
+        DynaBean data = manager.getUserDataSet(user, params.dataSetName);
+        if(data == null)
+            throw new ServletException("Can not find data set[" + params.dataSetName + "] for user[" + user + "]");
         try {
-            DynaBean data = manager.getUserDataSet(user, params.dataSetName);
 
             //TODO fill in data
             BeanUtils.populate(data,req.getParameterMap());
             manager.save(data);
-        } catch (NoSuchElementException|IllegalAccessException|InvocationTargetException|IOException e) {
+        } catch (IllegalAccessException|InvocationTargetException|IOException e) {
             throw new ServletException(e);
         }
 
-        //TODO return bean as map and compare values on the client
-        return null;
+        return new DynaBeanPropertyMapDecorator(data);
     }
 
     @Override

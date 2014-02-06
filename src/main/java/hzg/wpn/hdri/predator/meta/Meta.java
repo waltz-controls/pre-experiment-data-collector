@@ -41,6 +41,11 @@ public class Meta {
     public static final String FLD_ID = "id";
     public static final String FLD_TYPE = "type";
     public static final String FRM_FIELDS = "fields";
+    public static final DynaProperty[] DEFAULT_PROPERTIES = new DynaProperty[]{
+            new DynaProperty("user", String.class),
+            new DynaProperty("beamtimeId", String.class),
+            new DynaProperty("name", String.class)
+    };
 
     private final Path pathToYaml;
     private final Yaml parser = new Yaml();
@@ -66,11 +71,7 @@ public class Meta {
     public DynaClass extractDynaClass() {
         if (yaml == null) throw new IllegalStateException("Yaml was not loaded yet.");
 
-        LazyDynaClass result = new LazyDynaClass("MetaData", null, new DynaProperty[]{
-                new DynaProperty("user", String.class),
-                new DynaProperty("beamtimeId", String.class),
-                new DynaProperty("name", String.class)
-        });
+        LazyDynaClass result = new LazyDynaClass("MetaData", null, DEFAULT_PROPERTIES);
 
 
         //assume that yaml has been properly validated and loaded

@@ -8,6 +8,7 @@ import hzg.wpn.util.beanutils.BeanUtilsHelper;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaClass;
+import org.apache.commons.beanutils.DynaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -84,13 +86,23 @@ public class DataSetsManager {
         });
     }
 
+    /**
+     *
+     * @param user
+     * @param dataSetName
+     * @return an instance of the data or null
+     */
     public DynaBean getUserDataSet(final String user, final String dataSetName) {
-        return Iterables.find(getUserDataSets(user), new Predicate<DynaBean>() {
-            @Override
-            public boolean apply(@Nullable DynaBean input) {
-                return BeanUtilsHelper.getProperty(input, "name", String.class).equalsIgnoreCase(dataSetName);
-            }
-        });
+        try {
+            return Iterables.find(getUserDataSets(user), new Predicate<DynaBean>() {
+                @Override
+                public boolean apply(@Nullable DynaBean input) {
+                    return BeanUtilsHelper.getProperty(input, "name", String.class).equalsIgnoreCase(dataSetName);
+                }
+            });
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     /**
@@ -102,6 +114,8 @@ public class DataSetsManager {
     public DynaBean newDataSet(String user, String dataSetName) {
         try {
             DynaBean result = dataSetClass.newInstance();
+            //these are default properties, every data set must have them
+            //these properties are defined in Meta#DEFAULT_PROPERTIES
             BeanUtils.setProperty(result,"user",user);
             BeanUtils.setProperty(result,"name",dataSetName);
             BeanUtils.setProperty(result,"beamtimeId",beamtimeId);
