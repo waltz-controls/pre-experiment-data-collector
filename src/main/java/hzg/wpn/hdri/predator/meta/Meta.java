@@ -69,7 +69,7 @@ public class Meta {
         LazyDynaClass result = new LazyDynaClass("MetaData", null, new DynaProperty[]{
                 new DynaProperty("user", String.class),
                 new DynaProperty("beamtimeId", String.class),
-                new DynaProperty("id", String.class)
+                new DynaProperty("name", String.class)
         });
 
 

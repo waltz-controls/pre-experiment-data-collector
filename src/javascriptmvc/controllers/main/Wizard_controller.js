@@ -9,9 +9,12 @@ WizardController = MVC.Controller.extend('Wizard',
     newWizardEngine:function(){
         this.wizard = new WizardEngine("Wizard","PreExperiment Data Collector",{
             beforeForward: function (event, state) {
-                if(state.stepIndex == 1) return true;//skip welcome step
                 var currentStep = state.step.prevObject.get(state.stepIndex - 1);
-                var wizardStep = WizardStep.find_by_element(currentStep);
+                var wizardStep;
+                if(state.stepIndex == 1)
+                    wizardStep = WelcomeStep.find_by_element(currentStep);
+                else
+                    wizardStep = WizardStep.find_by_element(currentStep);
 
                 var isValid = wizardStep.validate();
                 if (isValid) {

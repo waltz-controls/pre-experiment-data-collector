@@ -5,6 +5,7 @@ import hzg.wpn.hdri.predator.data.DataSetsManager;
 import hzg.wpn.hdri.predator.storage.Storage;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
+import org.bitbucket.ingvord.web.RequestParameter;
 import org.bitbucket.ingvord.web.json.JsonSerializable;
 import org.bitbucket.ingvord.web.json.JsonpBaseServlet;
 
@@ -19,22 +20,18 @@ import java.util.NoSuchElementException;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 05.02.14
  */
-public class DataServlet extends JsonpBaseServlet<Void,Void> {
+public class DataServlet extends JsonpBaseServlet<Void,DataServlet.Request> {
     @Override
-    protected Void create(HttpServletRequest req, HttpServletResponse res, Void params) throws ServletException {
+    protected Void create(HttpServletRequest req, HttpServletResponse res, DataServlet.Request params) throws ServletException {
         String user = req.getRemoteUser();
         if(user == null){
             throw new ServletException("User is null");
-        }
-        String dataSetName = req.getParameter("name");
-        if(dataSetName == null){
-            throw new ServletException("DataSet name is null");
         }
 
         ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
         DataSetsManager manager = applicationContext.getManager();
 
-        DynaBean data = manager.newDataSet(user,dataSetName);
+        DynaBean data = manager.newDataSet(user,params.dataSetName);
         if(data == null)
             throw new ServletException("Can not create new dataset");
 
@@ -48,30 +45,37 @@ public class DataServlet extends JsonpBaseServlet<Void,Void> {
     }
 
     @Override
-    protected Void update(HttpServletRequest req, HttpServletResponse res, Void params) throws ServletException {
+    protected Void update(HttpServletRequest req, HttpServletResponse res, DataServlet.Request params) throws ServletException {
         String user = req.getRemoteUser();
         if(user == null){
             throw new ServletException("User is null");
-        }
-        String dataSetName = req.getParameter("name");
-        if(dataSetName == null){
-            throw new ServletException("DataSet name is null");
         }
 
         ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
         DataSetsManager manager = applicationContext.getManager();
         try {
-            DynaBean data = manager.getUserDataSet(user, dataSetName);
+            DynaBean data = manager.getUserDataSet(user, params.dataSetName);
 
             //TODO fill in data
             BeanUtils.populate(data,req.getParameterMap());
-        } catch (NoSuchElementException|IllegalAccessException|InvocationTargetException e) {
+            manager.save(data);
+        } catch (NoSuchElementException|IllegalAccessException|InvocationTargetException|IOException e) {
             throw new ServletException(e);
         }
 
-        //TODO save data
-        //TODO load data
         //TODO return bean as map and compare values on the client
         return null;
+    }
+
+    @Override
+    protected Request getParamsContainer() {
+        return new Request();
+    }
+
+    public static class Request{
+        @RequestParameter("name")
+        public String dataSetName;
+        @RequestParameter("template")
+        public String templateName;
     }
 }

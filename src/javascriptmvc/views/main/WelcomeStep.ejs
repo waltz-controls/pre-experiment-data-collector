@@ -1,4 +1,4 @@
-<form class="step regular-form" id="WizardStep_frmWelcome">
+<form class="step regular-form" id="WelcomeStep_frmWelcome">
     <fieldset>
         <div class="title-wrap">
             <strong class="label">Welcome</strong>
@@ -6,14 +6,12 @@
         <div class="form-box">
             <% for(var i = 0, size = data.length ; i<size; ++i){ %>
             <div class="row">
-            <input type="radio" name="datasets" value="<%= data[i]%>">
-            <input type="text" value="<%= data[i]%>" />
-            </input>
-                </div>
+            <label><input type="radio" name="datasets" value="<%= data[i]%>"/><%= data[i]%></label>
+            </div>
             <% } %>
             <div class="row">
-                <input type="radio" name="datasets" value="new">
-                <input type="text" value="Type name"/>
+                <input type="radio" name="datasets" value="new" checked >
+                <input type="text" id="txtNewDataSetName" value="Type name"/>
                 </input>
             </div>
             <div class="row">
@@ -22,6 +20,7 @@
                 Use as template:
                 </label>
                 <select id="tmplName">
+                    <option value="none">none</option>
                 <% for(var i = 0, size = data.length ; i<size; ++i){ %>
                     <option value="<%= data[i]%>"><%= data[i]%></option>
                 <% } %>

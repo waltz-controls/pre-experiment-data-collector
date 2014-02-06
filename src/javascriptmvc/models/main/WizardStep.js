@@ -45,7 +45,7 @@ WizardStep = MVC.Model.JsonP.extend('WizardStep',
         var options = {};
         options.parameters = {
             //data set name
-            name:"test",
+            name:kDataSetName,
             action:"update"
         };
         MVC.Object.extend(options.parameters, this.values);
