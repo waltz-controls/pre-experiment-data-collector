@@ -75,5 +75,9 @@ WizardController = MVC.Controller.extend('Wizard',
     }
 },
 /* @Prototype */
-{}
+{
+    "Wizard.submit subscribe":function(){
+        window.location.href=ApplicationContext.domain;
+    }
+}
 );
