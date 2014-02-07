@@ -23,13 +23,13 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
     update:function(){
         var $this = $(this.element());
         var dataSetName = $("input[name=datasets]:checked",$this).val();
+        //set global data set name
+        kDataSetName = ApplicationContext["data-set-name"] = dataSetName;
         var template = "none";
         if('new' == dataSetName){
             dataSetName = $('#txtNewDataSetName',$this).val();
             template = $('#tmplName',$this).val()
         }
-
-
 
         var options = {
             parameters:{
@@ -45,8 +45,6 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
             }
         };
         new MVC.JsonP(this.Class.domain + "/Data.json",options);
-        //set global data set name
-        kDataSetName = ApplicationContext["data-set-name"] = dataSetName;
     },
     /**
      *

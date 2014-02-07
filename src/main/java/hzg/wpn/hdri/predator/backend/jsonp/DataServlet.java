@@ -44,7 +44,7 @@ public class DataServlet extends JsonpBaseServlet<Object,DataServlet.Request> {
         ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
         DataSetsManager manager = applicationContext.getManager();
 
-        String dataSetNameToLoad = !"none".equals(params.templateName) ? params.templateName : params.dataSetName;
+        String dataSetNameToLoad = params.templateName != null && !"none".equals(params.templateName) ? params.templateName : params.dataSetName;
         DynaBean data = manager.getUserDataSet(user, dataSetNameToLoad);
 
         if(data == null)

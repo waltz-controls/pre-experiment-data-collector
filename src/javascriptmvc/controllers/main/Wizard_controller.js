@@ -61,7 +61,11 @@ WizardController = MVC.Controller.extend('Wizard',
                 });
 
                 //load all values and display them
-                //TODO if next step is the last one call update
+                if(state.stepIndex == state.stepsPossible)
+                    FinalStep.find_by_element(
+                    /*we need this long expression to get HTML dom object, but step is a jQuery obj*/
+                        state.step.prevObject.get(state.stepIndex)
+                    ).update();
             }
         });
         return this.wizard;
