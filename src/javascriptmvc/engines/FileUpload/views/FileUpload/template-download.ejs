@@ -2,10 +2,10 @@
     <tr class="template-download file-row">
         <td class="image">
             <% if (file.thumbnail_url) { %>
-            <a href="<%=file.url%>" title="<%=file.name%>" rel="gallery"><img src="<%=file.thumbnail_url%>"></a>
+            <img src="<%=file.thumbnail_url%>">
             <% } %>
         </td>
-        <td class="name"><%= file.name %></td>
+        <td class="name"><a href="<%=file.url%>" title="<%=file.name%>" rel="gallery"><%= file.name %></a></td>
         <td class="price-holder"><strong class="price"><%=data.formatFileSize(file.size)%></strong></td>
         <% if (file.error) { %>
         <td class="error">
