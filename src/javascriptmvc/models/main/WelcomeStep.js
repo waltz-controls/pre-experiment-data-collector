@@ -41,6 +41,16 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
                 for(var v in data){
                     $(MVC.$E(v)).val(data[v]);
                 }
+                $('form.step[type="upload"]').each(function(){
+                    var upload = WizardStep.find_by_element($(this).get(0));
+                    $.each(upload.fields,function(nfx,fld){
+                        var files = data[fld.id];
+                        //TODO use jquery.map
+                        $.each(files,function(ndx,file){
+                            Controller.publish("FileUpload.add_file_names", { id: upload.element_id(), data: [] });
+                        })
+                    })
+                });
             }
         };
         new MVC.JsonP(this.Class.domain + "/Data.json",options);
