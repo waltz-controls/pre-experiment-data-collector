@@ -60,23 +60,6 @@ FileUploadController = MVC.Controller.extend('FileUpload', {
     },
     /**
      * Expects the following:
-     * params.data - an array of file names
-     * params.id   - an id of the file upload on the page
-     *
-     * @param params
-     */
-    "FileUpload.add_file_names subscribe": function (params) {
-        //TODO transform utility will be useful here
-        var fileNames = params.data;
-        params.data = [];
-        for (var i = 0, size = fileNames.length, fileName = fileNames[0]; i < size && fileName.length > 0; fileName = fileNames[++i]) {
-            params.data.push({name: fileName});
-        }
-
-        this.continue_to("FileUpload.add_files subscribe")(params);
-    },
-    /**
-     * Expects the following:
      * params.data - an array of file objects,
      * each file object:
      * {
