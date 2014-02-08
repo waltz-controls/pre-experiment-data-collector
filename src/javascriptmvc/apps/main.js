@@ -13,7 +13,7 @@ include.plugins(
 
 include(function(){ //runs after prior includes are loaded
 include.models('main/WelcomeStep','main/WizardStep','main/FinalStep');
-include.controllers('main','main/Welcome','main/Wizard');
+include.controllers('main','main/Wizard');
 include.views('views/main/WelcomeStep','views/main/FinalStep','views/main/wizard.step.field',
     'views/main/wizard.step.fieldset','views/main/wizard.step.multichoice','views/main/wizard.step.upload',
     'views/main/final.value'
