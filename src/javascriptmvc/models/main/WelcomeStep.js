@@ -7,7 +7,7 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
     domain: ApplicationContext.domain,
     attributes:{
         id:'string',
-        data:'st1ring[]'
+        data:'string[]'
     },
     default_attributes:{
         id:'frmWelcome'
@@ -23,14 +23,13 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
     update:function(){
         var $this = $(this.element());
         var dataSetName = $("input[name=datasets]:checked",$this).val();
-        //set global data set name
-        kDataSetName = ApplicationContext["data-set-name"] = dataSetName;
         var template = "none";
         if('new' == dataSetName){
             dataSetName = $('#txtNewDataSetName',$this).val();
             template = $('#tmplName',$this).val()
         }
-
+        //set global data set name
+        kDataSetName = ApplicationContext["data-set-name"] = dataSetName;
         var options = {
             parameters:{
                 action:"create",

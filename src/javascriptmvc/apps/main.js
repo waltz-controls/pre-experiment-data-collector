@@ -1,9 +1,9 @@
 include.css('main/all', 'validationEngine.jquery');
 include.resources(
-    'main/wizard_step_view_helpers',
+    'main/string','main/wizard_step_view_helpers',
     'jsonp.utility.functions', 'jquery.validationEngine', 'languages/jquery.validationEngine-en', 'webtoolkit.base64'
 );
-include.engines('Wizard');
+include.engines('Wizard','FileUpload');
 include.plugins(
 'controller','controller/stateful',
 'view','view/helpers',

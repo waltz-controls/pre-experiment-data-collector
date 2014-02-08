@@ -38,8 +38,18 @@ WizardStep = MVC.Model.JsonP.extend('WizardStep',
         //TODO if we create a dedicated model for each fld we can store $ wrapper there
         //TODO additionally this code will be much clear
         var me = this;
+        //populate fields before update server
+
+
         $.each(this.fields,function(ndx,fld){
-            me.values[fld.id] = $(MVC.$E(fld.id)).val();
+            if(this.type=='file'){
+                me.values[fld.id] = [];
+                $('tr.file-row > td.name', $(me.element())).each(function () {
+                    me.values[fld.id].push($(this).text());
+                });
+            }else {
+                me.values[fld.id] = $(MVC.$E(fld.id)).val();
+            }
             //multichoice special case
             if(fld.fields)
                 $.each(fld.fields,function(ndx,fld){

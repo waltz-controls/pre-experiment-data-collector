@@ -47,7 +47,7 @@
         return new View({ url:'views/main/wizard.step.' + form.type + '.ejs' }).render(data,this);
     },
     isRequired:function (validation) {
-        return validation != null && (typeof validation).toLowerCase() == 'string' && validation.contains('required');
+        return validation != null && validation.contains('required');
     },
     printAsterisk:function (validation) {
         if (this.isRequired(validation)) {

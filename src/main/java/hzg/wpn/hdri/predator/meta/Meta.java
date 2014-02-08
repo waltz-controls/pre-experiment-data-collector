@@ -33,6 +33,7 @@ public class Meta {
 
     static {
         TYPE_TO_CLASS.put("string", String.class);
+        TYPE_TO_CLASS.put("file", String[].class);
         TYPE_TO_CLASS.put("number", int.class);
         TYPE_TO_CLASS.put("double", float.class);
         TYPE_TO_CLASS.put("choice", boolean.class);

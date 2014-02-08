@@ -30,7 +30,6 @@
 package hzg.wpn.hdri.predator.backend.upload;
 
 import hzg.wpn.hdri.predator.ApplicationContext;
-import hzg.wpn.hdri.predator.data.UploadedDocument;
 import hzg.wpn.hdri.predator.data.User;
 import hzg.wpn.hdri.predator.data.Users;
 import hzg.wpn.util.servlet.ServletUtils;
@@ -95,10 +94,8 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Void>
             requestUrl.set(req.getRequestURL());
             url.set(getUrl(req));
             return super.doGetInternal(req, res, params);
-        } catch (FileUploadException e) {
-            //TODO process exception - ensure client is aware
-            throw new ServletException(e);
-        } catch (MalformedURLException e) {
+        } catch (FileUploadException|MalformedURLException e) {
+            //TODO log
             throw new ServletException(e);
         }
     }

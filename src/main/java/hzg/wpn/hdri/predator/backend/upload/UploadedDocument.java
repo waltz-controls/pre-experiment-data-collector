@@ -27,22 +27,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-package hzg.wpn.hdri.predator.storage;
+package hzg.wpn.hdri.predator.backend.upload;
 
-import org.apache.commons.beanutils.DynaBean;
+import net.jcip.annotations.Immutable;
 
-import java.io.IOException;
-import java.nio.file.Path;
+import java.net.URL;
 
 /**
- * Represents storage layer of the application.
- * Implementation should provide proper functionality for storing and retrieving data.
+ * Aggregates values valuable for FileUpload engine.
  *
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
- * @since 01.02.12
+ * @since 17.02.12
  */
-public interface Storage {
-    void save(DynaBean data, Path root) throws IOException;
+@Immutable
+public class UploadedDocument {
+    private final String name;
+    private final long size;
+    private final URL url;
+    private final URL thumbnail_url;
+    private final URL delete;
+    private final String deleteType;
 
-    DynaBean load(String dataSetName, Path root) throws IOException;
+    public UploadedDocument(String name, long size, URL url, URL thumbnail, URL delete, String deleteType) {
+        this.name = name;
+        this.size = size;
+        this.url = url;
+        this.thumbnail_url = thumbnail;
+        this.delete = delete;
+        this.deleteType = deleteType;
+    }
 }

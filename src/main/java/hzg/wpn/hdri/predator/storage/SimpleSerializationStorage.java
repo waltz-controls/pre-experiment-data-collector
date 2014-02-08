@@ -34,6 +34,7 @@ import org.apache.commons.beanutils.DynaBean;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -54,6 +55,9 @@ public final class SimpleSerializationStorage implements Storage {
      * @throws IOException
      */
     public void save(DynaBean bean, Path root) throws IOException {
+        if(!Files.exists(root)){
+            Files.createDirectories(root);
+        }
         String name = null;
         try {
             name = BeanUtils.getProperty(bean, "name");
