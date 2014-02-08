@@ -34,27 +34,27 @@
  */
 //TODO make stateful
 FileUploadController = MVC.Controller.extend('FileUpload', {
-    init:function () {
+    init: function () {
         window.fileUploadErrors = {
-            maxFileSize:'File is too big',
-            minFileSize:'File is too small',
-            acceptFileTypes:'Filetype not allowed',
-            maxNumberOfFiles:'Max number of files exceeded',
-            uploadedBytes:'Uploaded bytes exceed file size',
-            emptyResult:'Empty file upload result'
+            maxFileSize: 'File is too big',
+            minFileSize: 'File is too small',
+            acceptFileTypes: 'Filetype not allowed',
+            maxNumberOfFiles: 'Max number of files exceeded',
+            uploadedBytes: 'Uploaded bytes exceed file size',
+            emptyResult: 'Empty file upload result'
         };
         this._super();
     }
 }, {
-    "FileUpload.initialize subscribe":function (params) {
+    "FileUpload.initialize subscribe": function (params) {
         this.data = params.data;
-        this.render({to:this.data.id, action:'initialize'});
-        $('#' + this.data.id).fileupload(
+        this.render({to: this.data.element(), action: 'initialize'});
+        $(this.data.element()).fileupload(
             {
-                sequentialUploads:true,
-                autoUpload:true,
+                sequentialUploads: true,
+                autoUpload: true,
                 //avoid authentication issues with ajax requests
-                forceIframeTransport:true
+                forceIframeTransport: true
             }
         );
     },
@@ -65,12 +65,12 @@ FileUploadController = MVC.Controller.extend('FileUpload', {
      *
      * @param params
      */
-    "FileUpload.add_file_names subscribe":function (params) {
+    "FileUpload.add_file_names subscribe": function (params) {
         //TODO transform utility will be useful here
         var fileNames = params.data;
         params.data = [];
         for (var i = 0, size = fileNames.length, fileName = fileNames[0]; i < size && fileName.length > 0; fileName = fileNames[++i]) {
-            params.data.push({name:fileName});
+            params.data.push({name: fileName});
         }
 
         this.continue_to("FileUpload.add_files subscribe")(params);
@@ -89,7 +89,7 @@ FileUploadController = MVC.Controller.extend('FileUpload', {
      *
      * @param params
      */
-    "FileUpload.add_files subscribe":function (params) {
+    "FileUpload.add_files subscribe": function (params) {
         this.data = {};
         this.data.id = params.id;
         this.data.files = params.data;
@@ -98,6 +98,6 @@ FileUploadController = MVC.Controller.extend('FileUpload', {
             return "Unknown";
         };
 
-        this.render({action:'template-download', to:$('tbody.files', $('#' + this.data.id))[0]})
+        this.render({action: 'template-download', to: $('tbody.files', $('#' + this.data.id))[0]})
     }
 });
