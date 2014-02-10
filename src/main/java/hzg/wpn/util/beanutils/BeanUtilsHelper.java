@@ -2,6 +2,7 @@ package hzg.wpn.util.beanutils;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -25,7 +26,7 @@ public class BeanUtilsHelper {
      */
     public static <T, V extends DynaBean> T getProperty(V bean, String name, Class<T> toType){
         try {
-            return toType.cast(BeanUtils.getProperty(bean, name));
+            return toType.cast(PropertyUtils.getProperty(bean, name));
         } catch (IllegalAccessException|InvocationTargetException|NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

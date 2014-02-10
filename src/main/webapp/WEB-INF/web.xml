@@ -63,18 +63,6 @@
         </init-param>
     </servlet>
     <servlet>
-        <servlet-name>SubmitDataHandler</servlet-name>
-        <display-name>SubmitDataHandler</display-name>
-        <description>saves the user's data to the local storage. The local storage implementation is defined by the
-            initialization parameter
-        </description>
-        <servlet-class>hzg.wpn.hdri.predator.backend.submit.SubmitDataHandler</servlet-class>
-        <init-param>
-            <param-name>submit.data.handler.storage.class</param-name>
-            <param-value>hzg.wpn.hdri.predator.backend.storage.SimpleJsonStorage</param-value>
-        </init-param>
-    </servlet>
-    <servlet>
         <servlet-name>IndexServlet</servlet-name>
         <servlet-class>hzg.wpn.hdri.predator.backend.IndexServlet</servlet-class>
         <init-param>
@@ -85,7 +73,7 @@
     <servlet>
         <servlet-name>TangoServlet</servlet-name>
         <servlet-class>hzg.wpn.hdri.predator.frontend.TangoServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
+        <load-on-startup>0</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>WelcomeServlet</servlet-name>
@@ -102,10 +90,6 @@
     <servlet-mapping>
         <servlet-name>UploadHandler</servlet-name>
         <url-pattern>/backend/upload</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SubmitDataHandler</servlet-name>
-        <url-pattern>/backend/SubmitData</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>IndexServlet</servlet-name>

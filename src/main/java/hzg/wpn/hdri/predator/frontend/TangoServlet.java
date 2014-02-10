@@ -31,6 +31,7 @@ package hzg.wpn.hdri.predator.frontend;
 
 import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.ApplicationProperties;
+import org.tango.server.ServerManager;
 
 import javax.servlet.*;
 import java.io.IOException;
@@ -68,21 +69,30 @@ public class TangoServlet extends GenericServlet {
     private static volatile boolean STARTED;
     private static volatile Future<?> TANGO_SERVER;
 
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
+    public void init() {
         if (STARTED) return;
 
-        ApplicationContext applicationContext = (ApplicationContext) config.getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
-//        TangoDevice.setContext(applicationContext);
+        ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
+        //TODO avoid this hack
+        TangoDevice.setStaticContext(applicationContext);
 
         ApplicationProperties properties = applicationContext.getApplicationProperties();
 
-        String tangoServerName = properties.tangoServerClassName;
-        String tangoInstanceName = properties.tangoServerInstanceName;
+        final String tangoServerName = properties.tangoServerClassName;
+        final String tangoInstanceName = properties.tangoServerInstanceName;
+        final String[] tangoServerArguments = properties.tangoServerArguments.isEmpty() ? new String[0] : properties.tangoServerArguments.split(",");
+        final String[] args = new String[tangoServerArguments.length + 1];
+        args[0] = tangoInstanceName;
+        System.arraycopy(tangoServerArguments,0,args,1,tangoServerArguments.length);
 
-        String[] tangoServerArguments = properties.tangoServerArguments.isEmpty() ? new String[0] : properties.tangoServerArguments.split(",");
 
-        TANGO_SERVER = EXEC.submit(new TangoDevice(/*tangoInstanceName, tangoServerArguments*/));
+        TANGO_SERVER = EXEC.submit(new Runnable() {
+            @Override
+            public void run() {
+                ServerManager.getInstance().addClass(tangoServerName,TangoDevice.class);
+                ServerManager.getInstance().start(args,tangoServerName);
+            }
+        });
         STARTED = true;
     }
 

@@ -33,19 +33,23 @@ public class Meta {
 
     static {
         TYPE_TO_CLASS.put("string", String.class);
+        TYPE_TO_CLASS.put("text", String.class);
         TYPE_TO_CLASS.put("file", String[].class);
-        TYPE_TO_CLASS.put("number", int.class);
-        TYPE_TO_CLASS.put("double", float.class);
-        TYPE_TO_CLASS.put("choice", boolean.class);
+        TYPE_TO_CLASS.put("number", Integer.class);
+        TYPE_TO_CLASS.put("double", Float.class);
+        TYPE_TO_CLASS.put("choice", Boolean.class);
     }
 
     public static final String FLD_ID = "id";
     public static final String FLD_TYPE = "type";
     public static final String FRM_FIELDS = "fields";
+    public static final String USER = "user";
+    public static final String NAME = "name";
+    public static final String BEAMTIME_ID = "beamtimeId";
     public static final DynaProperty[] DEFAULT_PROPERTIES = new DynaProperty[]{
-            new DynaProperty("user", String.class),
-            new DynaProperty("beamtimeId", String.class),
-            new DynaProperty("name", String.class)
+            new DynaProperty(USER, String.class),
+            new DynaProperty(BEAMTIME_ID, String.class),
+            new DynaProperty(NAME, String.class)
     };
 
     private final Path pathToYaml;

@@ -29,6 +29,8 @@
 
 package hzg.wpn.hdri.predator;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import hzg.wpn.hdri.predator.data.DataSetsManager;
 import hzg.wpn.hdri.predator.data.User;
 import hzg.wpn.hdri.predator.meta.Meta;
@@ -36,9 +38,13 @@ import hzg.wpn.hdri.predator.storage.Storage;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.io.FileUtils;
 
+import javax.annotation.Nullable;
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Provides a number of useful methods to deal with agreed file structure on the server.
@@ -229,5 +235,14 @@ public class ApplicationContext {
         }
 
         return dir;
+    }
+
+    public Iterable<String> getUsers() throws IOException {
+        return Iterables.transform(Files.newDirectoryStream(Paths.get(getHomeDir().getAbsolutePath())),new Function<Path, String>() {
+            @Override
+            public String apply(@Nullable Path input) {
+                return input.getFileName().toString();
+            }
+        });
     }
 }

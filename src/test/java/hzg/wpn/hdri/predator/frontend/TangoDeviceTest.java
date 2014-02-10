@@ -10,9 +10,9 @@ public class TangoDeviceTest {
     @Test
     public void testRun() throws Exception {
 //        TangoDevice.setContext(UsefulTestConstants.NULL_APP_CTX);
-        TangoDevice instance = new TangoDevice(/*"development", new String[0]*/);
+//        TangoDevice instance = new TangoDevice("Predator","development", new String[0], null);
 
-        instance.run();
+//        instance.run();
 
         //TODO
     }

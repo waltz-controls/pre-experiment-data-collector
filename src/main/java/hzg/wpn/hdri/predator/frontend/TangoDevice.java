@@ -29,17 +29,139 @@
 
 package hzg.wpn.hdri.predator.frontend;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import fr.esrf.Tango.DevFailed;
+import hzg.wpn.hdri.predator.ApplicationContext;
+import hzg.wpn.hdri.predator.meta.Meta;
+import hzg.wpn.util.beanutils.BeanUtilsHelper;
+import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.DynaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tango.server.ServerManager;
+import org.tango.server.StateMachineBehavior;
+import org.tango.server.annotation.Command;
 import org.tango.server.annotation.Device;
+import org.tango.server.annotation.DynamicManagement;
+import org.tango.server.annotation.Init;
+import org.tango.server.attribute.AttributeConfiguration;
+import org.tango.server.attribute.AttributeValue;
+import org.tango.server.attribute.IAttributeBehavior;
+import org.tango.server.dynamic.DynamicManager;
 
+import javax.annotation.Nullable;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+/**
+ * Designed to be Thread condemned
+ *
+ */
 @Device
-public class TangoDevice implements Runnable {
+public class TangoDevice {
     private static final Logger LOG = LoggerFactory.getLogger(TangoDevice.class);
 
+    private ApplicationContext appCtx;
+
+    private volatile DynaBean data;
+
     /**
-     * Main entry point for Tango Server
+     * Iterates over all users and loads their data sets
+     *
+     * @return
+     * @throws Exception
      */
-    public void run() {
+    @Command
+    public String[] datasets() throws Exception{
+        List<String> result = new ArrayList<>();
+
+        //get all users
+        Iterable<String> users = appCtx.getUsers();
+        //add all data sets of each user
+        for(String user : users){
+            Iterables.addAll(result,appCtx.getManager().getUserDataSetNames(user));
+        }
+
+        return result.toArray(new String[result.size()]);
+    }
+
+    @Command
+    public void load_data_set(final String name) throws Exception {
+        //get all users
+        Iterable<String> users = appCtx.getUsers();
+        //add all data sets of each user
+        DynaBean data = null;
+        for(String user : users){
+            Optional<DynaBean> result = Iterables.tryFind(appCtx.getManager().getUserDataSets(user),new Predicate<DynaBean>() {
+                @Override
+                public boolean apply(@Nullable DynaBean input) {
+                    return BeanUtilsHelper.getProperty(input, Meta.NAME, String.class).equals(name);
+                }
+            });
+            if(result.isPresent()){
+                data = result.get();
+                break;
+            }
+        }
+        if(data == null)
+            throw new NoSuchElementException("Dataset[" + name + "] can not be found!");
+
+        this.data = data;
+    }
+
+    @DynamicManagement
+    private DynamicManager dynamic;
+    public void setDynamic(DynamicManager dynamic){
+        this.dynamic = dynamic;
+    }
+
+    @Init
+    public void init() throws Exception {
+        this.appCtx = APPLICATION_CONTEXT;
+
+        //populate attributes
+        for(final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()){
+            dynamic.addAttribute(createNewAttribute(dynaProperty,appCtx));
+        }
+    }
+
+    private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx){
+        return new IAttributeBehavior() {
+            @Override
+            public AttributeConfiguration getConfiguration() throws DevFailed {
+                AttributeConfiguration configuration = new AttributeConfiguration();
+                configuration.setName(dynaProperty.getName());
+                configuration.setType(dynaProperty.getType());
+                return configuration;
+            }
+
+            @Override
+            public AttributeValue getValue() throws DevFailed {
+                return new AttributeValue(BeanUtilsHelper.getProperty(data,getConfiguration().getName(),getConfiguration().getType()));
+            }
+
+            @Override
+            public void setValue(AttributeValue value) throws DevFailed {
+                data.set(getConfiguration().getName(),value.getValue());
+            }
+
+            @Override
+            public StateMachineBehavior getStateMachine() throws DevFailed {
+                return new StateMachineBehavior();
+            }
+        };
+    }
+
+    private static ApplicationContext APPLICATION_CONTEXT;
+    public synchronized static void setStaticContext(ApplicationContext applicationContext) {
+        APPLICATION_CONTEXT = applicationContext;
     }
 }
