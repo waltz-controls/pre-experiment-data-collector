@@ -51,6 +51,7 @@ import org.tango.server.attribute.AttributeConfiguration;
 import org.tango.server.attribute.AttributeValue;
 import org.tango.server.attribute.IAttributeBehavior;
 import org.tango.server.dynamic.DynamicManager;
+import org.tango.utils.DevFailedUtils;
 
 import javax.annotation.Nullable;
 import java.nio.file.DirectoryStream;
@@ -135,11 +136,19 @@ public class TangoDevice {
 
     private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx){
         return new IAttributeBehavior() {
+            private volatile AttributeConfiguration configuration = new AttributeConfiguration();
+
+            {
+                try {
+                    configuration.setName(dynaProperty.getName());
+                    configuration.setType(dynaProperty.getType());
+                } catch (DevFailed devFailed) {
+                    throw new RuntimeException(devFailed);
+                }
+            }
+
             @Override
             public AttributeConfiguration getConfiguration() throws DevFailed {
-                AttributeConfiguration configuration = new AttributeConfiguration();
-                configuration.setName(dynaProperty.getName());
-                configuration.setType(dynaProperty.getType());
                 return configuration;
             }
 
