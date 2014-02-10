@@ -45,8 +45,6 @@ import java.nio.file.Path;
  * @since 23.02.12
  */
 public final class SimpleSerializationStorage implements Storage {
-    public static final String BINARY_FILE_EXTENSION = ".dat";
-
     /**
      * Saves the bean instance as binary serialized java object
      *
@@ -64,7 +62,7 @@ public final class SimpleSerializationStorage implements Storage {
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new IOException(e);
         }
-        Path output = root.resolve(name + BINARY_FILE_EXTENSION);
+        Path output = root.resolve(name);
         try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(output.toFile())))) {
             oos.writeObject(bean);
         }

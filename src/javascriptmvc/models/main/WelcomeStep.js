@@ -41,13 +41,15 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
                     for (var v in data) {
                         $(MVC.$E(v)).val(data[v]);
                     }
+                    //iterate over upload type forms and populate them with files
                     $('form.step[type="upload"]').each(
                         function () {
                             var upload = WizardStep.find_by_element($(this).get(0));
                             $.each(upload.fields, function (nfx, fld) {
                                 var files = $.map(data[fld.id], function (fileName) {
                                         return {
-                                            name: fileName
+                                            name: fileName,
+                                            url: ApplicationContext.domain + "/home/" + ApplicationContext.userName + "/upload/" + fileName
                                         };
                                 });
                                 Controller.publish("FileUpload.add_files",

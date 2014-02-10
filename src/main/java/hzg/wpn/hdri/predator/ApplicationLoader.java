@@ -29,7 +29,7 @@ public class ApplicationLoader implements ServletContextListener {
     public static final String LOGIN_PROPERTIES = WEB_INF + "login.properties";
     public static final String APPLICATION_PROPERTIES = WEB_INF + "application.properties";
     public static final String META_YAML = WEB_INF + "meta.yaml";
-    public static final String HOME = "HOME";
+    public static final String HOME = "home";
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
