@@ -29,7 +29,6 @@
 
 package hzg.wpn.hdri.predator.frontend;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -41,7 +40,6 @@ import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tango.server.ServerManager;
 import org.tango.server.StateMachineBehavior;
 import org.tango.server.annotation.Command;
 import org.tango.server.annotation.Device;
@@ -51,13 +49,8 @@ import org.tango.server.attribute.AttributeConfiguration;
 import org.tango.server.attribute.AttributeValue;
 import org.tango.server.attribute.IAttributeBehavior;
 import org.tango.server.dynamic.DynamicManager;
-import org.tango.utils.DevFailedUtils;
 
 import javax.annotation.Nullable;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -143,6 +136,7 @@ public class TangoDevice {
                     configuration.setName(dynaProperty.getName());
                     configuration.setType(dynaProperty.getType());
                 } catch (DevFailed devFailed) {
+                    LOG.error("Configuration creation has failed!",devFailed);
                     throw new RuntimeException(devFailed);
                 }
             }
