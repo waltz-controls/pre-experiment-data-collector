@@ -129,8 +129,9 @@ public class TangoDevice {
 
     private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx){
         return new IAttributeBehavior() {
-            private volatile AttributeConfiguration configuration = new AttributeConfiguration();
+            private final AttributeConfiguration configuration = new AttributeConfiguration();
 
+            //TODO thread safety
             {
                 try {
                     configuration.setName(dynaProperty.getName());

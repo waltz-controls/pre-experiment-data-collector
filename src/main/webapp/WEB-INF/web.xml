@@ -70,11 +70,6 @@
             <param-value>web-client</param-value>
         </init-param>
     </servlet>
-    <servlet>
-        <servlet-name>TangoServlet</servlet-name>
-        <servlet-class>hzg.wpn.hdri.predator.frontend.TangoServlet</servlet-class>
-        <load-on-startup>0</load-on-startup>
-    </servlet>
     <servlet-mapping>
         <servlet-name>WelcomeServlet</servlet-name>
         <url-pattern>/WelcomeSteps.json</url-pattern>
@@ -94,10 +89,6 @@
     <servlet-mapping>
         <servlet-name>IndexServlet</servlet-name>
         <url-pattern>/index.html</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TangoServlet</servlet-name>
-        <url-pattern>/frontend/tango</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

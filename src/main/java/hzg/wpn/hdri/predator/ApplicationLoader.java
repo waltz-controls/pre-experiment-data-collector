@@ -1,6 +1,7 @@
 package hzg.wpn.hdri.predator;
 
 import hzg.wpn.hdri.predator.data.DataSetsManager;
+import hzg.wpn.hdri.predator.frontend.TangoDevice;
 import hzg.wpn.hdri.predator.meta.Meta;
 import hzg.wpn.hdri.predator.storage.SimpleSerializationStorage;
 import hzg.wpn.hdri.predator.storage.Storage;
@@ -9,6 +10,7 @@ import hzg.wpn.util.properties.PropertiesHelper;
 import org.apache.commons.beanutils.DynaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tango.server.ServerManager;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -17,6 +19,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -31,13 +36,63 @@ public class ApplicationLoader implements ServletContextListener {
     public static final String META_YAML = WEB_INF + "meta.yaml";
     public static final String HOME = "home";
 
+    private final ExecutorService exec = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        private final ThreadFactory factory = Executors.defaultThreadFactory();
+
+        public Thread newThread(Runnable r) {
+            Thread t = factory.newThread(r);
+            //prevent this thread from locking JVM
+            t.setDaemon(true);
+            t.setName("PreExperimentDataCollector Tango frontend");
+            return t;
+        }
+    });
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         String realPath = sce.getServletContext().getRealPath("/");
 
         initializeLoginProperties(realPath);
 
-        initializeApplicationContext(sce.getServletContext());
+        ApplicationProperties appProperties = initializeApplicationProperties(realPath);
+
+        ApplicationContext context = initializeApplicationContext(appProperties, sce.getServletContext());
+        sce.getServletContext().setAttribute(ApplicationContext.APPLICATION_CONTEXT, context);
+
+        //TODO avoid this hack
+        TangoDevice.setStaticContext(context);
+
+        initializeTangoFrontend(appProperties);
+    }
+
+    private void initializeTangoFrontend(ApplicationProperties appProperties) {
+        final String tangoServerName = appProperties.tangoServerClassName;
+        final String tangoInstanceName = appProperties.tangoServerInstanceName;
+        final String[] tangoServerArguments = appProperties.tangoServerArguments.isEmpty() ? new String[0] : appProperties.tangoServerArguments.split(",");
+        final String[] args = new String[tangoServerArguments.length + 1];
+        args[0] = tangoInstanceName;
+        System.arraycopy(tangoServerArguments,0,args,1,tangoServerArguments.length);
+
+        exec.submit(new Runnable() {
+            @Override
+            public void run() {
+                ServerManager.getInstance().addClass(tangoServerName,TangoDevice.class);
+                ServerManager.getInstance().start(args,tangoServerName);
+            }
+        });
+    }
+
+    private ApplicationProperties initializeApplicationProperties(String realPath) {
+        try {
+            Properties properties = PropertiesHelper.loadProperties(Paths.get(realPath, APPLICATION_PROPERTIES));
+
+            PropertiesFactory<ApplicationProperties> factory = new PropertiesFactory<>(properties, ApplicationProperties.class);
+            ApplicationProperties appProperties = factory.createType();
+            return appProperties;
+        } catch (Exception e) {
+            LOG.error("Cannot initialize application properties",e);
+            throw new RuntimeException(e);
+        }
     }
 
     private void initializeLoginProperties(String realPath) {
@@ -56,16 +111,13 @@ public class ApplicationLoader implements ServletContextListener {
     /**
      * Initializes {@link ApplicationContext} and puts it into ServletContext
      *
+     * @param appProperties
      * @param servletContext
      */
-    private void initializeApplicationContext(ServletContext servletContext) {
+    private ApplicationContext initializeApplicationContext(ApplicationProperties appProperties, ServletContext servletContext) {
         String realPath = servletContext.getRealPath("/");
         String contextPath = servletContext.getContextPath();
         try {
-            Properties properties = PropertiesHelper.loadProperties(Paths.get(realPath, APPLICATION_PROPERTIES));
-
-            PropertiesFactory<ApplicationProperties> factory = new PropertiesFactory<>(properties, ApplicationProperties.class);
-            ApplicationProperties appProperties = factory.createType();
 
             String beamtimeId = appProperties.beamtimeId;
 
@@ -78,7 +130,8 @@ public class ApplicationLoader implements ServletContextListener {
             DataSetsManager manager = new DataSetsManager(beamtimeId, Paths.get(realPath, HOME), dataClass, storage);
 
             ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass, manager);
-            servletContext.setAttribute(ApplicationContext.APPLICATION_CONTEXT, context);
+
+            return context;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -88,5 +141,6 @@ public class ApplicationLoader implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         LOG.info("Context destroyed");
+        exec.shutdownNow();
     }
 }
