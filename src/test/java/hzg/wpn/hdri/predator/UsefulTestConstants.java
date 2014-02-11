@@ -30,8 +30,6 @@
 package hzg.wpn.hdri.predator;
 
 import hzg.wpn.hdri.predator.data.User;
-import hzg.wpn.hdri.predator.data.Users;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 /**
@@ -85,7 +83,7 @@ public class UsefulTestConstants {
                     "    }]\n" +
                     "}";
 
-    public static final User TEST_USER = Users.TEST_USER;
+    public static final String TEST_USER = "test-user";
     public static final String TEST_BEAMTIME_ID = "test-beamtime";
     public static final ApplicationContext NULL_APP_CTX = Mockito.mock(ApplicationContext.class);
 }

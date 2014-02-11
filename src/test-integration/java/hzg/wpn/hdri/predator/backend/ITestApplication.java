@@ -34,7 +34,6 @@ import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.data.User;
-import hzg.wpn.hdri.predator.data.Users;
 import hzg.wpn.hdri.predator.storage.SimpleSerializationStorage;
 import hzg.wpn.hdri.predator.storage.Storage;
 import hzg.wpn.util.reflection.ReflectionUtils;
@@ -81,8 +80,6 @@ public class ITestApplication {
 
         //TODO override application.properties, login.properties etc
         TOMCAT.addWebapp(CONTEXT, REAL_PATH);
-
-        TEST_USER = Users.createUser(USERNAME);
 
         TOMCAT.addUser(USERNAME, PASS);
         TOMCAT.addRole(USERNAME, ROLE);

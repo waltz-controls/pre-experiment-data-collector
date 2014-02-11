@@ -30,8 +30,6 @@
 package hzg.wpn.hdri.predator.backend.upload;
 
 import hzg.wpn.hdri.predator.ApplicationContext;
-import hzg.wpn.hdri.predator.data.User;
-import hzg.wpn.hdri.predator.data.Users;
 import hzg.wpn.util.servlet.ServletUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -122,11 +120,11 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Void>
      * @return an array of the UploadedDocuments
      */
     public Collection<UploadedDocument> find_all(HttpServletRequest req, HttpServletResponse res, Void params) throws ServletException{
-        User user = Users.getUser(req.getRemoteUser(), false, appCtx);
+        String user = req.getRemoteUser();
         try {
             List<UploadedDocument> documents = new ArrayList<UploadedDocument>();
 
-            File destination = appCtx.getUserUploadDir(user);
+            File destination = appCtx.getUserUploadDir(user).toFile();
 
             for (FileItem item : items.get()) {
                 if (!item.isFormField()) {
@@ -150,7 +148,7 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Void>
         } catch (FileUploadException e) {
             throw new ServletException("Unable to upload file.", e);
         } catch (IOException e) {
-            throw new ServletException("Unable to get user's upload dir [user:" + user.getName() + "].", e);
+            throw new ServletException("Unable to get user's upload dir [user:" + user + "].", e);
         } catch (Exception e) {
             throw new ServletException("Unable to write file.", e);
         }

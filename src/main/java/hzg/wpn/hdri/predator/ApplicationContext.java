@@ -148,9 +148,9 @@ public class ApplicationContext {
      * @param user
      * @return a path to user's home dir on the server without ending '/'
      */
-    public StringBuilder getUserHomeDirPath(User user) {
+    private StringBuilder getUserHomeDirPath(String user) {
         StringBuilder result = new StringBuilder();
-        result.append(realPath).append("home/").append(user.getName());
+        result.append(realPath).append("home/").append(user);
         return result;
     }
 
@@ -160,27 +160,16 @@ public class ApplicationContext {
      * @param user user
      * @return a path to user's upload dir on the server without ending '/'
      */
-    public StringBuilder getUserUploadDirPath(User user) {
+    private StringBuilder getUserUploadDirPath(String user) {
         //TODO optimize
         return getUserHomeDirPath(user).append("/upload");
     }
 
-    /**
-     * Returns a {@link StringBuilder} representation of the users upload dir.
-     *
-     * @param user user
-     * @return a path to user's upload dir on the server without ending '/'
-     */
-    public StringBuilder getUserUploadDirRelativePath(User user) {
-        //TODO optimize
-        return getHomeDirPath(true).append("/").append(user.getName()).append("/upload");
-    }
+    public Path getHomeDir() throws IOException {
+        Path homeDir = Paths.get(getHomeDirPath(false).toString());
 
-    public File getHomeDir() throws IOException {
-        File homeDir = new File(getHomeDirPath(false).toString());
-
-        if (!homeDir.exists()) {
-            FileUtils.forceMkdir(homeDir);
+        if (!Files.exists(homeDir)) {
+            Files.createDirectories(homeDir);
         }
 
         return homeDir;
@@ -193,31 +182,14 @@ public class ApplicationContext {
      * @return dir
      * @throws IOException if creation attempt failed
      */
-    public File getUserHomeDir(User user) throws IOException {
-        File dir = new File(getHomeDir(), user.getName());
+    public Path getUserHomeDir(User user) throws IOException {
+        Path dir = getHomeDir().resolve(user.getName());
 
-        if (!dir.exists()) {
-            FileUtils.forceMkdir(dir);
+        if (!Files.exists(dir)) {
+            Files.createDirectories(dir);
         }
 
         return dir;
-    }
-
-    /**
-     * Returns a {@link java.io.File} representation of the associated with the user beamtime dir on the server. Creates one if no exists.
-     *
-     * @param user
-     * @return dir
-     * @throws IOException if creation attempt failed
-     */
-    public File getUserBeamtimeDir(User user) throws IOException {
-        File beamtime = new File(getUserHomeDir(user), beamtimeId);
-
-        if (!beamtime.exists()) {
-            FileUtils.forceMkdir(beamtime);
-        }
-
-        return beamtime;
     }
 
     /**
@@ -227,18 +199,18 @@ public class ApplicationContext {
      * @return a path to user's upload dir on the server without ending '/'
      * @throws IOException if creation attempt failed
      */
-    public File getUserUploadDir(User user) throws IOException {
-        File dir = new File(getUserUploadDirPath(user).toString());
+    public Path getUserUploadDir(String user) throws IOException {
+        Path dir = Paths.get(getUserUploadDirPath(user).toString());
 
-        if (!dir.exists()) {
-            FileUtils.forceMkdir(dir);
+        if (!Files.exists(dir)) {
+            Files.createDirectories(dir);
         }
 
         return dir;
     }
 
     public Iterable<String> getUsers() throws IOException {
-        return Iterables.transform(Files.newDirectoryStream(Paths.get(getHomeDir().getAbsolutePath())),new Function<Path, String>() {
+        return Iterables.transform(Files.newDirectoryStream(getHomeDir()),new Function<Path, String>() {
             @Override
             public String apply(@Nullable Path input) {
                 return input.getFileName().toString();
