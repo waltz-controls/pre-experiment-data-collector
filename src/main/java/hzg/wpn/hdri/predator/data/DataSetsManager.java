@@ -132,4 +132,11 @@ public class DataSetsManager {
         final Path pathToHomeUser = pathToHome.resolve(user);
         storage.save(data,pathToHomeUser);
     }
+
+    public void delete(DynaBean data) throws IOException{
+        String user = BeanUtilsHelper.getProperty(data,"user",String.class);
+
+        final Path pathToHomeUser = pathToHome.resolve(user);
+        storage.delete(data,pathToHomeUser);
+    }
 }

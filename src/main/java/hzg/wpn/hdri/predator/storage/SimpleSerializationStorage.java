@@ -29,11 +29,11 @@
 
 package hzg.wpn.hdri.predator.storage;
 
-import org.apache.commons.beanutils.BeanUtils;
+import hzg.wpn.hdri.predator.meta.Meta;
+import hzg.wpn.util.beanutils.BeanUtilsHelper;
 import org.apache.commons.beanutils.DynaBean;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -56,12 +56,7 @@ public final class SimpleSerializationStorage implements Storage {
         if(!Files.exists(root)){
             Files.createDirectories(root);
         }
-        String name = null;
-        try {
-            name = BeanUtils.getProperty(bean, "name");
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IOException(e);
-        }
+        String name = BeanUtilsHelper.getProperty(bean, Meta.NAME, String.class);
         Path output = root.resolve(name);
         try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(output.toFile())))) {
             oos.writeObject(bean);
@@ -85,5 +80,12 @@ public final class SimpleSerializationStorage implements Storage {
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
+    }
+
+    @Override
+    public void delete(DynaBean data, Path root) throws IOException{
+        String name = BeanUtilsHelper.getProperty(data, Meta.NAME, String.class);
+        Path output = root.resolve(name);
+        Files.delete(output);
     }
 }

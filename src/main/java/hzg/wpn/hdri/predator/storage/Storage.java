@@ -44,5 +44,7 @@ import java.nio.file.Path;
 public interface Storage {
     void save(DynaBean data, Path root) throws IOException;
 
+    void delete(DynaBean data, Path root) throws IOException;
+
     DynaBean load(String dataSetName, Path root) throws IOException;
 }

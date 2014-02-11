@@ -41,10 +41,10 @@ public class DataServlet extends JsonpBaseServlet<Object,DataServlet.Request> {
             throw new ServletException("User is null");
         }
 
+        String dataSetNameToLoad = params.templateName != null && !"none".equals(params.templateName) ? params.templateName : params.dataSetName;
         ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
         DataSetsManager manager = applicationContext.getManager();
 
-        String dataSetNameToLoad = params.templateName != null && !"none".equals(params.templateName) ? params.templateName : params.dataSetName;
         DynaBean data = manager.getUserDataSet(user, dataSetNameToLoad);
 
         if(data == null)
@@ -59,6 +59,28 @@ public class DataServlet extends JsonpBaseServlet<Object,DataServlet.Request> {
             manager.save(data);
         } catch (IOException e) {
             throw new ServletException("Can not save data!", e);
+        }
+
+        return new DynaBeanPropertyMapDecorator(data);
+    }
+
+    @Override
+    protected Object delete(HttpServletRequest req, HttpServletResponse res, Request params) throws ServletException {
+        String user = req.getRemoteUser();
+        if(user == null){
+            throw new ServletException("User is null");
+        }
+
+        ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
+        DataSetsManager manager = applicationContext.getManager();
+        DynaBean data = manager.getUserDataSet(user, params.dataSetName);
+        if(data == null)
+            throw new ServletException("Can not find data set[" + params.dataSetName + "] for user[" + user + "]");
+
+        try {
+            manager.delete(data);
+        } catch (IOException e) {
+            throw new ServletException("Can not delete data set[" + params.dataSetName + "] for user[" + user + "]",e);
         }
 
         return new DynaBeanPropertyMapDecorator(data);

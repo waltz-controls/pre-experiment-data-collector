@@ -88,13 +88,18 @@ public class TangoDevice {
     }
 
     @Command
-    public void load_data_set(final String name) throws Exception {
-        //get all users
+    public void delete_data_set(final String name) throws Exception{
         Iterable<String> users = appCtx.getUsers();
-        //add all data sets of each user
+
+        DynaBean data = getDataSet(name, users);
+
+        appCtx.getManager().delete(data);
+    }
+
+    private DynaBean getDataSet(final String name, Iterable<String> users) {
         DynaBean data = null;
         for(String user : users){
-            Optional<DynaBean> result = Iterables.tryFind(appCtx.getManager().getUserDataSets(user),new Predicate<DynaBean>() {
+            Optional<DynaBean> result = Iterables.tryFind(appCtx.getManager().getUserDataSets(user), new Predicate<DynaBean>() {
                 @Override
                 public boolean apply(@Nullable DynaBean input) {
                     return BeanUtilsHelper.getProperty(input, Meta.NAME, String.class).equals(name);
@@ -108,7 +113,15 @@ public class TangoDevice {
         if(data == null)
             throw new NoSuchElementException("Dataset[" + name + "] can not be found!");
 
-        this.data = data;
+        return data;
+    }
+
+    @Command
+    public void load_data_set(final String name) throws Exception {
+        //get all users
+        Iterable<String> users = appCtx.getUsers();
+        //add all data sets of each user
+        this.data = getDataSet(name,users);
     }
 
     @DynamicManagement

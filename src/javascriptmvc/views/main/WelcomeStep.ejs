@@ -7,6 +7,11 @@
             <% for(var i = 0, size = data.length ; i<size; ++i){ %>
             <div class="row">
             <label><input type="radio" name="datasets" value="<%= data[i]%>"/><%= data[i]%></label>
+
+            <a href="javascript:void(0)" class="delete ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" title="Delete">
+                <span class="ui-button-icon-primary ui-icon ui-icon-trash"></span>
+                <span class="ui-button-text">...</span>
+            </a>
             </div>
             <% } %>
             <div class="row">
