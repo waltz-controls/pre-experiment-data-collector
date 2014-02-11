@@ -29,16 +29,18 @@
 
 package hzg.wpn.hdri.predator.backend.upload;
 
+import com.google.gson.Gson;
 import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.util.servlet.ServletUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.bitbucket.ingvord.web.json.JsonBaseServlet;
+import org.bitbucket.ingvord.web.BaseServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -46,7 +48,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static hzg.wpn.hdri.predator.backend.upload.Thumbnails.PDF;
@@ -59,11 +60,11 @@ import static hzg.wpn.hdri.predator.backend.upload.Thumbnails.TIF;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 06.01.12
  */
-public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Void> {
+public final class UploadHandler extends HttpServlet {
     private static final String TMP_DIR_PATH = System.getProperty("java.io.tmpdir");
-    private final ThreadLocal<List<FileItem>> items = new ThreadLocal<List<FileItem>>();
-    private final ThreadLocal<StringBuilder> url = new ThreadLocal<StringBuilder>();
-    private final ThreadLocal<StringBuffer> requestUrl = new ThreadLocal<StringBuffer>();
+
+    private final Gson gson = new Gson();
+
     private volatile ApplicationContext appCtx;
     private volatile ServletFileUpload uploadHandler;
 
@@ -80,53 +81,20 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Void>
     }
 
     @Override
-    //TODO dirty hack with overriding doPost
-    protected String doPostInternal(HttpServletRequest req, HttpServletResponse res, Void params) throws ServletException {
-        return doGetInternal(req, res, params);
-    }
-
-    @Override
-    protected String doGetInternal(HttpServletRequest req, HttpServletResponse res, Void params) throws ServletException {
-        try {
-            items.set(uploadHandler.parseRequest(req));
-            requestUrl.set(req.getRequestURL());
-            url.set(getUrl(req));
-            return super.doGetInternal(req, res, params);
-        } catch (FileUploadException|MalformedURLException e) {
-            //TODO log
-            throw new ServletException(e);
-        }
-    }
-
-    private StringBuilder getUrl(HttpServletRequest req) throws MalformedURLException {
-        return new StringBuilder(ServletUtils.getUrl(req).append("/home/").append(req.getRemoteUser()).append("/upload/"));
-    }
-
-    private URL getThumbnail(String file) throws MalformedURLException {
-        if (file.endsWith(".pdf")) {
-            return new URL(requestUrl.get().append(PDF).toString());
-        } else if (file.endsWith(".tif")) {
-            return new URL(requestUrl.get().append(TIF).toString());
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Stores files from the request and returns an array of the {@link UploadedDocument}s.
-     * This array is essential for proper UI show the uploaded files.
-     *
-     * @param req
-     * @return an array of the UploadedDocuments
-     */
-    public Collection<UploadedDocument> find_all(HttpServletRequest req, HttpServletResponse res, Void params) throws ServletException{
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String user = req.getRemoteUser();
         try {
+            List<FileItem> items = uploadHandler.parseRequest(req);
+
+
+            StringBuilder url = getUrl(req);
+            StringBuffer requestUrl = req.getRequestURL();
+
             List<UploadedDocument> documents = new ArrayList<UploadedDocument>();
 
             File destination = appCtx.getUserUploadDir(user).toFile();
 
-            for (FileItem item : items.get()) {
+            for (FileItem item : items) {
                 if (!item.isFormField()) {
                     //item.getName() in IE returns the full file path on the client
                     //wrapping it with the File to retrieve a file name only
@@ -137,14 +105,13 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Void>
                     UploadedDocument document = new UploadedDocument(
                             fileName,
                             file.length(),
-                            new URL(url.get().append(file.getName()).toString()),
-                            getThumbnail(fileName), null, "DELETE");
+                            new URL(url.append(file.getName()).toString()),
+                            getThumbnail(fileName, requestUrl), null, "DELETE");
                     documents.add(document);
                 }
             }
 
-            return documents;
-            //TODO log and properly handle exceptions
+            gson.toJson(documents,resp.getWriter());
         } catch (FileUploadException e) {
             throw new ServletException("Unable to upload file.", e);
         } catch (IOException e) {
@@ -152,5 +119,14 @@ public final class UploadHandler extends JsonBaseServlet<UploadedDocument, Void>
         } catch (Exception e) {
             throw new ServletException("Unable to write file.", e);
         }
+    }
+
+    private StringBuilder getUrl(HttpServletRequest req) throws MalformedURLException {
+        return new StringBuilder(ServletUtils.getUrl(req).append("/home/").append(req.getRemoteUser()).append("/upload/"));
+    }
+
+    private URL getThumbnail(String file, StringBuffer requestUrl) throws MalformedURLException {
+        Thumbnails thumbnail = Thumbnails.getThumbnail(file);
+        return new URL(requestUrl.append(thumbnail).toString());
     }
 }

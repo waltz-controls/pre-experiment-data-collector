@@ -29,6 +29,8 @@
 
 package hzg.wpn.hdri.predator.backend.upload;
 
+import javax.annotation.Nullable;
+
 /**
  * Represents supported thumbnails of the uploaded documents.
  *
@@ -53,5 +55,22 @@ public enum Thumbnails {
 
     public String getPath() {
         return this.path;
+    }
+
+    /**
+     * Determines thumbnail by file's extension
+     *
+     * @param file a full file name (or even path)
+     * @return a thumbnail or null
+     */
+    public static @Nullable
+    Thumbnails getThumbnail(String file){
+        if (file.endsWith(".pdf")) {
+            return PDF;
+        } else if (file.endsWith(".tif") || file.endsWith(".tiff")) {
+            return TIF;
+        } else {
+            return null;
+        }
     }
 }
