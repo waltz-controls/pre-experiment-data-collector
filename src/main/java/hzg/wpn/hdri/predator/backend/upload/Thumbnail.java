@@ -37,14 +37,14 @@ import javax.annotation.Nullable;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 23.02.12
  */
-public enum Thumbnails {
+public enum Thumbnail {
     PDF("/images/thumbnails/pdf_ico.png"),
     TIF("/images/thumbnails/TIF-Image-icon");
 
 
     private final String path;
 
-    private Thumbnails(String path) {
+    private Thumbnail(String path) {
         this.path = path;
     }
 
@@ -64,7 +64,7 @@ public enum Thumbnails {
      * @return a thumbnail or null
      */
     public static @Nullable
-    Thumbnails getThumbnail(String file){
+    Thumbnail getThumbnail(String file){
         if (file.endsWith(".pdf")) {
             return PDF;
         } else if (file.endsWith(".tif") || file.endsWith(".tiff")) {

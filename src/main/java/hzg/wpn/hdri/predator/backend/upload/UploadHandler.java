@@ -36,7 +36,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.bitbucket.ingvord.web.BaseServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -49,9 +48,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import static hzg.wpn.hdri.predator.backend.upload.Thumbnails.PDF;
-import static hzg.wpn.hdri.predator.backend.upload.Thumbnails.TIF;
 
 /**
  * Handles files upload. Files are stored to {WEB_APP_ROOT}/home/{user}/upload directory.
@@ -126,7 +122,7 @@ public final class UploadHandler extends HttpServlet {
     }
 
     private URL getThumbnail(String file, StringBuffer requestUrl) throws MalformedURLException {
-        Thumbnails thumbnail = Thumbnails.getThumbnail(file);
+        Thumbnail thumbnail = Thumbnail.getThumbnail(file);
         return new URL(requestUrl.append(thumbnail).toString());
     }
 }
