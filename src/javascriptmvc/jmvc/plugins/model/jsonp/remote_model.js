@@ -1,5 +1,14 @@
 /**
  * Model for connecting to resources with JSONP
+ *
+ * Since JSONP does not really have a way to distinguish between timeout and any exception on the server
+ * side usually onComplete serves as onFailure.
+ *
+ * It is expected that if server answers in a normal way then instances of this model will be created and user
+ * may verify that there is no errors by checking corresponding field of this model. onFailure may be also
+ * called if response contains an array of errors.
+ *
+ * If there is no answer from the server a provided onFailure callback will be called with url as the argument
  */
 MVC.Model.JsonP = MVC.Model.extend(
     {
@@ -33,7 +42,10 @@ MVC.Model.JsonP = MVC.Model.extend(
                 onFailure : cbs.onFailure,
                 onSuccess : MVC.Function.bind(function (callback_params) {
                     var newObjects = this.create_many_as_existing(callback_params);
-                    callback(newObjects);
+                    if(callback_params.errors)
+                        error_callback(newObjects);
+                    else
+                        callback(newObjects);
                 }, this),
                 method    : 'get'
             })
@@ -60,6 +72,7 @@ MVC.Model.JsonP = MVC.Model.extend(
 
             var callbacks = this._clean_callbacks(cbs);
             var callback = callbacks.onSuccess;
+            var error_callback = callbacks.onFailure;
 
             this.add_standard_params(params, 'create');
 
@@ -97,7 +110,7 @@ MVC.Model.JsonP = MVC.Model.extend(
 
                 new MVC.JsonP(url, {
                     parameters: params,
-                    onComplete: MVC.Function.bind(this.single_create_callback(callback), this),
+                    onComplete: MVC.Function.bind(this.single_create_callback(callback, error_callback), this),
                     onFailure : callback.onFailure,
                     method    : 'post'
                 });
@@ -109,7 +122,7 @@ MVC.Model.JsonP = MVC.Model.extend(
         },
         update:function(id,attributes,cbs){
             var callbacks = this._clean_callbacks(cbs);
-            var callback = callbacks.onSuccess;
+
             var params = {};
 
             params[this.id] = id;
@@ -117,48 +130,7 @@ MVC.Model.JsonP = MVC.Model.extend(
 
             this.add_standard_params(params, 'update');
 
-            var klass = this, className = this.className,
-                url = this.update_url ? this.update_url + "?" : this.domain + '/' + this.plural_controller_name + '.json?';
-            var tll = this.top_level_length(params, url);
-            var result = this.seperate(params[this.controller_name], tll, this.controller_name);
-            var postpone_params = result.postpone, send_params = result.send;
-
-            if (!callback) callback = (function () {
-            });
-
-            params['_method'] = 'POST';
-
-            if (result.send_in_parts) {
-                params[this.controller_name] = send_params;
-                params['_mutlirequest'] = 'true';
-
-                new MVC.JsonP(url, {
-                    parameters: params,
-                    onComplete: MVC.Function.bind(this.parts_create_callback(params, callback, postpone_params), this),
-                    onFailure : callback.onFailure,
-                    method    : 'post'
-                });
-
-                /*klass.createCallback = ;
-                 params[this.controller_name] = send_params;
-                 params['_mutlirequest'] = 'true';
-                 clearTimeout(this.remove_scripts_timer);
-                 include(url+MVC.Object.to_query_string(params)+'&'+Math.random());*/
-
-            } else {
-                params['_mutlirequest'] = null;
-
-                new MVC.JsonP(url, {
-                    parameters: params,
-                    onComplete: MVC.Function.bind(this.single_create_callback(callback), this),
-                    onFailure : callback.onFailure,
-                    method    : 'post'
-                });
-
-
-                //clearTimeout(this.remove_scripts_timer);
-                //include(url+MVC.Object.to_query_string(params)+'&'+Math.random());
-            }
+            this.create(params,callbacks);
         },
         parts_create_callback  : function (params, callback, postpone_params) {
             return function (callback_params) {
@@ -168,12 +140,12 @@ MVC.Model.JsonP = MVC.Model.extend(
                 this.create(params, callback);
             };
         },
-        single_create_callback : function (callback) {
+        single_create_callback : function (callback, error_callback) {
             return function (callback_params) {
-                if (callback_params[this.className]) {
-                    var inst = new this(callback_params[this.className]);
+                if (callback_params.errors) {
+                    var inst = new this(callback_params[this.className] ? callback_params[this.className]: {});
                     inst.add_errors(callback_params.errors);
-                    callback(inst);
+                    error_callback(inst);
                 } else {
                     callback(new this(callback_params));
                 }

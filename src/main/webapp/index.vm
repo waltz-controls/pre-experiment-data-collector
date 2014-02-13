@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=9"/>
     <title>Tomography Pre Experiment Data Wizard</title>
     <link rel="stylesheet" type="text/css"
-          href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css"/>
+          href="${jmvc_root}/stylesheets/smoothness/jquery-ui-1.8.16.custom.css"/>
 </head>
 <body>
 <div id="wrapper">
@@ -27,11 +27,9 @@
         domain    : '$url'
     }
 </script>
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="text/javascript">
-    google.load('jquery', '1.7');
-    google.load('jqueryui', '1.8');
-</script>
+<script type="text/javascript" src="${jmvc_root}/resources/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="${jmvc_root}/resources/jquery.noty-2.2.2.packaged.min.js"></script>
+<script type="text/javascript" src="${jmvc_root}/resources/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="${jmvc_root}/jmvc/include.js?main,production"></script>
 </body>
 </html>

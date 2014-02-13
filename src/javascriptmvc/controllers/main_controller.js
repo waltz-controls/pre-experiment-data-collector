@@ -43,6 +43,21 @@ MainController = MVC.Controller.extend('main',
         load: function () {
             var wizard = WizardController.newWizardEngine();
 
+            function onFailure(instance) {
+                if(!instance.errors)
+                    noty({
+                        text: "Unexpected error has occurred!",
+                        type:"error"
+                    });
+                else
+                    $.each(instance.errors,function(ndx){
+                        noty({
+                            text: instance.errors[ndx],
+                            type:"error"
+                        });
+                    });
+            }
+
             function loadWizardSteps() {
                 WizardStep.find_all({}, {
                     onComplete: function (instances) {
@@ -51,9 +66,7 @@ MainController = MVC.Controller.extend('main',
                         }
                         MainController.onLoaded();
                     },
-                    onFailure: function (instances) {
-                        alert(instances[0].errors);
-                    }
+                    onFailure:onFailure
                 });
             }
 
@@ -62,9 +75,7 @@ MainController = MVC.Controller.extend('main',
                     wizard.addForm(instance);
                     loadWizardSteps();
                 },
-                onFailure: function (instance) {
-                    alert(instance.errors);
-                }
+                onFailure:onFailure
             });
         }
     }

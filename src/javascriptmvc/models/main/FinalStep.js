@@ -16,6 +16,7 @@ FinalStep = MVC.Model.extend('FinalStep',
 {
     update:function(){
         var options={
+            error_timeout:3,//seconds
             parameters:{
                 action:'create',//this seems ridiculous, but create acts as find as well
                 name:kDataSetName
@@ -32,6 +33,17 @@ FinalStep = MVC.Model.extend('FinalStep',
                         value:data[v]
                     }));
                 $dataHolder.html(values.join("<br/>"));
+                noty({
+                    text: "Data has been successfully stored",
+                    type:"success",
+                    timeout:true
+                });
+            },
+            onFailure:function(url){
+                noty({
+                    text: url + " does not respond",
+                    type:"error"
+                });
             }
         };
         new MVC.JsonP(ApplicationContext.domain + "/Data.json",options);

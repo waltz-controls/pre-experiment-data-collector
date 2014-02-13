@@ -31,6 +31,7 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
             //set global data set name
             kDataSetName = ApplicationContext["data-set-name"] = dataSetName;
             var options = {
+                error_timeout:3,//seconds
                 parameters: {
                     action: "create",
                     name: dataSetName,
@@ -59,7 +60,19 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
                                     }
                                 );
                             })
-                        })
+                        });
+
+                    noty({
+                        text:"Data has been loaded successfully!",
+                        type:"success",
+                        timeout:true
+                    });
+                },
+                onFailure:function(url){
+                    noty({
+                        text: url + " does not respond",
+                        type:"error"
+                    });
                 }
             };
             new MVC.JsonP(this.Class.domain + "/Data.json", options);

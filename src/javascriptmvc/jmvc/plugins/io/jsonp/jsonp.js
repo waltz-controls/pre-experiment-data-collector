@@ -41,6 +41,7 @@ MVC.JsonP.prototype = {
                 transport.responseText = "";
             } else if (typeof callback_params == 'string') {
                 transport.responseText = callback_params
+                //TODO assume that this is an internal error of the server?!
             } else {
                 transport = callback_params;
                 transport.responseText = callback_params.toString();

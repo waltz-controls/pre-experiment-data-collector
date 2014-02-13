@@ -12,7 +12,6 @@ import org.bitbucket.ingvord.web.json.JsonpBaseServlet;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -38,6 +37,5 @@ public class WelcomeServlet extends JsonpBaseServlet<WelcomeServlet.Response,Voi
 
     public static class Response {
         private String[] data;
-        private String[] errors;
     }
 }

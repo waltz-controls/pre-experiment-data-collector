@@ -117,6 +117,9 @@
         <copy todir="${dir.target}/stylesheets">
             <fileset dir="stylesheets">
                 <include name="*.css"/>
+                <!--jquery ui theme-->
+                <include name="smoothness/**/*.*"/>
+                <!-- app specific css -->
                 <include name="**/${application.name}/*.css"/>
             </fileset>
         </copy>

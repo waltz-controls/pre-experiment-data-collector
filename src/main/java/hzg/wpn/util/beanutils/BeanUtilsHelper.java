@@ -1,6 +1,5 @@
 package hzg.wpn.util.beanutils;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.PropertyUtils;
 
