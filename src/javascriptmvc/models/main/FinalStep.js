@@ -22,6 +22,15 @@ FinalStep = MVC.Model.extend('FinalStep',
                 name:kDataSetName
             },
             onComplete:function(data){
+                if(data.errors){
+                    $.each(data.errors,function(ndx){
+                        noty({
+                            text: data.errors[ndx],
+                            type:"error"
+                        });
+                    });
+                    return;
+                }
                 //TODO refactor this when Field model will be implemented
                 //TODO reuse ViewHelpers#printField
                 var $dataHolder = $(MVC.$E("dataHolder"));
