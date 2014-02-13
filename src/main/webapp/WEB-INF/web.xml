@@ -56,11 +56,7 @@
         <servlet-name>UploadHandler</servlet-name>
         <display-name>UploadHandler</display-name>
         <description>Handles user's upload actions</description>
-        <servlet-class>hzg.wpn.hdri.predator.backend.upload.UploadHandler</servlet-class>
-        <init-param>
-            <param-name>request.scheme</param-name>
-            <param-value>hzg.wpn.hdri.predator.backend.upload.UploadHandler$Parameters</param-value>
-        </init-param>
+        <servlet-class>hzg.wpn.hdri.predator.backend.upload.UploadServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>IndexServlet</servlet-name>

@@ -56,9 +56,7 @@ import java.util.List;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 06.01.12
  */
-public final class UploadHandler extends HttpServlet {
-    private static final String TMP_DIR_PATH = System.getProperty("java.io.tmpdir");
-
+public final class UploadServlet extends HttpServlet {
     private final Gson gson = new Gson();
 
     private volatile ApplicationContext appCtx;
@@ -68,8 +66,6 @@ public final class UploadHandler extends HttpServlet {
     public void init() throws ServletException {
         DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
         fileItemFactory.setSizeThreshold(1024 * 1024);//1MB
-        //the following is not necessary due to default implementation
-        //fileItemFactory.setRepository(new File(TMP_DIR_PATH));
         ServletConfig config = getServletConfig();
 
         uploadHandler = new ServletFileUpload(fileItemFactory);
