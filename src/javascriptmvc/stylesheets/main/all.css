@@ -120,6 +120,7 @@ form, fieldset {
 }
 
 .regular-form .form-box {
+    width: 45%;
     float: left;
     margin-right: 21px;
     padding-bottom: 7px;
