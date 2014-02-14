@@ -22,12 +22,14 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
         },
         update: function () {
             var $this = $(this.element());
-            var dataSetName = $("input[name=datasets]:checked", $this).val();
-            var template = "none";
-            if ('new' == dataSetName) {
-                //TODO create jquery ui modal dialog
-                dataSetName = prompt("Enter a new dataset name:");//$('#txtNewDataSetName', $this).val();//replace with prompt
-                template = $('#tmplName', $this).val()
+            var dataSetName;
+            var template;
+            if ($('#flgCreateNew',$this).val() === 'true') {
+                dataSetName = $('#hdnNewDataSetName', $this).val();
+                template = $('#hdnTmplName', $this).val()
+            }else {
+                dataSetName = $("input[name=datasets]:checked", $this).val();
+                template = "none";
             }
             //set global data set name
             kDataSetName = ApplicationContext["data-set-name"] = dataSetName;

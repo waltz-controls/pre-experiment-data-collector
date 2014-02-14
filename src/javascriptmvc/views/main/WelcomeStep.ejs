@@ -15,21 +15,26 @@
             </div>
             <% } %>
             <div class="row">
-                <label><input type="radio" name="datasets" value="new" checked >Create New...</label>
+                <input type="hidden" id="flgCreateNew" value="false"/>
+                <input type="hidden" id="hdnNewDataSetName" value=""/>
+                <input type="hidden" id="hdnTmplName" value=""/>
+                <button id="btnCreate">Create New...</button>
             </div>
-            <div class="row">
-                <span>
-                <label for="tmplName">
-                Use as template:
-                </label>
-                <select id="tmplName">
-                    <option value="none">none</option>
-                <% for(var i = 0, size = data.length ; i<size; ++i){ %>
-                    <option value="<%= data[i]%>"><%= data[i]%></option>
-                <% } %>
-                </select>
-
-                </span>
+            <div id="dlgCreate" title="Create new dataset" style="display: none;">
+                <p class="validateTips">All form fields are required.</p>
+                <form>
+                    <fieldset>
+                        <label for="txtNewDataSetName">Name</label>
+                        <input type="text" name="name" id="txtNewDataSetName" class="text ui-widget-content ui-corner-all">
+                        <label for="tmplName">Use as template:</label>
+                        <select id="tmplName" class="select ui-widget-content ui-corner-all">
+                            <option value="none">none</option>
+                            <% for(var i = 0, size = data.length ; i<size; ++i){ %>
+                            <option value="<%= data[i]%>"><%= data[i]%></option>
+                            <% } %>
+                        </select>
+                    </fieldset>
+                </form>
             </div>
         </div>
         <div class="ui-widget help-box">

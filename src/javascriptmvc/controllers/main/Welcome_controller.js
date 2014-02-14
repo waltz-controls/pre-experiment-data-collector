@@ -30,6 +30,38 @@ WelcomeController = MVC.Controller.extend('rows',
             }
         };
         new MVC.JsonP(ApplicationContext.domain + "/Data.json",options);
+    },
+    "#btnCreate click":function(params){
+        var $dlgCreate = $("#dlgCreate");
+        $dlgCreate.dialog({
+            autoOpen: false,
+            height: 300,
+            width: 350,
+            modal: true,
+            buttons: {
+                Confirm: function() {
+                    //TODO validate duplicated name
+                    var $txtNewDataSetName = $('#txtNewDataSetName');
+                    var newDataSet = $txtNewDataSetName.val();
+                    if(!newDataSet) {
+                        $txtNewDataSetName.addClass( "ui-state-error" );
+                        return;
+                    }
+                    $('#hdnNewDataSetName').val(newDataSet);
+                    $('#hdnTmplName').val($('#tmplName').val());
+                    $('#flgCreateNew').val(true);
+                    $( this ).dialog( "close" );
+                    WizardController.wizard.$next.click();
+                },
+                Cancel: function() {
+                    $( this ).dialog( "close" );
+                }
+            },
+            close: function() {
+                $('#txtNewDataSetName').removeClass("ui-state-error");
+            }
+        });
+        $dlgCreate.dialog( "open" );
     }
 }
 );

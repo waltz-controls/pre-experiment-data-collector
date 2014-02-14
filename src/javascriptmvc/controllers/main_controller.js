@@ -20,15 +20,12 @@ MainController = MVC.Controller.extend('main',
                 //                    new FileUpload(form.id,{data:form});
                 var form = WizardStep.find_by_element($(this).get(0));
                 Controller.publish("FileUpload.initialize", { data: form });
-                //TODO move to a dedicated method of the upload form
-//                var frmValues = values[form.id];
-//                $.each(form.fields, function (ii, fld) {
-//                    var data = frmValues[fld.id] ? frmValues[fld.id].split(';') : [];
-//                    Controller.publish("FileUpload.add_file_names", { id: form.id, data: data });
-//                });
             });
             } catch (e) {
-                alert(e.message);
+                noty({
+                    text:e.message,
+                    type:"error"
+                });
             }
 
             //initialize validation engine for each form
