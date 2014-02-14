@@ -7,11 +7,11 @@
         <% for(var i = 0,size = forms.length, frm = forms[0]; i<size;frm = forms[++i]){ %>
             <%= frm.toHtml() %>
         <% } %>
-        <form class="navigation">
+        <form id="navigation" class="navigation">
             <ul class="clearfix">
-                <li><button type="button" name="backward" class="backward">Backward</button></li>
-                <li><button type="button" name="forward" class="forward">Forward</button></li>
-                <li><button type="button" name="submit" class="submit">Submit</button></li>
+                <li><button type="button" name="backward" class="backward">Back</button></li>
+                <li><button type="button" name="forward" class="forward">Next</button></li>
+                <li><button type="button" name="submit" class="submit">Finish</button></li>
             </ul>
         </form>
     </div>

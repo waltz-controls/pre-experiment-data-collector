@@ -35,6 +35,8 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
     {
         title                  : "Basic Wizard With Progress Bar",
         $element               : null, //jQuery object that contains wizard wrapper
+        $back                  : null,
+        $next                  : null,
         options                : null,
         isInitialized          : false,
         forms                  : [],
@@ -126,7 +128,8 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
 
             //initialize jQuery.wizard
             this.$element.wizard(this.options);
-
+            this.$back = $("button.backward", this.$element);
+            this.$next = $("button.forward", this.$element);
             this.isInitialized = true;
             return this;
         },
