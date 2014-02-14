@@ -33,6 +33,9 @@ WelcomeController = MVC.Controller.extend('rows',
         },
         "a#btnCreate click": function (params) {
             var frmWelcome = WelcomeStep.find_by_element(MVC.$E('WelcomeStep_frmWelcome'));
+
+            //TODO refactor this mess - introduce a dedicated model (or stateful controller)
+            //TODO move dialog to engines
             var $dlgCreate = $('#dlgCreate');
             if ($dlgCreate.length == 0) {
                 $dlgCreate = $(new View({url: 'views/main/Welcome/create.ejs'}).render(frmWelcome)).appendTo(document.body)
@@ -43,11 +46,20 @@ WelcomeController = MVC.Controller.extend('rows',
                     modal   : true,
                     buttons : {
                         Confirm: function () {
-                            //TODO validate duplicated name
                             var $txtNewDataSetName = $('#txtNewDataSetName');
                             var newDataSet = $txtNewDataSetName.val();
-                            if (!newDataSet) {
+                            if (!newDataSet || MVC.Array.include(frmWelcome.data,newDataSet)) {
                                 $txtNewDataSetName.addClass("ui-state-error");
+
+                                var tips = $('.validateTips', $(this));
+                                tips
+                                    .text( "DataSet name can not be empty or same as one of the existing!" )
+                                    .addClass( "ui-state-highlight" );
+                                setTimeout(function() {
+                                    tips
+                                        .text("Please enter a name:")
+                                        .removeClass( "ui-state-highlight", 1500 );
+                                }, 1500 );
                                 return;
                             }
                             $('#hdnNewDataSetName').val(newDataSet);

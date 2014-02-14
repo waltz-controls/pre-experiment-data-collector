@@ -1,8 +1,8 @@
 <div id="dlgCreate" title="Create new dataset" style="display: none;">
-    <p class="validateTips">All form fields are required.</p>
+    <p class="validateTips">Please enter a name:</p>
     <form>
         <fieldset>
-            <label for="txtNewDataSetName">Name</label>
+            <div>
             <input type="text" name="name" id="txtNewDataSetName" class="text ui-widget-content ui-corner-all">
             <label for="tmplName">Use as template:</label>
             <select id="tmplName" class="select ui-widget-content ui-corner-all">
@@ -11,6 +11,7 @@
                 <option value="<%= data[i]%>"><%= data[i]%></option>
                 <% } %>
             </select>
+            </div>
         </fieldset>
     </form>
 </div>

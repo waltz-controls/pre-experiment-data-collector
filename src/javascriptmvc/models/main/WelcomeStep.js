@@ -26,13 +26,14 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
             var template;
             if ($('#flgCreateNew',$this).val() === 'true') {
                 dataSetName = $('#hdnNewDataSetName', $this).val();
-                template = $('#hdnTmplName', $this).val()
+                template = $('#hdnTmplName', $this).val();
+                this.data.push(dataSetName);
             }else {
                 dataSetName = $("input[name=datasets]:checked", $this).val();
                 template = "none";
             }
             //set global data set name
-            kDataSetName = ApplicationContext["data-set-name"] = dataSetName;
+            kDataSetName = dataSetName;
             var options = {
                 error_timeout:3,//seconds
                 parameters: {
