@@ -16,17 +16,10 @@ WelcomeController = MVC.Controller.extend('rows',
                 },
                 onComplete   : function (data) {
                     window.location.href = ApplicationContext.domain;
-                    noty({
-                        text   : name + " has been deleted",
-                        type   : "success",
-                        timeout: true
-                    });
+                    MainController.success(data.name + " has been deleted");
                 },
                 onFailure    : function (url) {
-                    noty({
-                        text: url + " does not respond",
-                        type: "error"
-                    });
+                    MainController.error(url + " does not respond");
                 }
             };
             new MVC.JsonP(ApplicationContext.domain + "/Data.json", options);

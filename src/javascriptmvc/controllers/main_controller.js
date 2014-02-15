@@ -9,6 +9,26 @@ MainController = MVC.Controller.extend('main',
             $('#loading-box').toggle();
             $('#example-2').toggle();
         },
+        error:function(msg){
+            noty({
+                text:msg,
+                type:'error',
+                timeout:3000
+            });
+        },
+        alert:function(msg){
+            noty({
+                text:msg,
+                timeout:1500
+            });
+        },
+        success:function(msg){
+            noty({
+                text:msg,
+                type:'success',
+                timeout:1500
+            });
+        },
         onLoaded: function () {
             WizardController.wizard.addForm(new FinalStep());
 
@@ -22,10 +42,7 @@ MainController = MVC.Controller.extend('main',
                 Controller.publish("FileUpload.initialize", { data: form });
             });
             } catch (e) {
-                noty({
-                    text:e.message,
-                    type:"error"
-                });
+                MainController.error(e.message);
             }
 
             //initialize validation engine for each form
@@ -42,16 +59,10 @@ MainController = MVC.Controller.extend('main',
 
             function onFailure(instance) {
                 if(!instance.errors)
-                    noty({
-                        text: "Unexpected error has occurred!",
-                        type:"error"
-                    });
+                    MainController.error("Unexpected error has occurred!");
                 else
                     $.each(instance.errors,function(ndx){
-                        noty({
-                            text: instance.errors[ndx],
-                            type:"error"
-                        });
+                        MainController.error(instance.errors[ndx]);
                     });
             }
 

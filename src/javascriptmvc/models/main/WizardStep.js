@@ -65,10 +65,7 @@ WizardStep = MVC.Model.JsonP.extend('WizardStep',
         };
         MVC.Object.extend(options.parameters, this.values);
         options.onComplete = function(){
-            noty({
-                text:"Data has been updated successfully!",
-                timeout:1500
-            });
+            MainController.alert("Data has been updated successfully!");
         }
 
         new MVC.JsonP(ApplicationContext.domain + "/Data.json",options);

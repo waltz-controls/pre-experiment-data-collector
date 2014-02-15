@@ -22,14 +22,11 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
             //if no data set has been chosen nor a new one was created - validation fails
             if($("input[name=datasets]:checked", $this).length == 0 &&
                 $('#flgCreateNew',$this).val() === 'false'){
-                noty({
-                    text:'Choose data set or create a new one!',
-                    type:'error',
-                    timeout: 1500
-                });
+                MainController.error('Choose data set or create a new one!');
                 return false;
-            } else
-                return true;
+            }
+
+            return true;
         },
         update: function () {
             var $this = $(this.element());
@@ -77,17 +74,10 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
                             })
                         });
 
-                    noty({
-                        text:"Data has been loaded successfully!",
-                        type:"success",
-                        timeout:1500
-                    });
+                    MainController.success("Data has been loaded successfully!");
                 },
                 onFailure:function(url){
-                    noty({
-                        text: url + " does not respond",
-                        type:"error"
-                    });
+                    MainController.error(url + " does not respond");
                 }
             };
             new MVC.JsonP(this.Class.domain + "/Data.json", options);

@@ -24,10 +24,7 @@ FinalStep = MVC.Model.extend('FinalStep',
             onComplete:function(data){
                 if(data.errors){
                     $.each(data.errors,function(ndx){
-                        noty({
-                            text: data.errors[ndx],
-                            type:"error"
-                        });
+                        MainController.error(data.errors[ndx]);
                     });
                     return;
                 }
@@ -42,17 +39,10 @@ FinalStep = MVC.Model.extend('FinalStep',
                         value:data[v]
                     }));
                 $dataHolder.html(values.join("<br/>"));
-                noty({
-                    text: "Data has been successfully stored",
-                    type:"success",
-                    timeout:1500
-                });
+                MainController.success("Data has been successfully stored");
             },
             onFailure:function(url){
-                noty({
-                    text: url + " does not respond",
-                    type:"error"
-                });
+                MainController.error(url + " does not respond");
             }
         };
         new MVC.JsonP(ApplicationContext.domain + "/Data.json",options);
