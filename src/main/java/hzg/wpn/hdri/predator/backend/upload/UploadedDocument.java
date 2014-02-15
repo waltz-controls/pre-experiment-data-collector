@@ -29,8 +29,7 @@
 
 package hzg.wpn.hdri.predator.backend.upload;
 
-import net.jcip.annotations.Immutable;
-
+import javax.annotation.concurrent.Immutable;
 import java.net.URL;
 
 /**
