@@ -33,36 +33,86 @@
 WizardEngine = MVC.Controller.Stateful.extend('Wizard',
     /* @Prototype */
     {
-        title                  : "Basic Wizard With Progress Bar",
-        $element               : null, //jQuery object that contains wizard wrapper
-        $back                  : null,
-        $next                  : null,
-        options                : null,
-        isInitialized          : false,
-        forms                  : [],
-        defaultOptions         : {
-            submit       : ".submit",
-            afterSelect  : function (event, state) {
-                $("#progressbar").progressbar("value", state.percentComplete);
-                $("#location").text("(" + state.stepsComplete + "/" + state.stepsPossible + ")");
-            },
-            stepsWrapper : "#wizard-steps",
-            afterForward : function (event, state) {
-                if (window.location.hash) {
-                    window.location.hash = "#" + state.stepIndex;//+ "@" + elementId;
-                } else {
-                    window.location += "#" + state.stepIndex;//+ "@" + elementId;
-                }
-            },
-            afterBackward: function (event, state) {
-                if (window.location.hash) {
-                    window.location.hash = "#" + state.stepIndex;//+ "@" + elementId;
-                } else {
-                    window.location += "#" + state.stepIndex;//+"@"+ elementId;
+        title: "Basic Wizard With Progress Bar",
+        $element: null, //jQuery object that contains wizard wrapper
+        $back: null,
+        $next: null,
+        options: null,
+        isInitialized: false,
+        forms: [],
+        defaultOptions: function () {
+            var wizard_controller = this;
+            return {
+                submit: ".submit",
+                afterSelect: function (event, state) {
+                    $("#progressbar").progressbar("value", state.percentComplete);
+                    $("#location").text("(" + state.stepsComplete + "/" + state.stepsPossible + ")");
+                },
+                stepsWrapper: "#wizard-steps",
+                beforeForward: function (event, state) {
+                    var wizardStep = wizard_controller.forms[state.stepIndex - 1];
+                    var isValid = wizardStep.validate ? wizardStep.validate() : true;
+                    if (isValid) {
+                        //storing the data in the model object
+                        if(wizardStep.update) wizardStep.update();
+                        //allow user to move forward
+                        return true;
+                    } else {
+                        //prevent user from moving forward
+                        return false;
+                    }
+                },
+                afterForward: function (event, state) {
+                    if (window.location.hash) {
+                        window.location.hash = "#" + state.stepIndex;//+ "@" + elementId;
+                    } else {
+                        window.location += "#" + state.stepIndex;//+ "@" + elementId;
+                    }
+                    //workaround for Jquery-ui accordion height set to zero issue
+                    //see http://forum.jquery.com/topic/accordion-height-set-to-zero-issue
+                    //"You must have the accordion visible when the height is calculated" [Scott Gonzales].
+                    $('div.accordion', state.step).accordion({
+                        /**
+                         * Set active tab to true, other - false.
+                         *
+                         * @param event
+                         * @param ui
+                         */
+                        create: function (event, ui) {
+                            var id = $('h3[tabindex=0]', $(this)).attr('choice-id');
+                            $('#' + id, $(this)).val(true);
+
+                            $('h3[tabindex=-1]', $(this)).each(function () {
+                                var id = $(this).attr('choice-id');
+                                $('#' + id).val(false);
+                            });
+                        },
+                        /**
+                         * Exchange tab values: newActive -> true, oldActive -> false
+                         *
+                         * @param event
+                         * @param ui
+                         */
+                        change: function (event, ui) {
+                            $('#' + ui.oldHeader.attr('choice-id'), ui.oldContent).val(false);
+
+                            $('#' + ui.newHeader.attr('choice-id'), ui.newContent).val(true);
+                        }
+                    });
+
+                    var wizardStep = wizard_controller.forms[state.stepIndex];
+                    if(wizardStep.activate) wizardStep.activate();
+                },
+                afterBackward: function (event, state) {
+                    if (window.location.hash) {
+                        window.location.hash = "#" + state.stepIndex;//+ "@" + elementId;
+                    } else {
+                        window.location += "#" + state.stepIndex;//+"@"+ elementId;
+                    }
                 }
             }
         },
-        submitHandler          : function (params) {
+        submitHandler: function (params) {
             Controller.publish("Wizard.submit", params);
         },
         /**
@@ -73,38 +123,14 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
          * @param options
          * @param submitHandler custom handler for submit button
          */
-        init                   : function (elementId, title, options, submitHandler) {
+        init: function (elementId, title, options, submitHandler) {
             if (!document.getElementById(elementId)) {
                 throw 'Wizard#init(elementId,options): elementId can not be null';
             }
 
-            function defineNewOptions(options, thiz) {
-                function mergeFunctions(defaultFunction, userFunction) {
-                    return function (event, state) {
-                        userFunction(event, state);
-                        defaultFunction(event, state);
-                    }
-                }
-
-                options = options || {};
-                //merge essential options
-                //this is needed to support proper browser history for wizard's steps
-                if (options.afterForward) {
-                    options.afterForward = mergeFunctions(thiz.defaultOptions.afterForward, options.afterForward);
-                }
-                if (options.afterBackward) {
-                    options.afterBackward = mergeFunctions(thiz.defaultOptions.afterBackward, options.afterBackward);
-                }
-
-                var newOptions = MVC.Object.extend(thiz.defaultOptions, options);
-                return newOptions;
-            }
-
-            var newOptions = defineNewOptions(options, this);
-
-            this.options = newOptions;
-
             this._super(MVC.$E(elementId));
+
+            this.options = MVC.Object.extend(this.defaultOptions(),options);
 
             this.title = title || this.title;
             this.submitHandler = submitHandler || this.submitHandler;
@@ -115,12 +141,9 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
          *
          * @param data an array of form objects: {id,toHtml()}. Overrides this instance forms collection.
          */
-        initialize             : function (data) {
-            //TODO validate forms compatibility
-            this.forms = data || this.forms;
-
+        initialize: function () {
             this.render({
-                to    : this.element,
+                to: this.element,
                 action: 'initialize'
             });
 
@@ -133,7 +156,7 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
             this.isInitialized = true;
             return this;
         },
-        "button.forward click" : function (params) {
+        "button.forward click": function (params) {
             if (!this.isInitialized) {
                 throw "Wizard instance was not initialized. Call Wizard.initialize(data) first."
             }
@@ -143,7 +166,7 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
                 throw "Wizard instance was not initialized. Call Wizard.initialize(data) first."
             }
         },
-        "button.submit click"  : function (params) {
+        "button.submit click": function (params) {
             if (!this.isInitialized) {
                 throw "Wizard instance was not initialized. Call Wizard.initialize(data) first."
             }
@@ -156,7 +179,7 @@ WizardEngine = MVC.Controller.Stateful.extend('Wizard',
          *
          * @param form {id,toHtml()}
          */
-        addForm                : function (form) {
+        addForm: function (form) {
             if (typeof form["toHtml"] != 'function')
                 throw "form does not have toHtml function";
             this.forms.push(form);

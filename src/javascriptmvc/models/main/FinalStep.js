@@ -14,7 +14,7 @@ FinalStep = MVC.Model.extend('FinalStep',
 },
 /* @Prototype */
 {
-    update:function(){
+    activate:function(){
         var options={
             error_timeout:3,//seconds
             parameters:{
