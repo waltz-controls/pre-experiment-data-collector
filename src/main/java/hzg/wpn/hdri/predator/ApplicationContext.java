@@ -39,6 +39,7 @@ import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +56,7 @@ import java.nio.file.Paths;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 13.03.12
  */
+@Immutable
 public class ApplicationContext {
     public static final String APPLICATION_CONTEXT = "predator.context";
 

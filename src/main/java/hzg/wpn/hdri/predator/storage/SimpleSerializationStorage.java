@@ -33,6 +33,7 @@ import hzg.wpn.hdri.predator.meta.Meta;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
 import org.apache.commons.beanutils.DynaBean;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,6 +45,7 @@ import java.nio.file.Path;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 23.02.12
  */
+@ThreadSafe
 public final class SimpleSerializationStorage implements Storage {
     /**
      * Saves the bean instance as binary serialized java object
@@ -52,7 +54,7 @@ public final class SimpleSerializationStorage implements Storage {
      * @param root
      * @throws IOException
      */
-    public void save(DynaBean bean, Path root) throws IOException {
+    public synchronized void save(DynaBean bean, Path root) throws IOException {
         if(!Files.exists(root)){
             Files.createDirectories(root);
         }
@@ -71,7 +73,7 @@ public final class SimpleSerializationStorage implements Storage {
      * @return object of type T or null
      * @throws IOException if read file attempt failed.
      */
-    public DynaBean load(String dataSetName, Path root) throws IOException {
+    public synchronized DynaBean load(String dataSetName, Path root) throws IOException {
         Path input = root.resolve(dataSetName);
         try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(input.toFile())))) {
             Object o = ois.readObject();
@@ -83,7 +85,7 @@ public final class SimpleSerializationStorage implements Storage {
     }
 
     @Override
-    public void delete(DynaBean data, Path root) throws IOException{
+    public synchronized void delete(DynaBean data, Path root) throws IOException{
         String name = BeanUtilsHelper.getProperty(data, Meta.NAME, String.class);
         Path output = root.resolve(name);
         Files.delete(output);
