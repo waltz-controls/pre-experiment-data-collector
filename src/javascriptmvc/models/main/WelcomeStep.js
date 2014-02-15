@@ -17,8 +17,19 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
     /* @Prototype */
     {
         validate: function () {
-            //TODO validate data set name
-            return true;
+            var $this = $(this.element());
+
+            //if no data set has been chosen nor a new one was created - validation fails
+            if($("input[name=datasets]:checked", $this).length == 0 &&
+                $('#flgCreateNew',$this).val() === 'false'){
+                noty({
+                    text:'Choose data set or create a new one!',
+                    type:'error',
+                    timeout: 1500
+                });
+                return false;
+            } else
+                return true;
         },
         update: function () {
             var $this = $(this.element());
@@ -69,7 +80,7 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
                     noty({
                         text:"Data has been loaded successfully!",
                         type:"success",
-                        timeout:true
+                        timeout:1500
                     });
                 },
                 onFailure:function(url){

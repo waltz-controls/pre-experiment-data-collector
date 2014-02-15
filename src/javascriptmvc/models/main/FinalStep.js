@@ -45,7 +45,7 @@ FinalStep = MVC.Model.extend('FinalStep',
                 noty({
                     text: "Data has been successfully stored",
                     type:"success",
-                    timeout:true
+                    timeout:1500
                 });
             },
             onFailure:function(url){

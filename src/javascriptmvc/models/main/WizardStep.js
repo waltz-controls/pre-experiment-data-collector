@@ -67,7 +67,7 @@ WizardStep = MVC.Model.JsonP.extend('WizardStep',
         options.onComplete = function(){
             noty({
                 text:"Data has been updated successfully!",
-                timeout:true
+                timeout:1500
             });
         }
 
