@@ -45,7 +45,9 @@ FinalStep = MVC.Model.extend('FinalStep',
                 MainController.error(url + " does not respond");
             }
         };
-        new MVC.JsonP(ApplicationContext.domain + "/Data.json",options);
+
+        //temporal work around server side race condition when it updates data after loading it
+        setTimeout(function(){new MVC.JsonP(ApplicationContext.domain + "/Data.json",options);},500);
     },
     toHtml:function(){
         return new View({url:this.Class.view}).render();
