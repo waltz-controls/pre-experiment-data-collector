@@ -32,6 +32,7 @@ package hzg.wpn.hdri.predator.frontend;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import fr.esrf.Tango.AttrWriteType;
 import fr.esrf.Tango.DevFailed;
 import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.meta.Meta;
@@ -142,21 +143,15 @@ public class TangoDevice {
 
     private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx){
         return new IAttributeBehavior() {
-            private final AttributeConfiguration configuration = new AttributeConfiguration();
-
-            //TODO thread safety
-            {
-                try {
-                    configuration.setName(dynaProperty.getName());
-                    configuration.setType(dynaProperty.getType());
-                } catch (DevFailed devFailed) {
-                    LOG.error("Configuration creation has failed!",devFailed);
-                    throw new RuntimeException(devFailed);
-                }
-            }
+            private final String name = dynaProperty.getName();
+            private final Class<?> type = dynaProperty.getType();
 
             @Override
             public AttributeConfiguration getConfiguration() throws DevFailed {
+                AttributeConfiguration configuration = new AttributeConfiguration();
+                configuration.setName(name);
+                configuration.setType(type);
+                configuration.setWritable(AttrWriteType.READ_WRITE);
                 return configuration;
             }
 
