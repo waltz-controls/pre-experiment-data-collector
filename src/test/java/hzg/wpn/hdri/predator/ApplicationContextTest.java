@@ -32,6 +32,7 @@ package hzg.wpn.hdri.predator;
 import org.junit.Test;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -46,6 +47,6 @@ public class ApplicationContextTest {
 
         Path result = ctx.getUserUploadDir(UsefulTestConstants.TEST_USER);
 
-        assertEquals("/some/home/Test/upload", result.toString());
+        assertEquals(Paths.get("/some/home/test-user/upload"), result);
     }
 }
