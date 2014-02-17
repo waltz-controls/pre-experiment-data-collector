@@ -50,8 +50,10 @@ import org.tango.server.attribute.AttributeConfiguration;
 import org.tango.server.attribute.AttributeValue;
 import org.tango.server.attribute.IAttributeBehavior;
 import org.tango.server.dynamic.DynamicManager;
+import org.tango.utils.DevFailedUtils;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -163,6 +165,12 @@ public class TangoDevice {
             @Override
             public void setValue(AttributeValue value) throws DevFailed {
                 data.set(getConfiguration().getName(),value.getValue());
+                try {
+                    appCtx.getManager().save(data);
+                } catch (IOException e) {
+                    LOG.error("Can not save data set["+BeanUtilsHelper.getProperty(data,Meta.NAME,String.class)+"]", e);
+                    throw DevFailedUtils.newDevFailed(e);
+                }
             }
 
             @Override
