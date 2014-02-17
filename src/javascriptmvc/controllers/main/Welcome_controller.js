@@ -15,8 +15,10 @@ WelcomeController = MVC.Controller.extend('rows',
                     name  : name
                 },
                 onComplete   : function (data) {
-                    window.location.href = ApplicationContext.domain;
                     MainController.success(data.name + " has been deleted");
+                    setTimeout(function(){
+                        window.location.href = ApplicationContext.domain;
+                    },750);
                 },
                 onFailure    : function (url) {
                     MainController.error(url + " does not respond");

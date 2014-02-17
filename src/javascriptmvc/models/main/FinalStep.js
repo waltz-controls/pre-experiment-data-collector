@@ -5,10 +5,12 @@ FinalStep = MVC.Model.extend('FinalStep',
 /* @Static */
 {
     attributes:{
-        id:'string'
+        id:'string',
+        help:'string'
     },
     default_attributes:{
-        id:'frmFinal'
+        id:'frmFinal',
+        help:'This demonstrates all the values from the dataset that were actually downloaded from the server. Please review them carefully. If you find a mistake you can navigate to the corresponding Wizard step and correct the value.'
     },
     view:'views/main/FinalStep.ejs'
 },
@@ -50,7 +52,7 @@ FinalStep = MVC.Model.extend('FinalStep',
         setTimeout(function(){new MVC.JsonP(ApplicationContext.domain + "/Data.json",options);},500);
     },
     toHtml:function(){
-        return new View({url:this.Class.view}).render();
+        return new View({url:this.Class.view}).render(this);
     }
 }
 );

@@ -7,10 +7,12 @@ WelcomeStep = MVC.Model.JsonP.extend('WelcomeStep',
         domain: ApplicationContext.domain,
         attributes: {
             id: 'string',
+            help: 'string',
             data: 'string[]'
         },
         default_attributes: {
-            id: 'frmWelcome'
+            id: 'frmWelcome',
+            help: 'Choose or create a new dataset. When creating a new one make sure that its name is file name compatible.'
         },
         view: 'views/main/WelcomeStep.ejs'
     },
