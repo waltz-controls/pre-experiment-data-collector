@@ -2,7 +2,8 @@
   id  : frmFieldset
   type: fieldset
   help: >
-    This form demonstrates a typical fieldset form. The form has string, number and text fields, all required.
+    This form demonstrates a typical fieldset form.
+    The form has string, number and text fields, all required.
   fields:
   - name: A string field
     id  : fldString

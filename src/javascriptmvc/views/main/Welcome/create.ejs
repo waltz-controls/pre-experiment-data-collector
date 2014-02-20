@@ -4,13 +4,17 @@
         <fieldset>
             <div>
             <input type="text" name="name" id="txtNewDataSetName" class="text ui-widget-content ui-corner-all">
-            <label for="tmplName">Use as template:</label>
+                <!-- TODO replace with css -->
+                <br/>
+                <br/>
+            <label for="tmplName">Use as template:
             <select id="tmplName" class="select ui-widget-content ui-corner-all">
                 <option value="none">none</option>
                 <% for(var i = 0, size = data.length ; i<size; ++i){ %>
                 <option value="<%= data[i]%>"><%= data[i]%></option>
                 <% } %>
             </select>
+            </label>
             </div>
         </fieldset>
     </form>
