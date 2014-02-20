@@ -1,45 +1,26 @@
-To set up authentication:
-1) add JAAS realm to server.xml
+The main contributor to this project is Institute of Materials Research, 
+Helmholtz-Zentrum Geesthacht,
+Germany.  
 
-<Realm className="org.apache.catalina.realm.JAASRealm"
-                 appName="KommunikationnenPlatform"
-                 userClassNames="javax.security.auth.kerberos.KerberosPrincipal"
-                 roleClassNames="org.apache.catalina.realm.GenericPrincipal"
-                 useContextClassLoader="true"
-                 debug="99"/>
+This project is a contribution of the Helmholtz Association Centres and 
+Technische Universitaet Muenchen to the ESS Design Update Phase.
 
-2) create {TOMCAT_HOME}/conf/jaas.conf
+The project's funding reference is FKZ05E11CG1.
 
-Tomcat {
-  wpn.hdri.auth.BeamtimeLoginModule required debug=true;
-};
+Copyright (c) 2012. Institute of Materials Research,
+Helmholtz-Zentrum Geesthacht,
+Germany.
 
-3) start TomCat with the following variables:
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
--Djava.security.krb5.realm=WIN.DESY.DE -Djava.security.krb5.kdc=ADC11.WIN.DESY.DE -Djava.security.auth.login.config={TOMCAT_HOME}/conf/jaas.conf
-
-4) add security constraint to the web.xml:
-
- <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>eXperiment InformaTion</web-resource-name>
-            <url-pattern>/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>user</role-name>
-        </auth-constraint>
-    </security-constraint>
- ...
-<security-role>
-        <description>The owner of the login/password pair.</description>
-        <role-name>user</role-name>
-    </security-role>
-
-4) attach catalina.jar to the project in pom.xml:
-
-//===============================================
-Install TangORB jar manually
-
- 1) {PROJECT_ROOT}>mvn install:install-file -Dfile=lib/TangORB-7.1.1.jar -
-    DgroupId=fr.esrf.tango -DartifactId=TangORB -Dversion=7.1.1 -Dpackaging=jar -Dg
-    eneratePom=true
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
