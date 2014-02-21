@@ -31,10 +31,7 @@ public class UserFilter implements Filter {
     }
 
     private Object getOrCreate(String userName) {
-        Object token = USERS.get(userName);
-        if(token == null){
-            USERS.putIfAbsent(userName, new Object());//consensus value for all threads
-        }
+        USERS.putIfAbsent(userName, new Object());//consensus
         return USERS.get(userName);
     }
 
