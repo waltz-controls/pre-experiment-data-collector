@@ -37,6 +37,10 @@
     <listener>
         <listener-class>hzg.wpn.hdri.predator.ApplicationLoader</listener-class>
     </listener>
+    <filter>
+        <filter-name>UserFilter</filter-name>
+        <filter-class>hzg.wpn.hdri.predator.backend.UserFilter</filter-class>
+    </filter>
     <servlet>
         <servlet-name>WelcomeServlet</servlet-name>
         <display-name>WelcomeServlet</display-name>
@@ -66,6 +70,10 @@
             <param-value>web-client</param-value>
         </init-param>
     </servlet>
+    <filter-mapping>
+        <filter-name>UserFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <servlet-mapping>
         <servlet-name>WelcomeServlet</servlet-name>
         <url-pattern>/WelcomeSteps.json</url-pattern>

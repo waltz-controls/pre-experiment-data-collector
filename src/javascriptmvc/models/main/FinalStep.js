@@ -49,7 +49,7 @@ FinalStep = MVC.Model.extend('FinalStep',
         };
 
         //temporal work around server side race condition when it updates data after loading it
-        setTimeout(function(){new MVC.JsonP(ApplicationContext.domain + "/Data.json",options);},500);
+        new MVC.JsonP(ApplicationContext.domain + "/Data.json",options);
     },
     toHtml:function(){
         return new View({url:this.Class.view}).render(this);
