@@ -49,12 +49,18 @@ public class DataServlet extends JsonpBaseServlet<Object,DataServlet.Request> {
         List<Object> response = new ArrayList<>();
 
         for(final DynaBean bean : manager.getUserDataSets(user)){
-            response.add(new Object(){
-                private final String name = BeanUtilsHelper.getProperty(bean, "name", String.class);
-            });
+            response.add(new FindAllResponse(BeanUtilsHelper.getProperty(bean, "name", String.class)));
         }
 
         return response;
+    }
+
+    public static class FindAllResponse{
+        private final String name;
+
+        public FindAllResponse(String name) {
+            this.name = name;
+        }
     }
 
     /**
