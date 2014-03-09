@@ -42,11 +42,6 @@
         <filter-class>hzg.wpn.hdri.predator.backend.UserFilter</filter-class>
     </filter>
     <servlet>
-        <servlet-name>WelcomeServlet</servlet-name>
-        <display-name>WelcomeServlet</display-name>
-        <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.WelcomeServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>MetaServlet</servlet-name>
         <display-name>MetaServlet</display-name>
         <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.MetaServlet</servlet-class>
@@ -75,12 +70,8 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <servlet-mapping>
-        <servlet-name>WelcomeServlet</servlet-name>
-        <url-pattern>/WelcomeSteps.json</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>MetaServlet</servlet-name>
-        <url-pattern>/WizardSteps.json</url-pattern>
+        <url-pattern>/Meta.json</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DataServlet</servlet-name>

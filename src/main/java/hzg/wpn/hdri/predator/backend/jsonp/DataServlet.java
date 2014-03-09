@@ -2,6 +2,7 @@ package hzg.wpn.hdri.predator.backend.jsonp;
 
 import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.data.DataSetsManager;
+import hzg.wpn.util.beanutils.BeanUtilsHelper;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaBeanPropertyMapDecorator;
@@ -15,6 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -22,6 +26,36 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class DataServlet extends JsonpBaseServlet<Object,DataServlet.Request> {
     private static final Logger LOG = LoggerFactory.getLogger(DataServlet.class);
+
+    /**
+     * To save bandwidth this method returns only names
+     *
+     * @param req
+     * @param res
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    @Override
+    protected Collection<Object> find_all(HttpServletRequest req, HttpServletResponse res, Request params) throws ServletException {
+        String user = req.getRemoteUser();
+        if(user == null){
+            LOG.error("user is not set in the request!");
+            throw new ServletException("User is null");
+        }
+
+        ApplicationContext ctx = (ApplicationContext)getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
+        DataSetsManager manager = ctx.getManager();
+        List<Object> response = new ArrayList<>();
+
+        for(final DynaBean bean : manager.getUserDataSets(user)){
+            response.add(new Object(){
+                private final String name = BeanUtilsHelper.getProperty(bean, "name", String.class);
+            });
+        }
+
+        return response;
+    }
 
     /**
      * This methods implements the following:
