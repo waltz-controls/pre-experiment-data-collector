@@ -39,8 +39,9 @@ import javax.annotation.Nullable;
  */
 public enum Thumbnail {
     PDF("/images/thumbnails/pdf_ico.png"),
-    TIF("/images/thumbnails/TIF-Image-icon");
-
+    TIF("/images/thumbnails/TIF-Image-icon.png"),
+    YAML("/images/thumbnails/document-checkbox-icon.png"),
+    EMPTY("/images/thumbnails/Document-icon.png");
 
     private final String path;
 
@@ -63,14 +64,16 @@ public enum Thumbnail {
      * @param file a full file name (or even path)
      * @return a thumbnail or null
      */
-    public static @Nullable
+    public static
     Thumbnail getThumbnail(String file){
         if (file.endsWith(".pdf")) {
             return PDF;
         } else if (file.endsWith(".tif") || file.endsWith(".tiff")) {
             return TIF;
+        } else if (file.endsWith(".json") || file.endsWith(".yaml")) {
+            return YAML;
         } else {
-            return null;
+            return EMPTY;
         }
     }
 }

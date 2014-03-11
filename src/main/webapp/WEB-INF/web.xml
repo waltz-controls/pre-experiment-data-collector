@@ -58,6 +58,12 @@
         <servlet-class>hzg.wpn.hdri.predator.backend.upload.UploadServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DataSetUploadHandler</servlet-name>
+        <display-name>DataSetUploadHandler</display-name>
+        <description>Handles user's upload actions</description>
+        <servlet-class>hzg.wpn.hdri.predator.backend.upload.DataSetUploadServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>IndexServlet</servlet-name>
         <servlet-class>hzg.wpn.hdri.predator.backend.IndexServlet</servlet-class>
         <init-param>
@@ -80,6 +86,10 @@
     <servlet-mapping>
         <servlet-name>UploadHandler</servlet-name>
         <url-pattern>/backend/upload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DataSetUploadHandler</servlet-name>
+        <url-pattern>/backend/upload/data</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>IndexServlet</servlet-name>

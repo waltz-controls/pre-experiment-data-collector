@@ -56,21 +56,7 @@ import java.util.List;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 06.01.12
  */
-public final class UploadServlet extends HttpServlet {
-    private final Gson gson = new Gson();
-
-    private volatile ApplicationContext appCtx;
-    private volatile ServletFileUpload uploadHandler;
-
-    @Override
-    public void init() throws ServletException {
-        DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
-        fileItemFactory.setSizeThreshold(1024 * 1024);//1MB
-        ServletConfig config = getServletConfig();
-
-        uploadHandler = new ServletFileUpload(fileItemFactory);
-        appCtx = (ApplicationContext) config.getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
-    }
+public final class UploadServlet extends AbsUploadServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -113,12 +99,4 @@ public final class UploadServlet extends HttpServlet {
         }
     }
 
-    private StringBuilder getUrl(HttpServletRequest req) throws MalformedURLException {
-        return new StringBuilder(ServletUtils.getUrl(req).append("/home/").append(req.getRemoteUser()).append("/upload/"));
-    }
-
-    private URL getThumbnail(String file, StringBuffer requestUrl) throws MalformedURLException {
-        Thumbnail thumbnail = Thumbnail.getThumbnail(file);
-        return new URL(requestUrl.append(thumbnail).toString());
-    }
 }
