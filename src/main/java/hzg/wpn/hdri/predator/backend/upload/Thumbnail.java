@@ -30,6 +30,8 @@
 package hzg.wpn.hdri.predator.backend.upload;
 
 import javax.annotation.Nullable;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Represents supported thumbnails of the uploaded documents.
@@ -56,6 +58,14 @@ public enum Thumbnail {
 
     public String getPath() {
         return this.path;
+    }
+
+    public URL toURL(StringBuffer requestUrl){
+        try {
+            return new URL(requestUrl.append(getPath()).toString());
+        } catch (MalformedURLException e) {
+            return null;
+        }
     }
 
     /**

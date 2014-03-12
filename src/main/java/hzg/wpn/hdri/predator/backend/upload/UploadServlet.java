@@ -59,44 +59,22 @@ import java.util.List;
 public final class UploadServlet extends AbsUploadServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected UploadedDocument doPostInternal(HttpServletRequest req, HttpServletResponse resp, String fileName, FileItem item) throws Exception{
         String user = req.getRemoteUser();
-        try {
-            List<FileItem> items = uploadHandler.parseRequest(req);
 
+        StringBuilder url = getUrl(req);
+        StringBuffer requestUrl = req.getRequestURL();
 
-            StringBuilder url = getUrl(req);
-            StringBuffer requestUrl = req.getRequestURL();
+        File destination = appCtx.getUserUploadDir(user).toFile();
 
-            List<UploadedDocument> documents = new ArrayList<UploadedDocument>();
+        File file = new File(destination, fileName);
+        item.write(file);
 
-            File destination = appCtx.getUserUploadDir(user).toFile();
-
-            for (FileItem item : items) {
-                if (!item.isFormField()) {
-                    //item.getName() in IE returns the full file path on the client
-                    //wrapping it with the File to retrieve a file name only
-                    String fileName = new File(item.getName()).getName();
-                    File file = new File(destination, fileName);
-                    item.write(file);
-
-                    UploadedDocument document = new UploadedDocument(
-                            fileName,
-                            file.length(),
-                            new URL(url.append(file.getName()).toString()),
-                            getThumbnail(fileName, requestUrl), null, "DELETE");
-                    documents.add(document);
-                }
-            }
-
-            gson.toJson(documents,resp.getWriter());
-        } catch (FileUploadException e) {
-            throw new ServletException("Unable to upload file.", e);
-        } catch (IOException e) {
-            throw new ServletException("Unable to get user's upload dir [user:" + user + "].", e);
-        } catch (Exception e) {
-            throw new ServletException("Unable to write file.", e);
-        }
+        UploadedDocument document = new UploadedDocument(
+                fileName,
+                file.length(),
+                new URL(url.append(file.getName()).toString()),
+                Thumbnail.getThumbnail(fileName).toURL(requestUrl), null, "DELETE");
+        return document;
     }
-
 }
