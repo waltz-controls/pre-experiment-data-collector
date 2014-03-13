@@ -27,9 +27,9 @@
         domain    : '$url'
     }
 </script>
-<script type="text/javascript" src="${jmvc_root}/resources/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="${jmvc_root}/resources/jquery.noty-2.2.2.packaged.min.js"></script>
-<script type="text/javascript" src="${jmvc_root}/resources/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="${jmvc_root}/libs/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="${jmvc_root}/libs/jquery.noty-2.2.2.packaged.min.js"></script>
+<script type="text/javascript" src="${jmvc_root}/libs/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="${jmvc_root}/jmvc/include.js?main,production"></script>
 </body>
 </html>
