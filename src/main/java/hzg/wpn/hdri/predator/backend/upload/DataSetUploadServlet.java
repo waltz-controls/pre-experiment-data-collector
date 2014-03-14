@@ -36,7 +36,7 @@ public class DataSetUploadServlet extends AbsUploadServlet {
 
             tempFile = Files.createTempFile(fileName, null);
             item.write(tempFile.toFile());
-            Map<String, Object> json = gson.fromJson(Files.newBufferedReader(tempFile, Charset.forName("UTF-8")), HashMap.class);
+            Map<String, Object> json = gson.fromJson(Files.newBufferedReader(tempFile, Charset.defaultCharset()), HashMap.class);
 
 
             DataSetsManager manager = appCtx.getManager();
