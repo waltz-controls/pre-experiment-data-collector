@@ -31,9 +31,10 @@ public class ApplicationLoader implements ServletContextListener {
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationLoader.class);
 
     public static final String WEB_INF = "WEB-INF/";
+    public static final String JMVC_ROOT = "jmvc_root/";
     public static final String LOGIN_PROPERTIES = WEB_INF + "login.properties";
     public static final String APPLICATION_PROPERTIES = WEB_INF + "application.properties";
-    public static final String META_YAML = WEB_INF + "meta.yaml";
+    public static final String META_YAML = JMVC_ROOT + "meta/meta.yaml";
     public static final String HOME = "home";
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor(new ThreadFactory() {
