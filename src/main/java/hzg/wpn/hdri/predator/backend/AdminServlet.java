@@ -27,9 +27,9 @@ public class AdminServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String yaml = new String(request.getParameter("yaml").trim().getBytes(), Charset.forName("UTF-8"));
+        String yaml = request.getParameter("yaml");
         String realPath = getServletContext().getRealPath("/");
-        try (BufferedWriter out = Files.newBufferedWriter(Paths.get(realPath, ApplicationLoader.META_YAML), Charset.forName("UTF-8"))) {
+        try (BufferedWriter out = Files.newBufferedWriter(Paths.get(realPath, ApplicationLoader.META_YAML), Charset.defaultCharset())) {
             out.write(yaml);
         }
 

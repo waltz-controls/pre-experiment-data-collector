@@ -30,7 +30,7 @@ public class MetaYamlServlet extends HttpServlet {
 
         String realPath = getServletContext().getRealPath("/");
         Path pathToYaml = Paths.get(realPath, ApplicationLoader.META_YAML);
-        try (BufferedReader rdr = Files.newBufferedReader(pathToYaml, Charset.forName("UTF-8"))) {
+        try (BufferedReader rdr = Files.newBufferedReader(pathToYaml, Charset.defaultCharset())) {
 
             Writer out;
             if (res.getBufferSize() == 0)
