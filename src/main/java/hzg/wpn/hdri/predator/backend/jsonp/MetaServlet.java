@@ -1,6 +1,7 @@
 package hzg.wpn.hdri.predator.backend.jsonp;
 
 import hzg.wpn.hdri.predator.ApplicationContext;
+import hzg.wpn.hdri.predator.ApplicationLoader;
 import hzg.wpn.hdri.predator.meta.Meta;
 import org.bitbucket.ingvord.web.json.JsonpBaseServlet;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class MetaServlet extends HttpServlet {
             return;
         }
 
-        Meta meta = ((ApplicationContext)getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT)).getMeta();
+        Meta meta = ((ApplicationContext) getServletContext().getAttribute(ApplicationLoader.APPLICATION_CONTEXT)).getMeta();
 
         output.append(callback).append("(");
         meta.writeAsJson(output);

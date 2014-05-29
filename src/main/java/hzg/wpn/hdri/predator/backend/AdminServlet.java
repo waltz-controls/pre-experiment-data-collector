@@ -1,6 +1,8 @@
 package hzg.wpn.hdri.predator.backend;
 
+import hzg.wpn.hdri.predator.ApplicationContext;
 import hzg.wpn.hdri.predator.ApplicationLoader;
+import hzg.wpn.hdri.predator.meta.Meta;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -11,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -29,9 +32,18 @@ public class AdminServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String yaml = request.getParameter("yaml");
         String realPath = getServletContext().getRealPath("/");
-        try (BufferedWriter out = Files.newBufferedWriter(Paths.get(realPath, ApplicationLoader.META_YAML), Charset.defaultCharset())) {
+        Path pathToYaml = Paths.get(realPath, ApplicationLoader.META_YAML);
+        try (BufferedWriter out = Files.newBufferedWriter(pathToYaml, Charset.defaultCharset())) {
             out.write(yaml);
         }
+
+        ApplicationContext oldCtx = (ApplicationContext) getServletContext().getAttribute(ApplicationLoader.APPLICATION_CONTEXT);
+
+        Meta meta = new Meta(pathToYaml);
+        ApplicationContext ctx = new ApplicationContext(realPath, request.getContextPath(),
+                oldCtx.getBeamtimeId(), oldCtx.getStorage(), oldCtx.getApplicationProperties(), meta, meta.extractDynaClass(), oldCtx.getManager());
+
+        getServletContext().setAttribute(ApplicationLoader.APPLICATION_CONTEXT, ctx);
 
         indexServlet.doGet(request, response);
     }

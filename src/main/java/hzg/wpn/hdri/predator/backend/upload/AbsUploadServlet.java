@@ -2,6 +2,7 @@ package hzg.wpn.hdri.predator.backend.upload;
 
 import com.google.gson.Gson;
 import hzg.wpn.hdri.predator.ApplicationContext;
+import hzg.wpn.hdri.predator.ApplicationLoader;
 import hzg.wpn.util.servlet.ServletUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -16,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +36,7 @@ public abstract class AbsUploadServlet extends HttpServlet {
         ServletConfig config = getServletConfig();
 
         uploadHandler = new ServletFileUpload(fileItemFactory);
-        appCtx = (ApplicationContext) config.getServletContext().getAttribute(ApplicationContext.APPLICATION_CONTEXT);
+        appCtx = (ApplicationContext) config.getServletContext().getAttribute(ApplicationLoader.APPLICATION_CONTEXT);
     }
 
     protected StringBuilder getUrl(HttpServletRequest req) throws MalformedURLException {
@@ -56,13 +56,13 @@ public abstract class AbsUploadServlet extends HttpServlet {
                     //item.getName() in IE returns the full file path on the client
                     //wrapping it with the File to retrieve a file name only
                     String fileName = new File(item.getName()).getName();
-                    UploadedDocument document = doPostInternal(req,resp,fileName,item);
+                    UploadedDocument document = doPostInternal(req, resp, fileName, item);
 
                     documents.add(document);
                 }
             }
 
-            gson.toJson(documents,resp.getWriter());
+            gson.toJson(documents, resp.getWriter());
         } catch (FileUploadException e) {
             throw new ServletException("Unable to upload file.", e);
         } catch (IOException e) {

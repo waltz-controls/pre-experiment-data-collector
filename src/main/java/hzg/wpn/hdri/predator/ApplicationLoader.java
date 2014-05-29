@@ -28,6 +28,7 @@ import java.util.concurrent.ThreadFactory;
  * @since 30.01.14
  */
 public class ApplicationLoader implements ServletContextListener {
+    public static final String APPLICATION_CONTEXT = "predator.context";
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationLoader.class);
 
     public static final String WEB_INF = "WEB-INF/";
@@ -58,7 +59,7 @@ public class ApplicationLoader implements ServletContextListener {
         ApplicationProperties appProperties = initializeApplicationProperties(realPath);
 
         ApplicationContext context = initializeApplicationContext(appProperties, sce.getServletContext());
-        sce.getServletContext().setAttribute(ApplicationContext.APPLICATION_CONTEXT, context);
+        sce.getServletContext().setAttribute(APPLICATION_CONTEXT, context);
 
         //TODO avoid this hack
         TangoDevice.setStaticContext(context);

@@ -36,7 +36,6 @@ import hzg.wpn.hdri.predator.data.User;
 import hzg.wpn.hdri.predator.meta.Meta;
 import hzg.wpn.hdri.predator.storage.Storage;
 import org.apache.commons.beanutils.DynaClass;
-import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -58,8 +57,6 @@ import java.nio.file.Paths;
  */
 @Immutable
 public class ApplicationContext {
-    public static final String APPLICATION_CONTEXT = "predator.context";
-
     private final String realPath;
     private final String contextPath;
     private final String beamtimeId;
@@ -115,7 +112,7 @@ public class ApplicationContext {
         return dataClass;
     }
 
-    public DataSetsManager getManager(){
+    public DataSetsManager getManager() {
         return manager;
     }
 
@@ -212,7 +209,7 @@ public class ApplicationContext {
     }
 
     public Iterable<String> getUsers() throws IOException {
-        return Iterables.transform(Files.newDirectoryStream(getHomeDir()),new Function<Path, String>() {
+        return Iterables.transform(Files.newDirectoryStream(getHomeDir()), new Function<Path, String>() {
             @Override
             public String apply(@Nullable Path input) {
                 return input.getFileName().toString();
