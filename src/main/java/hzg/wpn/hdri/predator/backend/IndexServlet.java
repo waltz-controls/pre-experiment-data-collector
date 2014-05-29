@@ -51,9 +51,14 @@ import java.util.Properties;
  */
 public final class IndexServlet extends HttpServlet {
     private static final String JMVC_ROOT = "jmvc_root";
+    public static final String INIT_PARAM_TEMPLATE_FILE_NAME = "template.file.name";
+
+    private String templateFileName;
 
     @Override
     public void init() throws ServletException {
+        templateFileName = getServletConfig().getInitParameter(INIT_PARAM_TEMPLATE_FILE_NAME);
+
         Properties p = new Properties();
         p.setProperty("file.resource.loader.path", getServletContext().getRealPath("/"));
         Velocity.init(p);
@@ -65,7 +70,7 @@ public final class IndexServlet extends HttpServlet {
 
         Context vctx = createContext(req);
 
-        Velocity.mergeTemplate("index.vm", "UTF-8", vctx, out);
+        Velocity.mergeTemplate(templateFileName, "UTF-8", vctx, out);
     }
 
     private Context createContext(HttpServletRequest req) {
