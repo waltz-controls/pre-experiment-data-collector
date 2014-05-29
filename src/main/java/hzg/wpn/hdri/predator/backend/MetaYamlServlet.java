@@ -30,26 +30,27 @@ public class MetaYamlServlet extends HttpServlet {
 
         String realPath = getServletContext().getRealPath("/");
         Path pathToYaml = Paths.get(realPath, ApplicationLoader.META_YAML);
-        BufferedReader rdr = Files.newBufferedReader(pathToYaml, Charset.forName("UTF-8"));
+        try (BufferedReader rdr = Files.newBufferedReader(pathToYaml, Charset.forName("UTF-8"))) {
 
-        Writer out;
-        if (res.getBufferSize() == 0)
-            out = new BufferedWriter(res.getWriter());
-        else
-            out = res.getWriter();
+            Writer out;
+            if (res.getBufferSize() == 0)
+                out = new BufferedWriter(res.getWriter());
+            else
+                out = res.getWriter();
 
-        out.append(callback).append("({value:'");
+            out.append(callback).append("({value:'");
 
-        long size = Files.size(pathToYaml);
-        if (size * 2 > Integer.MAX_VALUE) throw new ServletException("yaml file is too big!");//TODO
-        char[] buff = new char[(int) size];
-        int eof = rdr.read(buff);
-        String yaml = new String(buff);
-        String encodedYaml = Base64OutputStream.encode(yaml.getBytes());
-        out.write(encodedYaml);
+            long size = Files.size(pathToYaml);
+            if (size * 2 > Integer.MAX_VALUE) throw new ServletException("yaml file is too big!");//TODO
+            char[] buff = new char[(int) size];
+            int eof = rdr.read(buff);
+            String yaml = new String(buff);
+            String encodedYaml = Base64OutputStream.encode(yaml.getBytes());
+            out.write(encodedYaml);
 
-        out.append("'})");
+            out.append("'})");
 
-        res.flushBuffer();
+            res.flushBuffer();
+        }
     }
 }

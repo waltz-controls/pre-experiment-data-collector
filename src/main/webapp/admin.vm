@@ -6,6 +6,10 @@
     <title>Tomography Pre Experiment Data Wizard</title>
     <link rel="stylesheet" type="text/css"
           href="${jmvc_root}/stylesheets/smoothness/jquery-ui-1.8.16.custom.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="${jmvc_root}/stylesheets/codemirror/codemirror-4.2.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="${jmvc_root}/stylesheets/codemirror/theme/pastel-on-dark.css"/>
 </head>
 <body>
 <div id="wrapper">
@@ -30,6 +34,7 @@
 <script type="text/javascript" src="${jmvc_root}/libs/jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="${jmvc_root}/libs/jquery.noty-2.2.2.packaged.min.js"></script>
 <script type="text/javascript" src="${jmvc_root}/libs/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="${jmvc_root}/libs/codemirror-4.2.min.js"></script>
 <script type="text/javascript" src="${jmvc_root}/jmvc/include.js?admin,production"></script>
 </body>
 </html>
