@@ -52,7 +52,6 @@ public class Meta {
             new DynaProperty(NAME, String.class)
     };
 
-    private final Path pathToYaml;
     private final Yaml parser = new Yaml();
     private final Gson gson = new GsonBuilder()
             .serializeNulls()
@@ -60,7 +59,6 @@ public class Meta {
     private final Object yaml;
 
     public Meta(Path pathToYaml) throws IOException {
-        this.pathToYaml = pathToYaml;
         yaml = parser.load(Files.newBufferedReader(pathToYaml, Charset.defaultCharset()));
     }
 
