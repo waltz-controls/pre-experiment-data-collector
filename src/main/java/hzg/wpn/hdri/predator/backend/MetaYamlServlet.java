@@ -44,7 +44,7 @@ public class MetaYamlServlet extends HttpServlet {
             if (size * 2 > Integer.MAX_VALUE) throw new ServletException("yaml file is too big!");//TODO
             char[] buff = new char[(int) size];
             int eof = rdr.read(buff);
-            String yaml = new String(buff);
+            String yaml = new String(buff).replaceAll("\\r\\n", "\n");
             String encodedYaml = Base64OutputStream.encode(yaml.getBytes());
             out.write(encodedYaml);
 
