@@ -30,9 +30,10 @@ public class AdminServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String yaml = request.getParameter("yaml");
+        String yaml = request.getParameter("yaml").replaceAll("\\r\\n", "\n");
         String realPath = getServletContext().getRealPath("/");
         Path pathToYaml = Paths.get(realPath, ApplicationLoader.META_YAML);
+
         try (BufferedWriter out = Files.newBufferedWriter(pathToYaml, Charset.defaultCharset())) {
             out.write(yaml);
         }
