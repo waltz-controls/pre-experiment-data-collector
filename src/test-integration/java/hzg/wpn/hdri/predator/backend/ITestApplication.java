@@ -97,7 +97,7 @@ public class ITestApplication {
 //        webDriver.get(WEBAPP_URL);
         webDriver.get("http://" + USERNAME + ":" + PASS + "@localhost:" + PORT + CONTEXT);
 
-        ctx = new ApplicationContext(REAL_PATH + "/", CONTEXT, "test-beamtime", null, null, null, null, null);
+        ctx = new ApplicationContext(REAL_PATH + "/", CONTEXT, "test-beamtime", null, null, null, null);
     }
 
     private WebDriver createFireFoxDriver() {

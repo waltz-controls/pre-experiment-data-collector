@@ -1,6 +1,5 @@
 package hzg.wpn.hdri.predator;
 
-import hzg.wpn.hdri.predator.data.DataSetsManager;
 import hzg.wpn.hdri.predator.frontend.TangoDevice;
 import hzg.wpn.hdri.predator.meta.Meta;
 import hzg.wpn.hdri.predator.storage.SimpleSerializationStorage;
@@ -36,7 +35,6 @@ public class ApplicationLoader implements ServletContextListener {
     public static final String LOGIN_PROPERTIES = WEB_INF + "login.properties";
     public static final String APPLICATION_PROPERTIES = WEB_INF + "application.properties";
     public static final String META_YAML = WEB_INF + "meta.yaml";
-    public static final String HOME = "home";
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor(new ThreadFactory() {
         private final ThreadFactory factory = Executors.defaultThreadFactory();
@@ -128,10 +126,7 @@ public class ApplicationLoader implements ServletContextListener {
             Meta meta = new Meta(Paths.get(realPath, META_YAML));
             DynaClass dataClass = meta.extractDynaClass();
 
-
-            DataSetsManager manager = new DataSetsManager(beamtimeId, Paths.get(realPath, HOME), dataClass, storage);
-
-            ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass, manager);
+            ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass);
 
             return context;
         } catch (Exception e) {

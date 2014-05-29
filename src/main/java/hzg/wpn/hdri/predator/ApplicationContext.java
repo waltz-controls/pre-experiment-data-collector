@@ -57,6 +57,7 @@ import java.nio.file.Paths;
  */
 @Immutable
 public class ApplicationContext {
+    public static final String HOME = "home";
     private final String realPath;
     private final String contextPath;
     private final String beamtimeId;
@@ -74,9 +75,8 @@ public class ApplicationContext {
      * @param properties
      * @param meta
      * @param dataClass
-     * @param manager
      */
-    public ApplicationContext(String realPath, String contextPath, String beamtimeId, Storage storage, ApplicationProperties properties, Meta meta, DynaClass dataClass, DataSetsManager manager) {
+    public ApplicationContext(String realPath, String contextPath, String beamtimeId, Storage storage, ApplicationProperties properties, Meta meta, DynaClass dataClass) {
         this.realPath = realPath;
         this.contextPath = contextPath;
         this.beamtimeId = beamtimeId;
@@ -84,7 +84,7 @@ public class ApplicationContext {
         this.properties = properties;
         this.meta = meta;
         this.dataClass = dataClass;
-        this.manager = manager;
+        this.manager = new DataSetsManager(beamtimeId, Paths.get(realPath, HOME), dataClass, storage);
     }
 
 

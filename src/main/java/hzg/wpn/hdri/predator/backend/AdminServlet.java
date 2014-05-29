@@ -42,7 +42,7 @@ public class AdminServlet extends HttpServlet {
 
         Meta meta = new Meta(pathToYaml);
         ApplicationContext ctx = new ApplicationContext(realPath, request.getContextPath(),
-                oldCtx.getBeamtimeId(), oldCtx.getStorage(), oldCtx.getApplicationProperties(), meta, meta.extractDynaClass(), oldCtx.getManager());
+                oldCtx.getBeamtimeId(), oldCtx.getStorage(), oldCtx.getApplicationProperties(), meta, meta.extractDynaClass());
 
         getServletContext().setAttribute(ApplicationLoader.APPLICATION_CONTEXT, ctx);
 

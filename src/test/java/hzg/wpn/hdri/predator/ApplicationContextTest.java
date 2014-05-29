@@ -43,7 +43,7 @@ import static junit.framework.Assert.assertEquals;
 public class ApplicationContextTest {
     @Test
     public void testGetUserUploadDirPath() throws Exception {
-        ApplicationContext ctx = new ApplicationContext("/some/", null, null, null, null, null, null, null);
+        ApplicationContext ctx = new ApplicationContext("/some/", null, null, null, null, null, null);
 
         Path result = ctx.getUserUploadDir(UsefulTestConstants.TEST_USER);
 
