@@ -34,7 +34,7 @@ public class ApplicationLoader implements ServletContextListener {
     public static final String JMVC_ROOT = "jmvc_root/";
     public static final String LOGIN_PROPERTIES = WEB_INF + "login.properties";
     public static final String APPLICATION_PROPERTIES = WEB_INF + "application.properties";
-    public static final String META_YAML = JMVC_ROOT + "meta/meta.yaml";
+    public static final String META_YAML = WEB_INF + "meta.yaml";
     public static final String HOME = "home";
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor(new ThreadFactory() {
@@ -72,13 +72,13 @@ public class ApplicationLoader implements ServletContextListener {
         final String[] tangoServerArguments = appProperties.tangoServerArguments.isEmpty() ? new String[0] : appProperties.tangoServerArguments.split(",");
         final String[] args = new String[tangoServerArguments.length + 1];
         args[0] = tangoInstanceName;
-        System.arraycopy(tangoServerArguments,0,args,1,tangoServerArguments.length);
+        System.arraycopy(tangoServerArguments, 0, args, 1, tangoServerArguments.length);
 
         exec.submit(new Runnable() {
             @Override
             public void run() {
-                ServerManager.getInstance().addClass(tangoServerName,TangoDevice.class);
-                ServerManager.getInstance().start(args,tangoServerName);
+                ServerManager.getInstance().addClass(tangoServerName, TangoDevice.class);
+                ServerManager.getInstance().start(args, tangoServerName);
             }
         });
     }
@@ -91,7 +91,7 @@ public class ApplicationLoader implements ServletContextListener {
             ApplicationProperties appProperties = factory.createType();
             return appProperties;
         } catch (Exception e) {
-            LOG.error("Cannot initialize application properties",e);
+            LOG.error("Cannot initialize application properties", e);
             throw new RuntimeException(e);
         }
     }
