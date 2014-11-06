@@ -164,8 +164,8 @@
         </dependency>
         <dependency>
             <groupId>org.bitbucket.ingvord</groupId>
-            <artifactId>web-engine</artifactId>
-            <version>0.0.8</version>
+            <artifactId>jmvc-backend</artifactId>
+            <version>0.0.3</version>
         </dependency>
     </dependencies>
     <build>

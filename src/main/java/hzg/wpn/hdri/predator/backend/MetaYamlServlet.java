@@ -2,6 +2,7 @@ package hzg.wpn.hdri.predator.backend;
 
 import hzg.wpn.hdri.predator.ApplicationLoader;
 import hzg.wpn.util.base64.Base64OutputStream;
+import org.bitbucket.ingvord.web.json.JsonpBaseServlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,8 +24,8 @@ import java.nio.file.Paths;
 public class MetaYamlServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        String callback = req.getParameter("callback");
-        if (callback == null) throw new ServletException("callback is not defined");//send error response
+        String callback = req.getParameter(JsonpBaseServlet.CALLBACK);
+        if (callback == null) throw new ServletException("cbk is not defined");//send error response
 
         res.setContentType("application/javascript");
 
