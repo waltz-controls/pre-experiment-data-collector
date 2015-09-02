@@ -4,8 +4,8 @@ import hzg.wpn.hdri.predator.frontend.TangoDevice;
 import hzg.wpn.hdri.predator.meta.Meta;
 import hzg.wpn.hdri.predator.storage.SimpleSerializationStorage;
 import hzg.wpn.hdri.predator.storage.Storage;
-import hzg.wpn.util.properties.PropertiesFactory;
-import hzg.wpn.util.properties.PropertiesHelper;
+import hzg.wpn.properties.PropertiesParser;
+import hzg.wpn.xenv.ResourceManager;
 import org.apache.commons.beanutils.DynaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -28,14 +27,12 @@ import java.util.concurrent.ThreadFactory;
  */
 public class ApplicationLoader implements ServletContextListener {
     public static final String APPLICATION_CONTEXT = "predator.context";
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationLoader.class);
-
-    public static final String WEB_INF = "WEB-INF/";
     public static final String JMVC_ROOT = "jmvc_root/";
-    public static final String LOGIN_PROPERTIES = WEB_INF + "login.properties";
-    public static final String APPLICATION_PROPERTIES = WEB_INF + "application.properties";
-    public static final String META_YAML = WEB_INF + "meta.yaml";
-
+    public static final String LOGIN_PROPERTIES = "login.properties";
+    public static final String APPLICATION_PROPERTIES = "application.properties";
+    public static final String META_YAML = "meta.yaml";
+    public static final String ETC_PRE_EXPERIMENT_DATA_COLLECTOR = "etc/PreExperimentDataCollector";
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationLoader.class);
     private final ExecutorService exec = Executors.newSingleThreadExecutor(new ThreadFactory() {
         private final ThreadFactory factory = Executors.defaultThreadFactory();
 
@@ -50,11 +47,9 @@ public class ApplicationLoader implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        String realPath = sce.getServletContext().getRealPath("/");
+        initializeLoginProperties();
 
-        initializeLoginProperties(realPath);
-
-        ApplicationProperties appProperties = initializeApplicationProperties(realPath);
+        ApplicationProperties appProperties = initializeApplicationProperties();
 
         ApplicationContext context = initializeApplicationContext(appProperties, sce.getServletContext());
         sce.getServletContext().setAttribute(APPLICATION_CONTEXT, context);
@@ -82,12 +77,12 @@ public class ApplicationLoader implements ServletContextListener {
         });
     }
 
-    private ApplicationProperties initializeApplicationProperties(String realPath) {
+    private ApplicationProperties initializeApplicationProperties() {
         try {
-            Properties properties = PropertiesHelper.loadProperties(Paths.get(realPath, APPLICATION_PROPERTIES));
+            Properties properties = ResourceManager.loadProperties(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, APPLICATION_PROPERTIES);
 
-            PropertiesFactory<ApplicationProperties> factory = new PropertiesFactory<>(properties, ApplicationProperties.class);
-            ApplicationProperties appProperties = factory.createType();
+            PropertiesParser<ApplicationProperties> factory = PropertiesParser.createInstance(ApplicationProperties.class);
+            ApplicationProperties appProperties = factory.parseProperties(properties);
             return appProperties;
         } catch (Exception e) {
             LOG.error("Cannot initialize application properties", e);
@@ -95,9 +90,9 @@ public class ApplicationLoader implements ServletContextListener {
         }
     }
 
-    private void initializeLoginProperties(String realPath) {
+    private void initializeLoginProperties() {
         try {
-            Properties loginProperties = PropertiesHelper.loadProperties(Paths.get(realPath, LOGIN_PROPERTIES));
+            Properties loginProperties = ResourceManager.loadProperties(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, LOGIN_PROPERTIES);
 
             for (Map.Entry<Object, Object> entry : loginProperties.entrySet()) {
                 System.getProperties().put(entry.getKey(), entry.getValue());
@@ -123,7 +118,7 @@ public class ApplicationLoader implements ServletContextListener {
 
             Storage storage = new SimpleSerializationStorage();
 
-            Meta meta = new Meta(Paths.get(realPath, META_YAML));
+            Meta meta = new Meta(ResourceManager.loadResource(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, META_YAML));
             DynaClass dataClass = meta.extractDynaClass();
 
             ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass);

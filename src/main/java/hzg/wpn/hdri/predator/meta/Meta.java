@@ -11,10 +11,8 @@ import org.yaml.snakeyaml.Yaml;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,17 +27,6 @@ import java.util.Map;
  */
 @ThreadSafe
 public class Meta {
-    private final static Map<String, Class<?>> TYPE_TO_CLASS = new HashMap<>();
-
-    static {
-        TYPE_TO_CLASS.put("string", String.class);
-        TYPE_TO_CLASS.put("text", String.class);
-        TYPE_TO_CLASS.put("file", String[].class);
-        TYPE_TO_CLASS.put("number", Integer.class);
-        TYPE_TO_CLASS.put("double", Float.class);
-        TYPE_TO_CLASS.put("choice", Boolean.class);
-    }
-
     public static final String FLD_ID = "id";
     public static final String FLD_TYPE = "type";
     public static final String FRM_FIELDS = "fields";
@@ -51,15 +38,24 @@ public class Meta {
             new DynaProperty(BEAMTIME_ID, String.class),
             new DynaProperty(NAME, String.class)
     };
+    private final static Map<String, Class<?>> TYPE_TO_CLASS = new HashMap<>();
 
+    static {
+        TYPE_TO_CLASS.put("string", String.class);
+        TYPE_TO_CLASS.put("text", String.class);
+        TYPE_TO_CLASS.put("file", String[].class);
+        TYPE_TO_CLASS.put("number", Integer.class);
+        TYPE_TO_CLASS.put("double", Float.class);
+        TYPE_TO_CLASS.put("choice", Boolean.class);
+    }
     private final Yaml parser = new Yaml();
     private final Gson gson = new GsonBuilder()
             .serializeNulls()
             .create();
     private final Object yaml;
 
-    public Meta(Path pathToYaml) throws IOException {
-        yaml = parser.load(Files.newBufferedReader(pathToYaml, Charset.defaultCharset()));
+    public Meta(InputStream yamlStream) throws IOException {
+        yaml = parser.load(yamlStream);
     }
 
     /**

@@ -29,7 +29,7 @@
 
 package hzg.wpn.hdri.predator;
 
-import hzg.wpn.util.properties.Property;
+import hzg.wpn.properties.Property;
 
 /**
  * Application properties container.
@@ -38,12 +38,12 @@ import hzg.wpn.util.properties.Property;
  * @since 29.03.12
  */
 public final class ApplicationProperties {
-    @Property(name = "beamtime.id")
+    @Property("beamtime.id")
     public String beamtimeId;
-    @Property(name = "tango.server.class")
+    @Property("tango.server.class")
     public String tangoServerClassName;
-    @Property(name = "tango.server.name")
+    @Property("tango.server.name")
     public String tangoServerInstanceName;
-    @Property(name = "tango.server.arguments")
+    @Property("tango.server.arguments")
     public String tangoServerArguments;
 }
