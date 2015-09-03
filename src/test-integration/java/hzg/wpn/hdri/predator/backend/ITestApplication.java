@@ -53,6 +53,7 @@ import java.lang.reflect.Field;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 05.04.12
  */
+//TODO replace with selenium
 public class ITestApplication {
     private final static String WEBAPP_DIR_LOCATION = "target/PreExperimentDataCollector/";
     private final static String REAL_PATH = new File(WEBAPP_DIR_LOCATION).getAbsolutePath();
@@ -85,6 +86,12 @@ public class ITestApplication {
         TOMCAT.addRole(USERNAME, ROLE);
 
         TOMCAT.start();
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        TOMCAT.stop();
+        TOMCAT = null;
     }
 
     @Before
@@ -135,12 +142,12 @@ public class ITestApplication {
     public void testCreateDataSet() throws Exception {
 
         //click new
-        webDriver.findElement(By.id("new")).click();
+        webDriver.findElement(By.id("btnCreate")).click();
         //set new data set name
-        webDriver.findElement(By.id("newScanName")).clear();
-        webDriver.findElement(By.id("newScanName")).sendKeys("test-data-set-1");
+        webDriver.findElement(By.id("txtNewDataSetName")).clear();
+        webDriver.findElement(By.id("txtNewDataSetName")).sendKeys("test-data-set-1");
         //click forward
-        webDriver.findElement(By.name("forward")).click();
+        webDriver.findElement(By.linkText("Confirm")).click();
 
         //set test fields
         webDriver.findElement(By.id("string")).sendKeys("Test string value");
@@ -182,11 +189,5 @@ public class ITestApplication {
     public void after() throws Exception {
         webDriver.close();
         webDriver = null;
-    }
-
-    @AfterClass
-    public static void afterClass() throws Exception {
-        TOMCAT.stop();
-        TOMCAT = null;
     }
 }

@@ -200,11 +200,13 @@
                         <configuration>
                             <excludes>
                                 <exclude>none</exclude>
+                                <exclude>**/IT*</exclude>
                             </excludes>
 
-                            <includes>
+                            <!-- temporary disable integration tests -->
+                            <!--<includes>
                                 <include>**/IT*</include>
-                            </includes>
+                            </includes>-->
                         </configuration>
                     </execution>
                 </executions>
