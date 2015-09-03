@@ -249,6 +249,12 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <releaseProfiles>standalone</releaseProfiles>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
