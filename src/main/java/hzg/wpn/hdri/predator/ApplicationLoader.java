@@ -11,6 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tango.server.ServerManager;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -71,8 +74,22 @@ public class ApplicationLoader implements ServletContextListener {
         exec.submit(new Runnable() {
             @Override
             public void run() {
-                ServerManager.getInstance().addClass(tangoServerName, TangoDevice.class);
-                ServerManager.getInstance().start(args, tangoServerName);
+                try {
+                    Context initCtx = new InitialContext();
+                    Context envCtx = (Context) initCtx.lookup("java:comp/env");
+
+                    //TODO get rid off this mess
+                    String tmp = System.getProperty("TANGO_HOST");
+                    String tango_host = (String) envCtx.lookup("TANGO_HOST");
+                    System.setProperty("TANGO_HOST", tango_host);
+
+                    ServerManager.getInstance().addClass(tangoServerName, TangoDevice.class);
+                    ServerManager.getInstance().start(args, tangoServerName);
+                    System.setProperty("TANGO_HOST", tmp);
+                } catch (NamingException e) {
+                    LOG.error(e.getLocalizedMessage());
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
