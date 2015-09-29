@@ -40,37 +40,37 @@
     <display-name>PreExperiment Data Collector</display-name>
     <distributable/>
     <listener>
-        <listener-class>hzg.wpn.hdri.predator.ApplicationLoader</listener-class>
+        <listener-class>hzg.wpn.predator.web.ApplicationLoader</listener-class>
     </listener>
     <filter>
         <filter-name>UserFilter</filter-name>
-        <filter-class>hzg.wpn.hdri.predator.backend.UserFilter</filter-class>
+        <filter-class>hzg.wpn.predator.web.backend.UserFilter</filter-class>
     </filter>
     <servlet>
         <servlet-name>MetaServlet</servlet-name>
         <display-name>MetaServlet</display-name>
-        <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.MetaServlet</servlet-class>
+        <servlet-class>hzg.wpn.predator.web.backend.jsonp.MetaServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DataServlet</servlet-name>
         <display-name>DataServlet</display-name>
-        <servlet-class>hzg.wpn.hdri.predator.backend.jsonp.DataServlet</servlet-class>
+        <servlet-class>hzg.wpn.predator.web.backend.jsonp.DataServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UploadHandler</servlet-name>
         <display-name>UploadHandler</display-name>
         <description>Handles user's upload actions</description>
-        <servlet-class>hzg.wpn.hdri.predator.backend.upload.UploadServlet</servlet-class>
+        <servlet-class>hzg.wpn.predator.web.backend.upload.UploadServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DataSetUploadHandler</servlet-name>
         <display-name>DataSetUploadHandler</display-name>
         <description>Handles user's upload actions</description>
-        <servlet-class>hzg.wpn.hdri.predator.backend.upload.DataSetUploadServlet</servlet-class>
+        <servlet-class>hzg.wpn.predator.web.backend.upload.DataSetUploadServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>IndexServlet</servlet-name>
-        <servlet-class>hzg.wpn.hdri.predator.backend.IndexServlet</servlet-class>
+        <servlet-class>hzg.wpn.predator.web.backend.IndexServlet</servlet-class>
         <init-param>
             <param-name>template.file.name</param-name>
             <param-value>index.vm</param-value>
@@ -78,7 +78,7 @@
     </servlet>
     <servlet>
         <servlet-name>MetaYaml</servlet-name>
-        <servlet-class>hzg.wpn.hdri.predator.backend.MetaYamlServlet</servlet-class>
+        <servlet-class>hzg.wpn.predator.web.backend.MetaYamlServlet</servlet-class>
     </servlet>
     <filter-mapping>
         <filter-name>UserFilter</filter-name>
