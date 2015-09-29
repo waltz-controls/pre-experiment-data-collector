@@ -41,11 +41,9 @@ import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tango.DeviceState;
 import org.tango.server.StateMachineBehavior;
-import org.tango.server.annotation.Command;
-import org.tango.server.annotation.Device;
-import org.tango.server.annotation.DynamicManagement;
-import org.tango.server.annotation.Init;
+import org.tango.server.annotation.*;
 import org.tango.server.attribute.AttributeConfiguration;
 import org.tango.server.attribute.AttributeValue;
 import org.tango.server.attribute.IAttributeBehavior;
@@ -95,13 +93,16 @@ public class PreExperimentDataCollector {
         return result.toArray(new String[result.size()]);
     }
 
-    @Command
+    @Command(inTypeDesc = "dataset_name")
+    @StateMachine(endState = DeviceState.ON)
     public void delete_data_set(final String name) throws Exception{
         Iterable<String> users = appCtx.getUsers();
 
         DynaBean data = getDataSet(name, users);
 
         appCtx.getManager().delete(data);
+
+        this.data = null;
     }
 
     private DynaBean getDataSet(final String name, Iterable<String> users) {
@@ -125,14 +126,16 @@ public class PreExperimentDataCollector {
     }
 
     @Command(inTypeDesc = "user_name;dataset_name")
+    @StateMachine(endState = DeviceState.STANDBY)
     public void create_data_set(String[] args) throws Exception {
         if (args.length != 2)
-            throw new IllegalArgumentException("Two arguments are expected here: user name and data set name.");
+            DevFailedUtils.throwDevFailed("Exactly 2 arguments are expected here: user name and data set name.");
         data = appCtx.getManager().newDataSet(args[0], args[1]);
         appCtx.getManager().save(data);
     }
 
-    @Command
+    @Command(inTypeDesc = "dataset_name")
+    @StateMachine(endState = DeviceState.STANDBY)
     public void load_data_set(final String name) throws Exception {
         //get all users
         Iterable<String> users = appCtx.getUsers();
@@ -145,6 +148,7 @@ public class PreExperimentDataCollector {
     }
 
     @Init
+    @StateMachine(endState = DeviceState.ON)
     public void init() throws Exception {
         this.appCtx = APPLICATION_CONTEXT;
 
@@ -155,21 +159,21 @@ public class PreExperimentDataCollector {
     }
 
     private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx){
+        final StateMachineBehavior stateMachine = new StateMachineBehavior();
+        stateMachine.setDeniedStates(DeviceState.ON);
         return new IAttributeBehavior() {
-            private final String name = dynaProperty.getName();
-            private final Class<?> type = dynaProperty.getType();
-
             @Override
             public AttributeConfiguration getConfiguration() throws DevFailed {
                 AttributeConfiguration configuration = new AttributeConfiguration();
-                configuration.setName(name);
-                configuration.setType(type);
+                configuration.setName(dynaProperty.getName());
+                configuration.setType(dynaProperty.getType());
                 configuration.setWritable(AttrWriteType.READ_WRITE);
                 return configuration;
             }
 
             @Override
             public AttributeValue getValue() throws DevFailed {
+                if (data == null) DevFailedUtils.throwDevFailed("data_set is null. load_data_set first.");
                 return new AttributeValue(BeanUtilsHelper.getProperty(data,getConfiguration().getName(),getConfiguration().getType()));
             }
 
@@ -179,14 +183,13 @@ public class PreExperimentDataCollector {
                 try {
                     appCtx.getManager().save(data);
                 } catch (IOException e) {
-                    LOG.error("Can not save data set["+BeanUtilsHelper.getProperty(data,Meta.NAME,String.class)+"]", e);
-                    throw DevFailedUtils.newDevFailed(e);
+                    DevFailedUtils.throwDevFailed(e.getClass().getSimpleName(), e.getLocalizedMessage());
                 }
             }
 
             @Override
             public StateMachineBehavior getStateMachine() throws DevFailed {
-                return new StateMachineBehavior();
+                return stateMachine;
             }
         };
     }

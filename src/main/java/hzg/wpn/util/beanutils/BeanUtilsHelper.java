@@ -24,6 +24,7 @@ public class BeanUtilsHelper {
      * @throws RuntimeException
      */
     public static <T, V extends DynaBean> T getProperty(V bean, String name, Class<T> toType){
+        if (bean == null) throw new NullPointerException("bean is null");
         try {
             return toType.cast(PropertyUtils.getProperty(bean, name));
         } catch (IllegalAccessException|InvocationTargetException|NoSuchMethodException e) {
