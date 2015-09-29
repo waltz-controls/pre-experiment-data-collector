@@ -65,10 +65,15 @@ import java.util.NoSuchElementException;
 @Device
 public class PreExperimentDataCollector {
     private static final Logger LOG = LoggerFactory.getLogger(PreExperimentDataCollector.class);
-
+    private static ApplicationContext APPLICATION_CONTEXT;
     private ApplicationContext appCtx;
-
     private volatile DynaBean data;
+    @DynamicManagement
+    private DynamicManager dynamic;
+
+    public synchronized static void setStaticContext(ApplicationContext applicationContext) {
+        APPLICATION_CONTEXT = applicationContext;
+    }
 
     /**
      * Iterates over all users and loads their data sets
@@ -119,6 +124,14 @@ public class PreExperimentDataCollector {
         return data;
     }
 
+    @Command(inTypeDesc = "user_name;dataset_name")
+    public void create_data_set(String[] args) throws Exception {
+        if (args.length != 2)
+            throw new IllegalArgumentException("Two arguments are expected here: user name and data set name.");
+        data = appCtx.getManager().newDataSet(args[0], args[1]);
+        appCtx.getManager().save(data);
+    }
+
     @Command
     public void load_data_set(final String name) throws Exception {
         //get all users
@@ -127,8 +140,6 @@ public class PreExperimentDataCollector {
         this.data = getDataSet(name,users);
     }
 
-    @DynamicManagement
-    private DynamicManager dynamic;
     public void setDynamic(DynamicManager dynamic){
         this.dynamic = dynamic;
     }
@@ -178,10 +189,5 @@ public class PreExperimentDataCollector {
                 return new StateMachineBehavior();
             }
         };
-    }
-
-    private static ApplicationContext APPLICATION_CONTEXT;
-    public synchronized static void setStaticContext(ApplicationContext applicationContext) {
-        APPLICATION_CONTEXT = applicationContext;
     }
 }
