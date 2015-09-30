@@ -1,5 +1,7 @@
 package hzg.wpn.predator.web.backend.upload;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import hzg.wpn.predator.web.data.DataSetsManager;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +35,17 @@ public class DataSetUploadServlet extends AbsUploadServlet {
             item.write(tempFile.toFile());
             Map<String, Object> json = gson.fromJson(Files.newBufferedReader(tempFile, Charset.defaultCharset()), HashMap.class);
 
+            //remove empty fields to prevent exception when populate
+            Iterables.removeIf(json.entrySet(), new Predicate<Map.Entry<String, Object>>() {
+                @Override
+                public boolean apply(Map.Entry<String, Object> input) {
+                    if (input.getValue() instanceof String && ((String) input.getValue()).isEmpty())
+                        return true;
+                    else if (input.getValue() instanceof Collection && ((Collection) input.getValue()).isEmpty())
+                        return true;
+                    else return false;
+                }
+            });
 
             DataSetsManager manager = appCtx.getManager();
             DynaBean data = manager.newDataSet(user, fileName);

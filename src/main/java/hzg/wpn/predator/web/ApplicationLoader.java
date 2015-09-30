@@ -2,12 +2,15 @@ package hzg.wpn.predator.web;
 
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
-import hzg.wpn.tango.PreExperimentDataCollector;
 import hzg.wpn.predator.storage.SimpleSerializationStorage;
 import hzg.wpn.predator.storage.Storage;
 import hzg.wpn.properties.PropertiesParser;
+import hzg.wpn.tango.PreExperimentDataCollector;
 import hzg.wpn.xenv.ResourceManager;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.DynaClass;
+import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tango.server.ServerManager;
@@ -37,6 +40,14 @@ public class ApplicationLoader implements ServletContextListener {
     public static final String META_YAML = "meta.yaml";
     public static final String ETC_PRE_EXPERIMENT_DATA_COLLECTOR = "etc/PreExperimentDataCollector";
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationLoader.class);
+
+    static {
+        Converter integerConverter =
+                new IntegerConverter();
+        ConvertUtils.register(integerConverter, Integer.TYPE);    // Native type
+        ConvertUtils.register(integerConverter, Integer.class);   // Wrapper class
+    }
+
     private final ExecutorService exec = Executors.newSingleThreadExecutor(new ThreadFactory() {
         private final ThreadFactory factory = Executors.defaultThreadFactory();
 

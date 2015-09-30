@@ -4,8 +4,10 @@ import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.web.ApplicationLoader;
 import hzg.wpn.predator.web.data.DataSetsManager;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
-import org.apache.commons.beanutils.*;
-import org.apache.commons.beanutils.converters.IntegerConverter;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.ConversionException;
+import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.DynaBeanPropertyMapDecorator;
 import org.bitbucket.ingvord.web.RequestParameter;
 import org.bitbucket.ingvord.web.json.JsonpBaseServlet;
 import org.slf4j.Logger;
@@ -26,13 +28,6 @@ import java.util.List;
  */
 public class DataServlet extends JsonpBaseServlet<Object, DataServlet.Request> {
     private static final Logger LOG = LoggerFactory.getLogger(DataServlet.class);
-
-    static {
-        Converter integerConverter =
-                new IntegerConverter();
-        ConvertUtils.register(integerConverter, Integer.TYPE);    // Native type
-        ConvertUtils.register(integerConverter, Integer.class);   // Wrapper class
-    }
 
     /**
      * To save bandwidth this method returns only names
