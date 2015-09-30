@@ -166,7 +166,7 @@ public class ApplicationContext {
      */
     private Path getUserUploadDirPath(String user) {
         //TODO optimize
-        return getUserHomeDirPath(user).resolve("/upload");
+        return getUserHomeDirPath(user).resolve("upload");
     }
 
     public Path getHomeDir() throws IOException {
