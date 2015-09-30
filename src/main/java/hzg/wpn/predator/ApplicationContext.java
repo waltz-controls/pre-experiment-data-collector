@@ -67,6 +67,7 @@ public class ApplicationContext {
     private final Meta meta;
     private final DynaClass dataClass;
     private final DataSetsManager manager;
+    private final Path home;
 
     /**
      * @param realPath    ends with '/'
@@ -85,7 +86,12 @@ public class ApplicationContext {
         this.properties = properties;
         this.meta = meta;
         this.dataClass = dataClass;
-        this.manager = new DataSetsManager(beamtimeId, Paths.get(realPath, HOME), dataClass, storage);
+        this.home =
+                properties.storageRoot != null && !properties.storageRoot.isEmpty() ?
+                        Paths.get(properties.storageRoot) :
+                        Paths.get(realPath, HOME);
+        this.manager = new DataSetsManager(beamtimeId,
+                home, dataClass, storage);
     }
 
 
@@ -148,10 +154,8 @@ public class ApplicationContext {
      * @param user
      * @return a path to user's home dir on the server without ending '/'
      */
-    private StringBuilder getUserHomeDirPath(String user) {
-        StringBuilder result = new StringBuilder();
-        result.append(realPath).append("home/").append(user);
-        return result;
+    private Path getUserHomeDirPath(String user) {
+        return home.resolve(user);
     }
 
     /**
@@ -160,9 +164,9 @@ public class ApplicationContext {
      * @param user user
      * @return a path to user's upload dir on the server without ending '/'
      */
-    private StringBuilder getUserUploadDirPath(String user) {
+    private Path getUserUploadDirPath(String user) {
         //TODO optimize
-        return getUserHomeDirPath(user).append("/upload");
+        return getUserHomeDirPath(user).resolve("/upload");
     }
 
     public Path getHomeDir() throws IOException {
@@ -200,7 +204,7 @@ public class ApplicationContext {
      * @throws IOException if creation attempt failed
      */
     public Path getUserUploadDir(String user) throws IOException {
-        Path dir = Paths.get(getUserUploadDirPath(user).toString());
+        Path dir = getUserUploadDirPath(user);
 
         if (!Files.exists(dir)) {
             Files.createDirectories(dir);

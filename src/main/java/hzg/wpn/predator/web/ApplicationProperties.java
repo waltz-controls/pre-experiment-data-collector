@@ -46,4 +46,6 @@ public final class ApplicationProperties {
     public String tangoServerInstanceName;
     @Property("tango.server.arguments")
     public String tangoServerArguments;
+    @Property("storage.root")
+    public String storageRoot;
 }
