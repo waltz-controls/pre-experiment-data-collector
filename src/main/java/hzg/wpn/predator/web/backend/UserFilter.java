@@ -23,6 +23,9 @@ public class UserFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String userName = ((HttpServletRequest)request).getRemoteUser();
+        if (userName == null) {
+            throw new ServletException("RemoteUser is null");
+        }
         Object userLock = getOrCreate(userName);
         //ensure FIFO requests order
         synchronized (userLock){

@@ -4,9 +4,8 @@ import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.web.ApplicationLoader;
 import hzg.wpn.predator.web.data.DataSetsManager;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.DynaBean;
-import org.apache.commons.beanutils.DynaBeanPropertyMapDecorator;
+import org.apache.commons.beanutils.*;
+import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.bitbucket.ingvord.web.RequestParameter;
 import org.bitbucket.ingvord.web.json.JsonpBaseServlet;
 import org.slf4j.Logger;
@@ -28,6 +27,13 @@ import java.util.List;
 public class DataServlet extends JsonpBaseServlet<Object, DataServlet.Request> {
     private static final Logger LOG = LoggerFactory.getLogger(DataServlet.class);
 
+    static {
+        Converter integerConverter =
+                new IntegerConverter();
+        ConvertUtils.register(integerConverter, Integer.TYPE);    // Native type
+        ConvertUtils.register(integerConverter, Integer.class);   // Wrapper class
+    }
+
     /**
      * To save bandwidth this method returns only names
      *
@@ -40,10 +46,6 @@ public class DataServlet extends JsonpBaseServlet<Object, DataServlet.Request> {
     @Override
     protected Collection<Object> find_all(HttpServletRequest req, HttpServletResponse res, Request params) throws ServletException {
         String user = req.getRemoteUser();
-        if (user == null) {
-            LOG.error("user is not set in the request!");
-            throw new ServletException("User is null");
-        }
 
         ApplicationContext ctx = (ApplicationContext) getServletContext().getAttribute(ApplicationLoader.APPLICATION_CONTEXT);
         DataSetsManager manager = ctx.getManager();
@@ -54,14 +56,6 @@ public class DataServlet extends JsonpBaseServlet<Object, DataServlet.Request> {
         }
 
         return response;
-    }
-
-    public static class FindAllResponse {
-        private final String name;
-
-        public FindAllResponse(String name) {
-            this.name = name;
-        }
     }
 
     /**
@@ -82,10 +76,6 @@ public class DataServlet extends JsonpBaseServlet<Object, DataServlet.Request> {
     @Override
     protected Object create(HttpServletRequest req, HttpServletResponse res, DataServlet.Request params) throws ServletException {
         String user = req.getRemoteUser();
-        if (user == null) {
-            LOG.error("user is not set in the request!");
-            throw new ServletException("User is null");
-        }
 
         String dataSetNameToLoad = params.templateName != null && !"none".equals(params.templateName) ? params.templateName : params.dataSetName;
         ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationLoader.APPLICATION_CONTEXT);
@@ -116,10 +106,6 @@ public class DataServlet extends JsonpBaseServlet<Object, DataServlet.Request> {
     @Override
     protected Object delete(HttpServletRequest req, HttpServletResponse res, Request params) throws ServletException {
         String user = req.getRemoteUser();
-        if (user == null) {
-            LOG.error("user is not set in the request!");
-            throw new ServletException("User is null");
-        }
 
         ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationLoader.APPLICATION_CONTEXT);
         DataSetsManager manager = applicationContext.getManager();
@@ -142,10 +128,6 @@ public class DataServlet extends JsonpBaseServlet<Object, DataServlet.Request> {
     @Override
     protected Object update(HttpServletRequest req, HttpServletResponse res, DataServlet.Request params) throws ServletException {
         String user = req.getRemoteUser();
-        if (user == null) {
-            LOG.error("user is not set in the request!");
-            throw new ServletException("User is null");
-        }
 
         ApplicationContext applicationContext = (ApplicationContext) getServletContext().getAttribute(ApplicationLoader.APPLICATION_CONTEXT);
         DataSetsManager manager = applicationContext.getManager();
@@ -157,8 +139,8 @@ public class DataServlet extends JsonpBaseServlet<Object, DataServlet.Request> {
         try {
             BeanUtils.populate(data, req.getParameterMap());
             manager.save(data);
-        } catch (IllegalAccessException | InvocationTargetException | IOException e) {
-            LOG.error("Failed to update data set", e);
+        } catch (IllegalAccessException | InvocationTargetException | IOException | ConversionException e) {
+            LOG.error("Failed to update data set: {}", e.getMessage());
             throw new ServletException(e);
         }
 
@@ -168,6 +150,14 @@ public class DataServlet extends JsonpBaseServlet<Object, DataServlet.Request> {
     @Override
     protected Request getParamsContainer() {
         return new Request();
+    }
+
+    public static class FindAllResponse {
+        private final String name;
+
+        public FindAllResponse(String name) {
+            this.name = name;
+        }
     }
 
     public static class Request {
