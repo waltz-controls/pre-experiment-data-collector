@@ -76,10 +76,6 @@
             <param-value>index.vm</param-value>
         </init-param>
     </servlet>
-    <servlet>
-        <servlet-name>MetaYaml</servlet-name>
-        <servlet-class>hzg.wpn.predator.web.backend.MetaYamlServlet</servlet-class>
-    </servlet>
     <filter-mapping>
         <filter-name>UserFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -103,10 +99,6 @@
     <servlet-mapping>
         <servlet-name>IndexServlet</servlet-name>
         <url-pattern>/index.html</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>MetaYaml</servlet-name>
-        <url-pattern>/admin/meta.yaml</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
