@@ -37,6 +37,8 @@ import fr.esrf.Tango.DevFailed;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
+import org.apache.catalina.Context;
+import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
@@ -54,18 +56,33 @@ import org.tango.utils.DevFailedUtils;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.jar.JarFile;
 
 /**
  * Designed to be Thread condemned
- *
  */
 @Device
 public class PreExperimentDataCollector {
-    private static final Logger LOG = LoggerFactory.getLogger(PreExperimentDataCollector.class);
+    private static final Logger logger = LoggerFactory.getLogger(PreExperimentDataCollector.class);
+
+    public static final String XENV_ROOT;
+
+    static {
+        String xenv_rootProperty = System.getProperty("XENV_ROOT", System.getenv("XENV_ROOT"));
+        XENV_ROOT = xenv_rootProperty == null ? "." : xenv_rootProperty;
+        logger.info("XENV_ROOT={}", XENV_ROOT);
+    }
+
+    public static final String VAR_PREDATOR_ROOT_WAR = "var/predator/ROOT.war";
+
     private static ApplicationContext APPLICATION_CONTEXT;
     private ApplicationContext appCtx;
     private volatile DynaBean data;
@@ -76,6 +93,18 @@ public class PreExperimentDataCollector {
         APPLICATION_CONTEXT = applicationContext;
     }
 
+    private static void extractWebapp() {
+        try {
+            InputStream webapp = PreExperimentDataCollector.class.getResourceAsStream("/ROOT.war");
+
+            Path cwd = Paths.get(XENV_ROOT);
+
+            Files.copy(webapp, Files.createDirectories(cwd.resolve("var/predator")).resolve("ROOT.war"), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new Error("Unable to extract native library.", e);
+        }
+    }
+
     /**
      * Iterates over all users and loads their data sets
      *
@@ -83,14 +112,14 @@ public class PreExperimentDataCollector {
      * @throws Exception
      */
     @Command
-    public String[] datasets() throws Exception{
+    public String[] datasets() throws Exception {
         List<String> result = new ArrayList<>();
 
         //get all users
         Iterable<String> users = appCtx.getUsers();
         //add all data sets of each user
-        for(String user : users){
-            Iterables.addAll(result,appCtx.getManager().getUserDataSetNames(user));
+        for (String user : users) {
+            Iterables.addAll(result, appCtx.getManager().getUserDataSetNames(user));
         }
 
         return result.toArray(new String[result.size()]);
@@ -98,7 +127,7 @@ public class PreExperimentDataCollector {
 
     @Command(inTypeDesc = "dataset_name")
     @StateMachine(endState = DeviceState.ON)
-    public void delete_data_set(final String name) throws Exception{
+    public void delete_data_set(final String name) throws Exception {
         Iterable<String> users = appCtx.getUsers();
 
         DynaBean data = getDataSet(name, users);
@@ -110,19 +139,19 @@ public class PreExperimentDataCollector {
 
     private DynaBean getDataSet(final String name, Iterable<String> users) {
         DynaBean data = null;
-        for(String user : users){
+        for (String user : users) {
             Optional<DynaBean> result = Iterables.tryFind(appCtx.getManager().getUserDataSets(user), new Predicate<DynaBean>() {
                 @Override
                 public boolean apply(@Nullable DynaBean input) {
                     return BeanUtilsHelper.getProperty(input, Meta.NAME, String.class).equals(name);
                 }
             });
-            if(result.isPresent()){
+            if (result.isPresent()) {
                 data = result.get();
                 break;
             }
         }
-        if(data == null)
+        if (data == null)
             throw new NoSuchElementException("Dataset[" + name + "] can not be found!");
 
         return data;
@@ -143,10 +172,10 @@ public class PreExperimentDataCollector {
         //get all users
         Iterable<String> users = appCtx.getUsers();
         //add all data sets of each user
-        this.data = getDataSet(name,users);
+        this.data = getDataSet(name, users);
     }
 
-    public void setDynamic(DynamicManager dynamic){
+    public void setDynamic(DynamicManager dynamic) {
         this.dynamic = dynamic;
     }
 
@@ -156,12 +185,12 @@ public class PreExperimentDataCollector {
         this.appCtx = APPLICATION_CONTEXT;
 
         //populate attributes
-        for(final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()){
-            dynamic.addAttribute(createNewAttribute(dynaProperty,appCtx));
+        for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
+            dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
         }
     }
 
-    private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx){
+    private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx) {
         final StateMachineBehavior stateMachine = new StateMachineBehavior();
         stateMachine.setDeniedStates(DeviceState.ON);
         return new IAttributeBehavior() {
@@ -177,12 +206,12 @@ public class PreExperimentDataCollector {
             @Override
             public AttributeValue getValue() throws DevFailed {
                 if (data == null) DevFailedUtils.throwDevFailed("data_set is null. load_data_set first.");
-                return new AttributeValue(BeanUtilsHelper.getProperty(data,getConfiguration().getName(),getConfiguration().getType()));
+                return new AttributeValue(BeanUtilsHelper.getProperty(data, getConfiguration().getName(), getConfiguration().getType()));
             }
 
             @Override
             public void setValue(AttributeValue value) throws DevFailed {
-                data.set(getConfiguration().getName(),value.getValue());
+                data.set(getConfiguration().getName(), value.getValue());
                 try {
                     appCtx.getManager().save(data);
                 } catch (IOException e) {
@@ -197,17 +226,30 @@ public class PreExperimentDataCollector {
         };
     }
 
-    public static void main(String... args) throws Exception{
+    public static void main(String... args) throws Exception {
+        extractWebapp();
+
         ServerManager.getInstance().start(args, PreExperimentDataCollector.class);
 
         //TODO start tomcat
         Tomcat tomcat = new Tomcat();
+
+        Path tomcatBasedir = Paths.get(XENV_ROOT, "var/predator/tomcat");
+        if(Files.notExists(tomcatBasedir)) Files.createDirectories(Paths.get(XENV_ROOT,"var/predator/tomcat/webapps"));
+        tomcat.setBaseDir(tomcatBasedir.toAbsolutePath().toString());
+
         tomcat.setPort(8333);//TODO move to server properties?
 
-        tomcat.addWebapp("/", Paths.get(".", "web/src/main/webapp").toAbsolutePath().toString());
+        String webapp = Paths.get(XENV_ROOT).resolve(VAR_PREDATOR_ROOT_WAR).toAbsolutePath().toString();
+        logger.info("Adding webapp {}", webapp);
 
-        tomcat.addUser("ingvord","test");
-        tomcat.addRole("ingvord","user");
+        Context context = tomcat.addWebapp("/", webapp);
+        WebappLoader loader =
+                new WebappLoader(Thread.currentThread().getContextClassLoader());
+        context.setLoader(loader);
+
+        tomcat.addUser("ingvord", "test");
+        tomcat.addRole("ingvord", "user");
 
         tomcat.start();
     }
