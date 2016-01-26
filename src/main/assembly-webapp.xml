@@ -1,0 +1,12 @@
+<assembly schemaLocation="http://maven.apache.org/xsd/assembly-1.0.0.xsd">
+    <id>assembly-webapp</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>webapp</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>
