@@ -37,11 +37,13 @@ import fr.esrf.Tango.DevFailed;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tango.DeviceState;
+import org.tango.server.ServerManager;
 import org.tango.server.StateMachineBehavior;
 import org.tango.server.annotation.*;
 import org.tango.server.attribute.AttributeConfiguration;
@@ -52,6 +54,7 @@ import org.tango.utils.DevFailedUtils;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -192,5 +195,20 @@ public class PreExperimentDataCollector {
                 return stateMachine;
             }
         };
+    }
+
+    public static void main(String... args) throws Exception{
+        ServerManager.getInstance().start(args, PreExperimentDataCollector.class);
+
+        //TODO start tomcat
+        Tomcat tomcat = new Tomcat();
+        tomcat.setPort(8333);//TODO move to server properties?
+
+        tomcat.addWebapp("/", Paths.get(".", "web/src/main/webapp").toAbsolutePath().toString());
+
+        tomcat.addUser("ingvord","test");
+        tomcat.addRole("ingvord","user");
+
+        tomcat.start();
     }
 }
