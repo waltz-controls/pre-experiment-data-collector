@@ -30,8 +30,8 @@ package hzg.wpn.predator.web.auth;
 
 import com.sun.security.auth.module.Krb5LoginModule;
 import org.apache.catalina.realm.GenericPrincipal;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -51,24 +51,32 @@ import java.util.Map;
  * @since 15.02.12
  */
 public class BeamtimeLoginModule implements LoginModule {
-    private static Log log = LogFactory.getLog(BeamtimeLoginModule.class);
+    private final static Logger logger = LoggerFactory.getLogger(BeamtimeLoginModule.class);
 
     private Krb5LoginModule krbmod;
     private Subject subject = null;
 
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options) {
+        logger.trace("initialize...");
         this.subject = subject;
 
         krbmod = new Krb5LoginModule();
         krbmod.initialize(subject, callbackHandler, sharedState, options);
+        logger.trace("initialize... Done.");
     }
 
     public boolean login() throws LoginException {
-        return krbmod.login();
+        logger.trace("login...");
+        try {
+            return krbmod.login();
+        } finally {
+            logger.trace("login... Done.");
+        }
     }
 
 
     public boolean commit() throws LoginException {
+        logger.trace("commit...");
         boolean answer = krbmod.commit();
 
         if (answer && subject != null) {
@@ -76,14 +84,28 @@ public class BeamtimeLoginModule implements LoginModule {
 
             subject.getPrincipals().add(role);
         }
-        return answer;
+        try {
+            return answer;
+        } finally {
+            logger.trace("commit... Done.");
+        }
     }
 
     public boolean abort() throws LoginException {
-        return krbmod.abort();
+        logger.trace("abort...");
+        try {
+            return krbmod.abort();
+        } finally {
+            logger.trace("abort... Done.");
+        }
     }
 
     public boolean logout() throws LoginException {
-        return krbmod.logout();
+        logger.trace("logout...");
+        try {
+            return krbmod.logout();
+        } finally {
+            logger.trace("logout... Done.");
+        }
     }
 }

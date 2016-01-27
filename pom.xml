@@ -178,6 +178,23 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-etc</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/etc</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/etc</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -285,6 +302,7 @@
                             <warName>ROOT</warName>
                             <warSourceDirectory>${project.basedir}/webapp</warSourceDirectory>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <webappDirectory>${project.build.directory}/webapp</webappDirectory>
                             <packagingExcludes>
                                 WEB-INF/lib/*,
                                 WEB-INF/classes/*

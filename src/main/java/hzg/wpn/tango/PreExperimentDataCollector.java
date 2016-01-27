@@ -36,9 +36,13 @@ import fr.esrf.Tango.AttrWriteType;
 import fr.esrf.Tango.DevFailed;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
+import hzg.wpn.predator.web.ApplicationLoader;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
 import org.apache.catalina.Context;
+import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.loader.WebappLoader;
+import org.apache.catalina.realm.GenericPrincipal;
+import org.apache.catalina.realm.JAASRealm;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
@@ -55,6 +59,9 @@ import org.tango.server.dynamic.DynamicManager;
 import org.tango.utils.DevFailedUtils;
 
 import javax.annotation.Nullable;
+import javax.security.auth.kerberos.KerberosPrincipal;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -73,36 +80,15 @@ import java.util.jar.JarFile;
 public class PreExperimentDataCollector {
     private static final Logger logger = LoggerFactory.getLogger(PreExperimentDataCollector.class);
 
-    public static final String XENV_ROOT;
-
-    static {
-        String xenv_rootProperty = System.getProperty("XENV_ROOT", System.getenv("XENV_ROOT"));
-        XENV_ROOT = xenv_rootProperty == null ? "." : xenv_rootProperty;
-        logger.info("XENV_ROOT={}", XENV_ROOT);
-    }
-
-    public static final String VAR_PREDATOR_ROOT_WAR = "var/predator/ROOT.war";
-
     private static ApplicationContext APPLICATION_CONTEXT;
     private ApplicationContext appCtx;
     private volatile DynaBean data;
+
     @DynamicManagement
     private DynamicManager dynamic;
 
     public synchronized static void setStaticContext(ApplicationContext applicationContext) {
         APPLICATION_CONTEXT = applicationContext;
-    }
-
-    private static void extractWebapp() {
-        try {
-            InputStream webapp = PreExperimentDataCollector.class.getResourceAsStream("/ROOT.war");
-
-            Path cwd = Paths.get(XENV_ROOT);
-
-            Files.copy(webapp, Files.createDirectories(cwd.resolve("var/predator")).resolve("ROOT.war"), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new Error("Unable to extract native library.", e);
-        }
     }
 
     /**
@@ -188,6 +174,7 @@ public class PreExperimentDataCollector {
         for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
             dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
         }
+        //TODO set status
     }
 
     private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx) {
@@ -227,30 +214,18 @@ public class PreExperimentDataCollector {
     }
 
     public static void main(String... args) throws Exception {
-        extractWebapp();
+        //TODO start tomcat
+        Tomcat tomcat = new Tomcat();
+        tomcat.setPort(8333);//TODO move to server properties?
+
+        ApplicationLoader.initializeWebapp(tomcat);
+
+        ApplicationLoader.initializeLoginProperties(tomcat);
+
+        tomcat.start();
 
         ServerManager.getInstance().start(args, PreExperimentDataCollector.class);
 
-        //TODO start tomcat
-        Tomcat tomcat = new Tomcat();
-
-        Path tomcatBasedir = Paths.get(XENV_ROOT, "var/predator/tomcat");
-        if(Files.notExists(tomcatBasedir)) Files.createDirectories(Paths.get(XENV_ROOT,"var/predator/tomcat/webapps"));
-        tomcat.setBaseDir(tomcatBasedir.toAbsolutePath().toString());
-
-        tomcat.setPort(8333);//TODO move to server properties?
-
-        String webapp = Paths.get(XENV_ROOT).resolve(VAR_PREDATOR_ROOT_WAR).toAbsolutePath().toString();
-        logger.info("Adding webapp {}", webapp);
-
-        Context context = tomcat.addWebapp("/", webapp);
-        WebappLoader loader =
-                new WebappLoader(Thread.currentThread().getContextClassLoader());
-        context.setLoader(loader);
-
-        tomcat.addUser("ingvord", "test");
-        tomcat.addRole("ingvord", "user");
-
-        tomcat.start();
+        //TODO get this instance and set tomcat
     }
 }

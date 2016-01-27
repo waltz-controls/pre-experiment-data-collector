@@ -7,6 +7,10 @@ import hzg.wpn.predator.storage.Storage;
 import hzg.wpn.properties.PropertiesParser;
 import hzg.wpn.tango.PreExperimentDataCollector;
 import hzg.wpn.xenv.ResourceManager;
+import org.apache.catalina.loader.WebappLoader;
+import org.apache.catalina.realm.GenericPrincipal;
+import org.apache.catalina.realm.JAASRealm;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.DynaClass;
@@ -18,10 +22,17 @@ import org.tango.server.ServerManager;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.security.auth.kerberos.KerberosPrincipal;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -34,7 +45,6 @@ import java.util.concurrent.ThreadFactory;
  */
 public class ApplicationLoader implements ServletContextListener {
     public static final String APPLICATION_CONTEXT = "predator.context";
-    public static final String JMVC_ROOT = "jmvc_root/";
     public static final String LOGIN_PROPERTIES = "login.properties";
     public static final String APPLICATION_PROPERTIES = "application.properties";
     public static final String META_YAML = "meta.yaml";
@@ -48,21 +58,9 @@ public class ApplicationLoader implements ServletContextListener {
         ConvertUtils.register(integerConverter, Integer.class);   // Wrapper class
     }
 
-    private final ExecutorService exec = Executors.newSingleThreadExecutor(new ThreadFactory() {
-        private final ThreadFactory factory = Executors.defaultThreadFactory();
-
-        public Thread newThread(Runnable r) {
-            Thread t = factory.newThread(r);
-            //prevent this thread from locking JVM
-            t.setDaemon(true);
-            t.setName("PreExperimentDataCollector Tango frontend");
-            return t;
-        }
-    });
-
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        initializeLoginProperties();
+
 
         ApplicationProperties appProperties = initializeApplicationProperties();
 
@@ -71,39 +69,6 @@ public class ApplicationLoader implements ServletContextListener {
 
         //TODO avoid this hack
         PreExperimentDataCollector.setStaticContext(context);
-
-        initializeTangoFrontend(appProperties);
-    }
-
-    private void initializeTangoFrontend(ApplicationProperties appProperties) {
-        final String tangoServerName = appProperties.tangoServerClassName;
-        final String tangoInstanceName = appProperties.tangoServerInstanceName;
-        final String[] tangoServerArguments = appProperties.tangoServerArguments.isEmpty() ? new String[0] : appProperties.tangoServerArguments.split(",");
-        final String[] args = new String[tangoServerArguments.length + 1];
-        args[0] = tangoInstanceName;
-        System.arraycopy(tangoServerArguments, 0, args, 1, tangoServerArguments.length);
-
-        exec.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Context initCtx = new InitialContext();
-                    Context envCtx = (Context) initCtx.lookup("java:comp/env");
-
-                    //TODO get rid off this mess
-                    String tmp = System.getProperty("TANGO_HOST");
-                    String tango_host = (String) envCtx.lookup("TANGO_HOST");
-                    System.setProperty("TANGO_HOST", tango_host);
-
-                    ServerManager.getInstance().addClass(tangoServerName, PreExperimentDataCollector.class);
-                    ServerManager.getInstance().start(args, tangoServerName);
-                    System.setProperty("TANGO_HOST", tmp);
-                } catch (NamingException e) {
-                    LOG.error(e.getLocalizedMessage());
-                    throw new RuntimeException(e);
-                }
-            }
-        });
     }
 
     private ApplicationProperties initializeApplicationProperties() {
@@ -119,12 +84,32 @@ public class ApplicationLoader implements ServletContextListener {
         }
     }
 
-    private void initializeLoginProperties() {
+    public static void initializeLoginProperties(Tomcat tomcat) {
         try {
             Properties loginProperties = ResourceManager.loadProperties(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, LOGIN_PROPERTIES);
 
-            for (Map.Entry<Object, Object> entry : loginProperties.entrySet()) {
-                System.getProperties().put(entry.getKey(), entry.getValue());
+            boolean useKerberos = Boolean.parseBoolean(loginProperties.getProperty("predator.tomcat.use.kerberos"));
+            if (useKerberos) {
+                for (Map.Entry<Object, Object> entry : loginProperties.entrySet()) {
+                    if (entry.getKey().toString().startsWith("java.security"))
+                        System.getProperties().put(entry.getKey(), entry.getValue());
+                }
+
+                JAASRealm jaasRealm = new JAASRealm();
+
+                jaasRealm.setAppName("PreExperimentDataCollector");
+                jaasRealm.setUserClassNames(KerberosPrincipal.class.getName());
+                jaasRealm.setRoleClassNames(GenericPrincipal.class.getName());
+                jaasRealm.setUseContextClassLoader(true);
+                jaasRealm.setConfigFile("jaas.conf");
+
+                tomcat.getEngine().setRealm(jaasRealm);
+            } else {
+                String userName = loginProperties.getProperty("predator.tomcat.user.name");
+                String userPass = loginProperties.getProperty("predator.tomcat.user.pass");
+
+                tomcat.addUser(userName, userPass);
+                tomcat.addRole(userName, "user");
             }
         } catch (IOException e) {
             LOG.error("Cannot initialize login.properties", e);
@@ -162,6 +147,57 @@ public class ApplicationLoader implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         LOG.info("Context destroyed");
-        exec.shutdownNow();
+    }
+
+    public static final String XENV_ROOT;
+
+    static {
+        String xenv_rootProperty = System.getProperty("XENV_ROOT", System.getenv("XENV_ROOT"));
+        XENV_ROOT = xenv_rootProperty == null ? "." : xenv_rootProperty;
+        LOG.info("XENV_ROOT={}", XENV_ROOT);
+    }
+
+    public static final String VAR_PREDATOR_ROOT_WAR = "var/predator/ROOT.war";
+
+
+    public static void initializeWebapp(Tomcat tomcat) {
+        try {
+            //create tomcat's basedir
+            Path tomcatBasedir = Paths.get(XENV_ROOT, "var/predator/tomcat");
+            if(Files.notExists(tomcatBasedir)) Files.createDirectories(Paths.get(XENV_ROOT,"var/predator/tomcat/webapps"));
+            tomcat.setBaseDir(tomcatBasedir.toAbsolutePath().toString());
+        } catch (IOException e) {
+            LOG.error("Unable to create tomcat's basedir.", e);
+            throw new RuntimeException("Unable to create tomcat's basedir.", e);
+        }
+
+        try {
+            extractWebapp();
+        } catch (IOException e) {
+            LOG.error("Unable to extract webapp.", e);
+            throw new RuntimeException("Unable to extract webapp.", e);
+        }
+
+        String webapp = Paths.get(XENV_ROOT).resolve(VAR_PREDATOR_ROOT_WAR).toAbsolutePath().toString();
+
+        try {
+            LOG.info("Adding webapp {}", webapp);
+            org.apache.catalina.Context context = tomcat.addWebapp("/", webapp);
+            WebappLoader loader =
+                    new WebappLoader(Thread.currentThread().getContextClassLoader());
+            context.setLoader(loader);
+        } catch (ServletException e) {
+            LOG.error("Unable to add webapp to tomcat.", e);
+            throw new RuntimeException("Unable to add webapp to tomcat.", e);
+        }
+
+    }
+
+    private static void extractWebapp() throws IOException {
+        InputStream webapp = PreExperimentDataCollector.class.getResourceAsStream("/ROOT.war");
+
+        Path cwd = Paths.get(XENV_ROOT);
+
+        Files.copy(webapp, Files.createDirectories(cwd.resolve("var/predator")).resolve("ROOT.war"), StandardCopyOption.REPLACE_EXISTING);
     }
 }
