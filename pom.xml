@@ -302,7 +302,7 @@
                             <warName>ROOT</warName>
                             <warSourceDirectory>${project.basedir}/webapp</warSourceDirectory>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                            <webappDirectory>${project.build.directory}/webapp</webappDirectory>
+                            <webappDirectory>${project.build.directory}/ROOT</webappDirectory>
                             <packagingExcludes>
                                 WEB-INF/lib/*,
                                 WEB-INF/classes/*
