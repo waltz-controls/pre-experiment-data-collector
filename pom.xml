@@ -46,7 +46,7 @@
         users. Prior the experiment the users have to fill out the form. In this form there are several fields that
         describes the ongoing experiment (samples, purposes etc.)
     </description>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.2</version>
 
     <packaging>jar</packaging>
 
