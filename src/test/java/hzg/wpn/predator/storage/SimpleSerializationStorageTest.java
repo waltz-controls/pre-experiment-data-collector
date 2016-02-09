@@ -52,9 +52,9 @@ public class SimpleSerializationStorageTest {
 
         DynaBean data = createTestData();
 
-        instance.save(data, Paths.get("/test-user"));
+        instance.save(data, Paths.get("test-user"));
 
-        DynaBean result = instance.load("test-data", Paths.get("/test-user"));
+        DynaBean result = instance.load("test-data", Paths.get("test-user"));
 
         assertEquals(expected.get("string"), result.get("string"));
         assertEquals(expected.get("number"), result.get("number"));
