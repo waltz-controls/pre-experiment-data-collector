@@ -30,10 +30,12 @@
 package hzg.wpn.tango;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import fr.esrf.Tango.AttrWriteType;
 import fr.esrf.Tango.DevFailed;
+import fr.esrf.TangoApi.PipeBlobBuilder;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.web.ApplicationLoader;
@@ -56,6 +58,7 @@ import org.tango.server.attribute.AttributeConfiguration;
 import org.tango.server.attribute.AttributeValue;
 import org.tango.server.attribute.IAttributeBehavior;
 import org.tango.server.dynamic.DynamicManager;
+import org.tango.server.pipe.PipeValue;
 import org.tango.utils.DevFailedUtils;
 
 import javax.annotation.Nullable;
@@ -64,6 +67,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -79,6 +83,7 @@ import java.util.jar.JarFile;
 @Device
 public class PreExperimentDataCollector {
     private static final Logger logger = LoggerFactory.getLogger(PreExperimentDataCollector.class);
+    public static final String ERROR_MESSAGE = "data_set is null. load_data_set first.";
 
     private static ApplicationContext APPLICATION_CONTEXT;
     private ApplicationContext appCtx;
@@ -89,6 +94,27 @@ public class PreExperimentDataCollector {
 
     public synchronized static void setStaticContext(ApplicationContext applicationContext) {
         APPLICATION_CONTEXT = applicationContext;
+    }
+
+    @Pipe
+    private PipeValue pipe;
+
+    public PipeValue getPipe() {
+        Preconditions.checkNotNull(data, ERROR_MESSAGE);
+
+        PipeBlobBuilder pbb = new PipeBlobBuilder("any");//see DFS
+
+        for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
+            Object property = BeanUtilsHelper.getProperty(data, dynaProperty.getName(), dynaProperty.getType());
+            if(property == null) continue;
+            Object value = Array.newInstance(dynaProperty.getType(), 1);
+            Array.set(value, 0, property);
+            pbb.add(dynaProperty.getName(), value);
+        }
+
+        PipeValue result = new PipeValue();
+        result.setValue(pbb.build(), System.currentTimeMillis());
+        return result;
     }
 
     /**
