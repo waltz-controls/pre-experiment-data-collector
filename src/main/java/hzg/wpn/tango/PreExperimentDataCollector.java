@@ -104,6 +104,9 @@ public class PreExperimentDataCollector {
 
         PipeBlobBuilder pbb = new PipeBlobBuilder("any");//see DFS
 
+        pbb.add("append", false);
+
+        PipeBlobBuilder dataBlob = new PipeBlobBuilder("data");
         for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
             Class<?> type = dynaProperty.getType();
             Object property = BeanUtilsHelper.getProperty(data, dynaProperty.getName(), type);
@@ -116,11 +119,13 @@ public class PreExperimentDataCollector {
                 Array.set(value, 0, property);
             }
 
-            pbb.add(dynaProperty.getName(),
+            dataBlob.add(dynaProperty.getName(),
                     new PipeBlobBuilder(dynaProperty.getName())
                             .add("value", value)
                             .build());
         }
+
+        pbb.add("data", dataBlob.build());
 
         PipeValue result = new PipeValue();
         result.setValue(pbb.build(), System.currentTimeMillis());
