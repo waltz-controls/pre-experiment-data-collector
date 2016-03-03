@@ -33,18 +33,16 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import fr.esrf.Tango.AttrWriteType;
 import fr.esrf.Tango.DevFailed;
+import fr.esrf.Tango.DevState;
 import fr.esrf.TangoApi.PipeBlobBuilder;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.web.ApplicationLoader;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
-import org.apache.catalina.Context;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.realm.GenericPrincipal;
-import org.apache.catalina.realm.JAASRealm;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
@@ -62,20 +60,13 @@ import org.tango.server.pipe.PipeValue;
 import org.tango.utils.DevFailedUtils;
 
 import javax.annotation.Nullable;
-import javax.security.auth.kerberos.KerberosPrincipal;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Array;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.jar.JarFile;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Designed to be Thread condemned
@@ -88,6 +79,17 @@ public class PreExperimentDataCollector {
     private static ApplicationContext APPLICATION_CONTEXT;
     private ApplicationContext appCtx;
     private volatile DynaBean data;
+
+    @State
+    private volatile DevState state;
+
+    public DevState getState() {
+        return state;
+    }
+
+    public void setState(DevState state) {
+        this.state = state;
+    }
 
     @DynamicManagement
     private DynamicManager dynamic;
@@ -206,16 +208,23 @@ public class PreExperimentDataCollector {
         this.dynamic = dynamic;
     }
 
+    private static final Tomcat TOMCAT = new Tomcat();
+    private static final ExecutorService TOMCAT_STARTER = Executors.newSingleThreadExecutor(
+            new ThreadFactoryBuilder().setNameFormat("PreExperimentDataCollector embedded tomcat starter").setDaemon(true).build());
+
     @Init
     @StateMachine(endState = DeviceState.ON)
     public void init() throws Exception {
-        this.appCtx = APPLICATION_CONTEXT;
+        TOMCAT_STARTER.execute(new TomcatStarterTask());
 
-        //populate attributes
-        for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
-            dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
-        }
+
         //TODO set status
+    }
+
+    @Delete
+    public void delete() throws Exception {
+        TOMCAT.stop();
+        TOMCAT_STARTER.shutdownNow();
     }
 
     private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx) {
@@ -255,18 +264,36 @@ public class PreExperimentDataCollector {
     }
 
     public static void main(String... args) throws Exception {
-        //TODO start tomcat
-        Tomcat tomcat = new Tomcat();
-        tomcat.setPort(8333);//TODO move to server properties?
-
-        ApplicationLoader.initializeWebapp(tomcat);
-
-        ApplicationLoader.initializeLoginProperties(tomcat);
-
-        tomcat.start();
+        TOMCAT.setPort(8333);//TODO move to server properties?
 
         ServerManager.getInstance().start(args, PreExperimentDataCollector.class);
+    }
 
-        //TODO get this instance and set tomcat
+    public class TomcatStarterTask implements Runnable {
+        @Override
+        public void run() {
+            ApplicationLoader.initializeWebapp(TOMCAT);
+
+            ApplicationLoader.initializeLoginProperties(TOMCAT);
+
+            try {
+                TOMCAT.start();
+
+                appCtx = APPLICATION_CONTEXT;
+
+                //populate attributes
+                for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
+                    dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
+                }
+            } catch (LifecycleException e) {
+                logger.error("Failed to start Tomcat: {}", e.getMessage());
+                setState(DevState.FAULT);
+                //TODO status
+            } catch (DevFailed devFailed) {
+                DevFailedUtils.logDevFailed(devFailed, logger);
+                setState(DevState.FAULT);
+                //TODO status
+            }
+        }
     }
 }
