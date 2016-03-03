@@ -41,6 +41,7 @@ import fr.esrf.TangoApi.PipeBlobBuilder;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.web.ApplicationLoader;
+import hzg.wpn.predator.web.LoginProperties;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
@@ -49,12 +50,14 @@ import org.apache.commons.beanutils.DynaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tango.DeviceState;
+import org.tango.client.ez.util.TangoUtils;
 import org.tango.server.ServerManager;
 import org.tango.server.StateMachineBehavior;
 import org.tango.server.annotation.*;
 import org.tango.server.attribute.AttributeConfiguration;
 import org.tango.server.attribute.AttributeValue;
 import org.tango.server.attribute.IAttributeBehavior;
+import org.tango.server.device.DeviceManager;
 import org.tango.server.dynamic.DynamicManager;
 import org.tango.server.pipe.PipeValue;
 import org.tango.utils.DevFailedUtils;
@@ -67,6 +70,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Designed to be Thread condemned
@@ -78,9 +82,16 @@ public class PreExperimentDataCollector {
 
     private static ApplicationContext APPLICATION_CONTEXT;
     private ApplicationContext appCtx;
+    //@Monitored
+    private LoginProperties loginProperties;
+    //@MonitoredSpecial(DataHandler.class)
     private volatile DynaBean data;
 
+    @DeviceManagement
+    private DeviceManager deviceManager;
+
     @State
+    //@Monitored
     private volatile DevState state;
 
     public DevState getState() {
@@ -132,6 +143,36 @@ public class PreExperimentDataCollector {
         PipeValue result = new PipeValue();
         result.setValue(pbb.build(), System.currentTimeMillis());
         return result;
+    }
+
+    @Pipe(name = "status")
+    private final PipeValue statusPipe = new PipeValue();
+
+    public PipeValue getStatusPipe() {
+        //aspect
+        PipeBlobBuilder pbb = new PipeBlobBuilder("status");
+
+        //TODO walk through @Monitored and put them into pipe
+
+        pbb.add("state", state);
+        pbb.add("status", "NA");//TODO status
+        pbb.add("dataset", data != null ? BeanUtilsHelper.getProperty(data,Meta.NAME, String.class) : "NONE");
+
+        pbb.add("auth", loginProperties.isKerberos ? "kerberos" : "basic");
+        pbb.add("tomcatUserName", loginProperties.tomcatUserName);
+        pbb.add("tomcatUserPassword", loginProperties.tomcatUserPassword);
+        pbb.add("kerberosRealm", loginProperties.kerberosRealm);
+        pbb.add("kerberosKdc", loginProperties.kerberosKdc);
+
+        try {
+            pbb.add("datasets", datasets());
+        } catch (Exception e) {
+            logger.warn("Failed to load datasets: {}", e.getMessage());
+        }
+
+        //pipe value is set in aspect
+        statusPipe.setValue(pbb.build(), System.currentTimeMillis());
+        return statusPipe;
     }
 
     /**
@@ -197,11 +238,30 @@ public class PreExperimentDataCollector {
 
     @Command(inTypeDesc = "dataset_name")
     @StateMachine(endState = DeviceState.STANDBY)
+    //@UpdatesMonitor -- basically calls pushStatus inside aspect
     public void load_data_set(final String name) throws Exception {
         //get all users
         Iterable<String> users = appCtx.getUsers();
         //add all data sets of each user
         this.data = getDataSet(name, users);
+        pushStatus();
+    }
+
+    //aspect
+    private void pushStatus() {
+        try {
+            deviceManager.pushPipeEvent("statusPipe", getStatusPipe());
+        } catch (DevFailed devFailed) {
+            if(getState() == DevState.FAULT){
+                logger.error("Failed to push statusPipe event: {}", TangoUtils.convertDevFailedToException(devFailed).getMessage());
+                return;//give up
+            }
+
+            setState(DevState.FAULT);
+            //TODO status
+
+            pushStatus();
+        }
     }
 
     public void setDynamic(DynamicManager dynamic) {
@@ -216,7 +276,6 @@ public class PreExperimentDataCollector {
     @StateMachine(endState = DeviceState.ON)
     public void init() throws Exception {
         TOMCAT_STARTER.execute(new TomcatStarterTask());
-
 
         //TODO set status
     }
@@ -274,7 +333,7 @@ public class PreExperimentDataCollector {
         public void run() {
             ApplicationLoader.initializeWebapp(TOMCAT);
 
-            ApplicationLoader.initializeLoginProperties(TOMCAT);
+            loginProperties = ApplicationLoader.initializeLoginProperties(TOMCAT);
 
             try {
                 TOMCAT.start();

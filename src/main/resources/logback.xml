@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <jmxConfigurator />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%p %d{dd-MM-yyyy HH:mm:ss,SSS} [%t - %C{1}] %m%n</pattern>
+        </layout>
+    </appender>
+
+    <logger name="org.apache" level="ERROR"/>
+    <logger name="org.jacorb" level="ERROR" />
+    <logger name="org.tango" level="DEBUG"/>
+    <logger name="hzg.wpn" level="TRACE"/>
+    <logger name="org.quartz" level="ERROR" />
+    <logger name="net.sf.ehcache" level="ERROR" />
+
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

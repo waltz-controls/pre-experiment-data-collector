@@ -85,7 +85,7 @@ public class ApplicationLoader implements ServletContextListener {
         }
     }
 
-    public static void initializeLoginProperties(Tomcat tomcat) {
+    public static LoginProperties initializeLoginProperties(Tomcat tomcat) {
         try {
             Properties loginProperties = ResourceManager.loadProperties(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, LOGIN_PROPERTIES);
 
@@ -112,6 +112,9 @@ public class ApplicationLoader implements ServletContextListener {
                 tomcat.addUser(userName, userPass);
                 tomcat.addRole(userName, "user");
             }
+
+            PropertiesParser<LoginProperties> factory = PropertiesParser.createInstance(LoginProperties.class);
+            return factory.parseProperties(loginProperties);
         } catch (IOException e) {
             LOG.error("Cannot initialize login.properties", e);
             throw new RuntimeException(e);
