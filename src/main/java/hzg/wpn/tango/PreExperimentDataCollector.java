@@ -37,6 +37,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import fr.esrf.Tango.AttrWriteType;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevState;
+import fr.esrf.TangoApi.PipeBlob;
 import fr.esrf.TangoApi.PipeBlobBuilder;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
@@ -89,6 +90,10 @@ public class PreExperimentDataCollector {
 
     @DeviceManagement
     private DeviceManager deviceManager;
+
+    public void setDeviceManager(DeviceManager deviceManager) {
+        this.deviceManager = deviceManager;
+    }
 
     @State
     //@Monitored
@@ -148,8 +153,9 @@ public class PreExperimentDataCollector {
     @Pipe(name = "status")
     private final PipeValue statusPipe = new PipeValue();
 
-    public PipeValue getStatusPipe() {
-        //aspect
+    //aspect
+    private PipeBlob updateStatus(){
+
         PipeBlobBuilder pbb = new PipeBlobBuilder("status");
 
         //TODO walk through @Monitored and put them into pipe
@@ -170,8 +176,13 @@ public class PreExperimentDataCollector {
             logger.warn("Failed to load datasets: {}", e.getMessage());
         }
 
+        return pbb.build();
+    }
+
+
+    public PipeValue getStatusPipe() {
         //pipe value is set in aspect
-        statusPipe.setValue(pbb.build(), System.currentTimeMillis());
+        statusPipe.setValue(updateStatus(), System.currentTimeMillis());
         return statusPipe;
     }
 
@@ -250,7 +261,7 @@ public class PreExperimentDataCollector {
     //aspect
     private void pushStatus() {
         try {
-            deviceManager.pushPipeEvent("statusPipe", getStatusPipe());
+            deviceManager.pushPipeEvent("status", getStatusPipe());
         } catch (DevFailed devFailed) {
             if(getState() == DevState.FAULT){
                 logger.error("Failed to push statusPipe event: {}", TangoUtils.convertDevFailedToException(devFailed).getMessage());
