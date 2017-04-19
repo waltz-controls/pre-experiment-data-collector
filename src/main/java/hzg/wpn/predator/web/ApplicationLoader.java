@@ -1,5 +1,6 @@
 package hzg.wpn.predator.web;
 
+import de.hzg.wpi.utils.authorization.Kerberos;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.storage.SimpleSerializationStorage;
@@ -8,8 +9,6 @@ import hzg.wpn.properties.PropertiesParser;
 import hzg.wpn.tango.PreExperimentDataCollector;
 import hzg.wpn.xenv.ResourceManager;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.realm.GenericPrincipal;
-import org.apache.catalina.realm.JAASRealm;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
@@ -17,12 +16,7 @@ import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tango.server.ServerManager;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.security.auth.kerberos.KerberosPrincipal;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -33,11 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -49,6 +39,8 @@ public class ApplicationLoader implements ServletContextListener {
     public static final String APPLICATION_PROPERTIES = "application.properties";
     public static final String META_YAML = "meta.yaml";
     public static final String ETC_PRE_EXPERIMENT_DATA_COLLECTOR = "etc/PreExperimentDataCollector";
+    public static final String XENV_ROOT;
+    public static final String VAR_PREDATOR_ROOT_WAR = "var/predator/ROOT.war";
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationLoader.class);
 
     static {
@@ -58,30 +50,10 @@ public class ApplicationLoader implements ServletContextListener {
         ConvertUtils.register(integerConverter, Integer.class);   // Wrapper class
     }
 
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-
-
-        ApplicationProperties appProperties = initializeApplicationProperties();
-
-        ApplicationContext context = initializeApplicationContext(appProperties, sce.getServletContext());
-        sce.getServletContext().setAttribute(APPLICATION_CONTEXT, context);
-
-        //TODO avoid this hack
-        PreExperimentDataCollector.setStaticContext(context);
-    }
-
-    private ApplicationProperties initializeApplicationProperties() {
-        try {
-            Properties properties = ResourceManager.loadProperties(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, APPLICATION_PROPERTIES);
-
-            PropertiesParser<ApplicationProperties> factory = PropertiesParser.createInstance(ApplicationProperties.class);
-            ApplicationProperties appProperties = factory.parseProperties(properties);
-            return appProperties;
-        } catch (Exception e) {
-            LOG.error("Cannot initialize application properties", e);
-            throw new RuntimeException(e);
-        }
+    static {
+        String xenv_rootProperty = System.getProperty("XENV_ROOT", System.getenv("XENV_ROOT"));
+        XENV_ROOT = xenv_rootProperty == null ? "." : xenv_rootProperty;
+        LOG.info("XENV_ROOT={}", XENV_ROOT);
     }
 
     public static void initializeLoginProperties(Tomcat tomcat) {
@@ -90,20 +62,8 @@ public class ApplicationLoader implements ServletContextListener {
 
             boolean useKerberos = Boolean.parseBoolean(loginProperties.getProperty("predator.tomcat.use.kerberos"));
             if (useKerberos) {
-                for (Map.Entry<Object, Object> entry : loginProperties.entrySet()) {
-                    if (entry.getKey().toString().startsWith("java.security"))
-                        System.getProperties().put(entry.getKey(), entry.getValue());
-                }
-
-                JAASRealm jaasRealm = new JAASRealm();
-
-                jaasRealm.setAppName("PreExperimentDataCollector");
-                jaasRealm.setUserClassNames(KerberosPrincipal.class.getName());
-                jaasRealm.setRoleClassNames(GenericPrincipal.class.getName());
-                jaasRealm.setUseContextClassLoader(true);
-                jaasRealm.setConfigFile("jaas.conf");
-
-                tomcat.getEngine().setRealm(jaasRealm);
+                Kerberos kerberos = new Kerberos();
+                kerberos.configure();
             } else {
                 String userName = loginProperties.getProperty("predator.tomcat.user.name");
                 String userPass = loginProperties.getProperty("predator.tomcat.user.pass");
@@ -116,49 +76,6 @@ public class ApplicationLoader implements ServletContextListener {
             throw new RuntimeException(e);
         }
     }
-
-    /**
-     * Initializes {@link ApplicationContext} and puts it into ServletContext
-     *
-     * @param appProperties
-     * @param servletContext
-     */
-    private ApplicationContext initializeApplicationContext(ApplicationProperties appProperties, ServletContext servletContext) {
-        String realPath = servletContext.getRealPath("/");
-        String contextPath = servletContext.getContextPath();
-        try {
-
-            String beamtimeId = appProperties.beamtimeId;
-
-            Storage storage = new SimpleSerializationStorage();
-
-            Meta meta = new Meta(ResourceManager.loadResource(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, META_YAML));
-            DynaClass dataClass = meta.extractDynaClass();
-
-            ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass);
-
-            return context;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        LOG.info("Context destroyed");
-    }
-
-    public static final String XENV_ROOT;
-
-    static {
-        String xenv_rootProperty = System.getProperty("XENV_ROOT", System.getenv("XENV_ROOT"));
-        XENV_ROOT = xenv_rootProperty == null ? "." : xenv_rootProperty;
-        LOG.info("XENV_ROOT={}", XENV_ROOT);
-    }
-
-    public static final String VAR_PREDATOR_ROOT_WAR = "var/predator/ROOT.war";
-
 
     public static void initializeWebapp(Tomcat tomcat) {
         try {
@@ -199,5 +116,62 @@ public class ApplicationLoader implements ServletContextListener {
         Path cwd = Paths.get(XENV_ROOT);
 
         Files.copy(webapp, Files.createDirectories(cwd.resolve("var/predator")).resolve("ROOT.war"), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+
+
+        ApplicationProperties appProperties = initializeApplicationProperties();
+
+        ApplicationContext context = initializeApplicationContext(appProperties, sce.getServletContext());
+        sce.getServletContext().setAttribute(APPLICATION_CONTEXT, context);
+
+        //TODO avoid this hack
+        PreExperimentDataCollector.setStaticContext(context);
+    }
+
+    private ApplicationProperties initializeApplicationProperties() {
+        try {
+            Properties properties = ResourceManager.loadProperties(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, APPLICATION_PROPERTIES);
+
+            PropertiesParser<ApplicationProperties> factory = PropertiesParser.createInstance(ApplicationProperties.class);
+            ApplicationProperties appProperties = factory.parseProperties(properties);
+            return appProperties;
+        } catch (Exception e) {
+            LOG.error("Cannot initialize application properties", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Initializes {@link ApplicationContext} and puts it into ServletContext
+     *
+     * @param appProperties
+     * @param servletContext
+     */
+    private ApplicationContext initializeApplicationContext(ApplicationProperties appProperties, ServletContext servletContext) {
+        String realPath = servletContext.getRealPath("/");
+        String contextPath = servletContext.getContextPath();
+        try {
+
+            String beamtimeId = appProperties.beamtimeId;
+
+            Storage storage = new SimpleSerializationStorage();
+
+            Meta meta = new Meta(ResourceManager.loadResource(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, META_YAML));
+            DynaClass dataClass = meta.extractDynaClass();
+
+            ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass);
+
+            return context;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        LOG.info("Context destroyed");
     }
 }

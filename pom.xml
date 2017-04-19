@@ -28,7 +28,8 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <properties>
         <tomcat.version>7.0.67</tomcat.version>
@@ -158,6 +159,11 @@
             <groupId>org.bitbucket.ingvord</groupId>
             <artifactId>jmvc-backend</artifactId>
             <version>0.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>de.hzg.wpi.utils</groupId>
+            <artifactId>krb-authorization</artifactId>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>
@@ -313,4 +319,21 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-hzg</id>
+            <url>http://dl.bintray.com/hzgde/hzg-wpn-projects</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-ingvord</id>
+            <url>http://dl.bintray.com/ingvord/maven</url>
+        </repository>
+    </repositories>
 </project>
