@@ -153,7 +153,7 @@
         <dependency>
             <groupId>hzg.wpn</groupId>
             <artifactId>utils</artifactId>
-            <version>0.0.6</version>
+            <version>0.0.7</version>
         </dependency>
         <dependency>
             <groupId>org.bitbucket.ingvord</groupId>

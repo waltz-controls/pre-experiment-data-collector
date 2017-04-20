@@ -16,6 +16,7 @@ import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tango.server.ServerManagerUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -56,7 +57,7 @@ public class ApplicationLoader implements ServletContextListener {
         LOG.info("XENV_ROOT={}", XENV_ROOT);
     }
 
-    public static void initializeLoginProperties(Tomcat tomcat) {
+    public static LoginProperties initializeLoginProperties(Tomcat tomcat) {
         try {
             Properties loginProperties = ResourceManager.loadProperties(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, LOGIN_PROPERTIES);
 
@@ -71,6 +72,9 @@ public class ApplicationLoader implements ServletContextListener {
                 tomcat.addUser(userName, userPass);
                 tomcat.addRole(userName, "user");
             }
+
+            PropertiesParser<LoginProperties> factory = PropertiesParser.createInstance(LoginProperties.class);
+            return factory.parseProperties(loginProperties);
         } catch (IOException e) {
             LOG.error("Cannot initialize login.properties", e);
             throw new RuntimeException(e);
