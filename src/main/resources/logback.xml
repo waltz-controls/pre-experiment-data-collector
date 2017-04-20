@@ -12,6 +12,7 @@
     <logger name="org.jacorb" level="ERROR" />
     <logger name="org.tango" level="DEBUG"/>
     <logger name="hzg.wpn" level="TRACE"/>
+    <logger name="de.hzg.wpi.utils.authorization" level="TRACE"/>
     <logger name="org.quartz" level="ERROR" />
     <logger name="net.sf.ehcache" level="ERROR" />
 

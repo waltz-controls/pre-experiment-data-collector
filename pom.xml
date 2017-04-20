@@ -163,7 +163,7 @@
         <dependency>
             <groupId>de.hzg.wpi.utils</groupId>
             <artifactId>krb-authorization</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1</version>
         </dependency>
     </dependencies>
     <build>

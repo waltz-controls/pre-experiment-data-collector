@@ -1,6 +1,7 @@
 package hzg.wpn.predator.web;
 
 import de.hzg.wpi.utils.authorization.Kerberos;
+import de.hzg.wpi.utils.authorization.PlainText;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.storage.SimpleSerializationStorage;
@@ -16,7 +17,6 @@ import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tango.server.ServerManagerUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -63,14 +63,11 @@ public class ApplicationLoader implements ServletContextListener {
 
             boolean useKerberos = Boolean.parseBoolean(loginProperties.getProperty("predator.tomcat.use.kerberos"));
             if (useKerberos) {
-                Kerberos kerberos = new Kerberos();
+                Kerberos kerberos = new Kerberos(tomcat, "PreExperimentDataCollector");
                 kerberos.configure();
             } else {
-                String userName = loginProperties.getProperty("predator.tomcat.user.name");
-                String userPass = loginProperties.getProperty("predator.tomcat.user.pass");
-
-                tomcat.addUser(userName, userPass);
-                tomcat.addRole(userName, "user");
+                PlainText plainText = PlainText.fromProperties(tomcat, loginProperties);
+                plainText.configure();
             }
 
             PropertiesParser<LoginProperties> factory = PropertiesParser.createInstance(LoginProperties.class);

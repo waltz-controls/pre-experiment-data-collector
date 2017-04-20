@@ -71,33 +71,49 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Designed to be Thread condemned
  */
 @Device
 public class PreExperimentDataCollector {
-    private static final Logger logger = LoggerFactory.getLogger(PreExperimentDataCollector.class);
     public static final String ERROR_MESSAGE = "data_set is null. load_data_set first.";
-
+    public static final int TOMCAT_PORT = 10002;
+    private static final Logger logger = LoggerFactory.getLogger(PreExperimentDataCollector.class);
+    private static final Tomcat TOMCAT = new Tomcat();
+    private static final ExecutorService TOMCAT_STARTER = Executors.newSingleThreadExecutor(
+            new ThreadFactoryBuilder().setNameFormat("PreExperimentDataCollector embedded tomcat starter").setDaemon(true).build());
     private static ApplicationContext APPLICATION_CONTEXT;
+    @Pipe(name = "status")
+    private final PipeValue statusPipe = new PipeValue();
     private ApplicationContext appCtx;
     //@Monitored
     private LoginProperties loginProperties;
     //@MonitoredSpecial(DataHandler.class)
     private volatile DynaBean data;
-
     @DeviceManagement
     private DeviceManager deviceManager;
+    @State
+    //@Monitored
+    private volatile DevState state;
+    @DynamicManagement
+    private DynamicManager dynamic;
+    @Pipe
+    private PipeValue pipe;
+
+    public synchronized static void setStaticContext(ApplicationContext applicationContext) {
+        APPLICATION_CONTEXT = applicationContext;
+    }
+
+    public static void main(String... args) throws Exception {
+        TOMCAT.setPort(TOMCAT_PORT);
+
+        ServerManager.getInstance().start(args, PreExperimentDataCollector.class);
+    }
 
     public void setDeviceManager(DeviceManager deviceManager) {
         this.deviceManager = deviceManager;
     }
-
-    @State
-    //@Monitored
-    private volatile DevState state;
 
     public DevState getState() {
         return state;
@@ -106,16 +122,6 @@ public class PreExperimentDataCollector {
     public void setState(DevState state) {
         this.state = state;
     }
-
-    @DynamicManagement
-    private DynamicManager dynamic;
-
-    public synchronized static void setStaticContext(ApplicationContext applicationContext) {
-        APPLICATION_CONTEXT = applicationContext;
-    }
-
-    @Pipe
-    private PipeValue pipe;
 
     public PipeValue getPipe() {
         Preconditions.checkNotNull(data, ERROR_MESSAGE);
@@ -150,9 +156,6 @@ public class PreExperimentDataCollector {
         return result;
     }
 
-    @Pipe(name = "status")
-    private final PipeValue statusPipe = new PipeValue();
-
     //aspect
     private PipeBlob updateStatus(){
 
@@ -165,10 +168,6 @@ public class PreExperimentDataCollector {
         pbb.add("dataset", data != null ? BeanUtilsHelper.getProperty(data,Meta.NAME, String.class) : "NONE");
 
         pbb.add("auth", loginProperties.isKerberos ? "kerberos" : "basic");
-        pbb.add("tomcatUserName", loginProperties.tomcatUserName);
-        pbb.add("tomcatUserPassword", loginProperties.tomcatUserPassword);
-        pbb.add("kerberosRealm", loginProperties.kerberosRealm);
-        pbb.add("kerberosKdc", loginProperties.kerberosKdc);
 
         try {
             pbb.add("datasets", datasets());
@@ -178,7 +177,6 @@ public class PreExperimentDataCollector {
 
         return pbb.build();
     }
-
 
     public PipeValue getStatusPipe() {
         //pipe value is set in aspect
@@ -279,10 +277,6 @@ public class PreExperimentDataCollector {
         this.dynamic = dynamic;
     }
 
-    private static final Tomcat TOMCAT = new Tomcat();
-    private static final ExecutorService TOMCAT_STARTER = Executors.newSingleThreadExecutor(
-            new ThreadFactoryBuilder().setNameFormat("PreExperimentDataCollector embedded tomcat starter").setDaemon(true).build());
-
     @Init
     @StateMachine(endState = DeviceState.ON)
     public void init() throws Exception {
@@ -331,12 +325,6 @@ public class PreExperimentDataCollector {
                 return stateMachine;
             }
         };
-    }
-
-    public static void main(String... args) throws Exception {
-        TOMCAT.setPort(8333);//TODO move to server properties?
-
-        ServerManager.getInstance().start(args, PreExperimentDataCollector.class);
     }
 
     public class TomcatStarterTask implements Runnable {
