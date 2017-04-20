@@ -41,15 +41,15 @@
         users. Prior the experiment the users have to fill out the form. In this form there are several fields that
         describes the ongoing experiment (samples, purposes etc.)
     </description>
-    <version>3.0.6</version>
+    <version>3.0.7-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
     <scm>
-        <connection>scm:hg:https://bitbucket.org/hzgwpn/${scm.connection.artifactId}</connection>
-        <developerConnection>scm:hg:ssh://hg@bitbucket.org/hzgwpn/${scm.connection.artifactId}</developerConnection>
-        <url>ssh://hg@bitbucket.org/hzgwpn/${scm.connection.artifactId}</url>
-        <tag>mtangorest.server-rc4-0.1</tag>
+        <connection>scm:hg:https://bitbucket.org/hzgwpn/PreExperimentDataCollector/PreExperimentDataCollector</connection>
+        <developerConnection>scm:hg:ssh://hg@bitbucket.org/hzgwpn/PreExperimentDataCollector</developerConnection>
+        <url>ssh://hg@bitbucket.org/hzgwpn/PreExperimentDataCollector/PreExperimentDataCollector</url>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
