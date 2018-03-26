@@ -167,7 +167,7 @@ public class PreExperimentDataCollector {
         pbb.add("status", "NA");//TODO status
         pbb.add("dataset", data != null ? BeanUtilsHelper.getProperty(data,Meta.NAME, String.class) : "NONE");
 
-        pbb.add("auth", loginProperties.isKerberos ? "kerberos" : "basic");
+//        pbb.add("auth", loginProperties.isKerberos ? "kerberos" : "basic");
 
         try {
             pbb.add("datasets", datasets());
@@ -280,9 +280,14 @@ public class PreExperimentDataCollector {
     @Init
     @StateMachine(endState = DeviceState.ON)
     public void init() throws Exception {
-        TOMCAT_STARTER.execute(new TomcatStarterTask());
+//        TOMCAT_STARTER.execute(new TomcatStarterTask());
 
+        appCtx = APPLICATION_CONTEXT;
         //TODO set status
+        //populate attributes
+        for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
+            dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
+        }
     }
 
     @Delete
@@ -337,18 +342,9 @@ public class PreExperimentDataCollector {
             try {
                 TOMCAT.start();
 
-                appCtx = APPLICATION_CONTEXT;
 
-                //populate attributes
-                for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
-                    dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
-                }
             } catch (LifecycleException e) {
                 logger.error("Failed to start Tomcat: {}", e.getMessage());
-                setState(DevState.FAULT);
-                //TODO status
-            } catch (DevFailed devFailed) {
-                DevFailedUtils.logDevFailed(devFailed, logger);
                 setState(DevState.FAULT);
                 //TODO status
             }

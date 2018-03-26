@@ -2,6 +2,7 @@ package hzg.wpn.predator.web;
 
 import de.hzg.wpi.utils.authorization.Kerberos;
 import de.hzg.wpi.utils.authorization.PlainText;
+import fr.esrf.Tango.DevFailed;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.storage.SimpleSerializationStorage;
@@ -17,6 +18,8 @@ import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tango.client.ez.util.TangoUtils;
+import org.tango.server.ServerManager;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -130,6 +133,8 @@ public class ApplicationLoader implements ServletContextListener {
 
         //TODO avoid this hack
         PreExperimentDataCollector.setStaticContext(context);
+
+        ServerManager.getInstance().start(new String[]{"development"}, PreExperimentDataCollector.class);
     }
 
     private ApplicationProperties initializeApplicationProperties() {
@@ -173,6 +178,11 @@ public class ApplicationLoader implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        try {
+            ServerManager.getInstance().stop();
+        } catch (DevFailed devFailed) {
+            throw new RuntimeException(TangoUtils.convertDevFailedToException(devFailed));
+        }
         LOG.info("Context destroyed");
     }
 }

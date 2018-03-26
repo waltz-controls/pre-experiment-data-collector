@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+    <title>Tomography Pre Experiment Data Wizard</title>
+    <link rel="stylesheet" type="text/css"
+          href="${jmvc_root}/stylesheets/smoothness/jquery-ui-1.8.16.custom.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="${jmvc_root}/stylesheets/codemirror/codemirror-4.2.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="${jmvc_root}/stylesheets/codemirror/theme/pastel-on-dark.css"/>
+</head>
+<body>
+<div id="wrapper">
+    <div id="loading-box">
+        <div title="Loading..." id="loading"></div>
+    </div>
+    <div id="example-2" style="display:none;" class="wizard">
+        <div class="header"></div>
+        <div id="Wizard">
+        </div>
+    </div>
+</div>
+<script language="javascript" type="text/javascript">
+    ApplicationContext = {
+        userName: '$user',
+        scheme: '$scheme',
+        serverName: '$serverName',
+        port: $portNumber,
+        domain: '$url'
+    }
+</script>
+<script type="text/javascript" src="${jmvc_root}/libs/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="${jmvc_root}/libs/jquery.noty-2.2.2.packaged.min.js"></script>
+<script type="text/javascript" src="${jmvc_root}/libs/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="${jmvc_root}/libs/codemirror-4.2.min.js"></script>
+<script type="text/javascript" src="${jmvc_root}/jmvc/include.js?admin,production"></script>
+</body>
+</html>

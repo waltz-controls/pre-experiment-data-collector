@@ -41,9 +41,9 @@
         users. Prior the experiment the users have to fill out the form. In this form there are several fields that
         describes the ongoing experiment (samples, purposes etc.)
     </description>
-    <version>3.0.7-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
 
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <scm>
         <connection>scm:hg:https://bitbucket.org/hzgwpn/PreExperimentDataCollector/PreExperimentDataCollector</connection>
