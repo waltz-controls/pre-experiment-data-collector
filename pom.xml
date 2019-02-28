@@ -185,7 +185,7 @@
         <dependency>
             <groupId>de.hzg.wpi.utils</groupId>
             <artifactId>authorization</artifactId>
-            <version>LATEST</version>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
