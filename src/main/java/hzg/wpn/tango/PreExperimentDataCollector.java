@@ -44,7 +44,6 @@ import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.web.ApplicationLoader;
 import hzg.wpn.predator.web.LoginProperties;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
@@ -292,7 +291,6 @@ public class PreExperimentDataCollector {
     }
 
     @Init
-    @StateMachine(endState = DeviceState.ON)
     public void init() throws Exception {
         TOMCAT_STARTER.execute(new TomcatStarterTask());
 
@@ -362,13 +360,14 @@ public class PreExperimentDataCollector {
                 for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
                     dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
                 }
-            } catch (LifecycleException e) {
-                logger.error("Failed to start Tomcat: {}", e.getMessage());
-                setState(DevState.FAULT);
-                //TODO status
+                setState(DevState.ON);
             } catch (DevFailed devFailed) {
                 DevFailedUtils.logDevFailed(devFailed, logger);
                 setState(DevState.FAULT);
+            } catch (Exception e) {
+                logger.error("Failed to start Tomcat: {}", e.getMessage());
+                setState(DevState.FAULT);
+                //TODO status
             }
         }
     }
