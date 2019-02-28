@@ -33,7 +33,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import fr.esrf.Tango.AttrWriteType;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevState;
@@ -44,6 +43,8 @@ import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.web.ApplicationLoader;
 import hzg.wpn.predator.web.LoginProperties;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleState;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
@@ -69,8 +70,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Designed to be Thread condemned
@@ -81,8 +80,6 @@ public class PreExperimentDataCollector {
     public static final int TOMCAT_PORT = 10002;
     private static final Logger logger = LoggerFactory.getLogger(PreExperimentDataCollector.class);
     private static final Tomcat TOMCAT = new Tomcat();
-    private static final ExecutorService TOMCAT_STARTER = Executors.newSingleThreadExecutor(
-            new ThreadFactoryBuilder().setNameFormat("PreExperimentDataCollector embedded tomcat starter").setDaemon(true).build());
     private static ApplicationContext APPLICATION_CONTEXT;
     @Pipe(name = "status")
     private final PipeValue statusPipe = new PipeValue();
@@ -292,14 +289,12 @@ public class PreExperimentDataCollector {
 
     @Init
     public void init() throws Exception {
-        TOMCAT_STARTER.execute(new TomcatStarterTask());
-
+        new TomcatStarterTask().run();
     }
 
     @Delete
     public void delete() throws Exception {
         TOMCAT.stop();
-        TOMCAT_STARTER.shutdownNow();
     }
 
     private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx) {
@@ -339,6 +334,10 @@ public class PreExperimentDataCollector {
         };
     }
 
+    public void setAppCtx(ApplicationContext appCtx) {
+        this.appCtx = appCtx;
+    }
+
     public class TomcatStarterTask implements Runnable {
         @Override
         public void run() {
@@ -353,6 +352,8 @@ public class PreExperimentDataCollector {
 
             try {
                 TOMCAT.start();
+                if (TOMCAT.getConnector().getState() == LifecycleState.FAILED)
+                    throw new LifecycleException("Failed to initialize default connector!");
 
                 appCtx = APPLICATION_CONTEXT;
                 //TODO set status
@@ -367,7 +368,6 @@ public class PreExperimentDataCollector {
             } catch (Exception e) {
                 logger.error("Failed to start Tomcat: {}", e.getMessage());
                 setState(DevState.FAULT);
-                //TODO status
             }
         }
     }
