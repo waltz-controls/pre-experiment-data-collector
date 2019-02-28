@@ -299,7 +299,7 @@ public class PreExperimentDataCollector {
 
     private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx) {
         final StateMachineBehavior stateMachine = new StateMachineBehavior();
-        stateMachine.setDeniedStates(DeviceState.ON);
+        stateMachine.setDeniedStates(DeviceState.FAULT);
         return new IAttributeBehavior() {
             @Override
             public AttributeConfiguration getConfiguration() throws DevFailed {
@@ -313,7 +313,7 @@ public class PreExperimentDataCollector {
 
             @Override
             public AttributeValue getValue() throws DevFailed {
-                if (data == null) DevFailedUtils.throwDevFailed("data_set is null. load_data_set first.");
+                if (data == null) throw DevFailedUtils.newDevFailed("data_set is null. load_data_set first.");
                 return new AttributeValue(BeanUtilsHelper.getProperty(data, getConfiguration().getName(), getConfiguration().getType()));
             }
 
@@ -323,7 +323,7 @@ public class PreExperimentDataCollector {
                 try {
                     appCtx.getManager().save(data);
                 } catch (IOException e) {
-                    DevFailedUtils.throwDevFailed(e.getClass().getSimpleName(), e.getLocalizedMessage());
+                    throw DevFailedUtils.newDevFailed(e.getClass().getSimpleName(), e.getLocalizedMessage());
                 }
             }
 
