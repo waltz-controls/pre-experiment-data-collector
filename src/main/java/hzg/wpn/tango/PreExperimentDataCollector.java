@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import org.tango.DeviceState;
 import org.tango.client.ez.util.TangoUtils;
 import org.tango.server.ServerManager;
+import org.tango.server.ServerManagerUtils;
 import org.tango.server.StateMachineBehavior;
 import org.tango.server.annotation.*;
 import org.tango.server.attribute.AttributeConfiguration;
@@ -96,6 +97,8 @@ public class PreExperimentDataCollector {
     @State
     //@Monitored
     private volatile DevState state;
+    @Status
+    private String status;
     @DynamicManagement
     private DynamicManager dynamic;
     @Pipe
@@ -106,9 +109,8 @@ public class PreExperimentDataCollector {
     }
 
     public static void main(String... args) throws Exception {
-        TOMCAT.setPort(TOMCAT_PORT);
-
         ServerManager.getInstance().start(args, PreExperimentDataCollector.class);
+        ServerManagerUtils.writePidFile(null);
     }
 
     public void setDeviceManager(DeviceManager deviceManager) {
@@ -156,6 +158,14 @@ public class PreExperimentDataCollector {
         return result;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     //aspect
     private PipeBlob updateStatus(){
 
@@ -170,7 +180,7 @@ public class PreExperimentDataCollector {
 //        pbb.add("auth", loginProperties.isKerberos ? "kerberos" : "basic");
 
         try {
-            pbb.add("datasets", datasets());
+            pbb.add("datasets", getDatasets());
         } catch (Exception e) {
             logger.warn("Failed to load datasets: {}", e.getMessage());
         }
@@ -190,8 +200,8 @@ public class PreExperimentDataCollector {
      * @return
      * @throws Exception
      */
-    @Command
-    public String[] datasets() throws Exception {
+    @Attribute
+    public String[] getDatasets() throws Exception {
         List<String> result = new ArrayList<>();
 
         //get all users
@@ -214,6 +224,7 @@ public class PreExperimentDataCollector {
         appCtx.getManager().delete(data);
 
         this.data = null;
+        setStatus(String.format("Dataset[%s] has been deleted", name));
     }
 
     private DynaBean getDataSet(final String name, Iterable<String> users) {
@@ -237,24 +248,27 @@ public class PreExperimentDataCollector {
     }
 
     @Command(inTypeDesc = "user_name;dataset_name")
-    @StateMachine(endState = DeviceState.STANDBY)
     public void create_data_set(String[] args) throws Exception {
         if (args.length != 2)
-            DevFailedUtils.throwDevFailed("Exactly 2 arguments are expected here: user name and data set name.");
-        data = appCtx.getManager().newDataSet(args[0], args[1]);
+            throw DevFailedUtils.newDevFailed("Exactly 2 arguments are expected here: user name and data set name.");
+        String user = args[0];
+        String name = args[1];
+        data = appCtx.getManager().newDataSet(user, name);
         appCtx.getManager().save(data);
+        setStatus(String.format("Dataset[%s] for user[%s] has been created", name, user));
     }
 
     @Command(inTypeDesc = "dataset_name")
-    @StateMachine(endState = DeviceState.STANDBY)
     //@UpdatesMonitor -- basically calls pushStatus inside aspect
     public void load_data_set(final String name) throws Exception {
         //get all users
         Iterable<String> users = appCtx.getUsers();
         //add all data sets of each user
         this.data = getDataSet(name, users);
+        setStatus(String.format("Dataset[%s] has been loaded", name));
         pushStatus();
     }
+
 
     //aspect
     private void pushStatus() {
@@ -280,14 +294,8 @@ public class PreExperimentDataCollector {
     @Init
     @StateMachine(endState = DeviceState.ON)
     public void init() throws Exception {
-//        TOMCAT_STARTER.execute(new TomcatStarterTask());
+        TOMCAT_STARTER.execute(new TomcatStarterTask());
 
-        appCtx = APPLICATION_CONTEXT;
-        //TODO set status
-        //populate attributes
-        for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
-            dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
-        }
     }
 
     @Delete
@@ -305,6 +313,7 @@ public class PreExperimentDataCollector {
                 AttributeConfiguration configuration = new AttributeConfiguration();
                 configuration.setName(dynaProperty.getName());
                 configuration.setType(dynaProperty.getType());
+                configuration.getAttributeProperties().setLabel(dynaProperty.getName());
                 configuration.setWritable(AttrWriteType.READ_WRITE);
                 return configuration;
             }
@@ -335,6 +344,11 @@ public class PreExperimentDataCollector {
     public class TomcatStarterTask implements Runnable {
         @Override
         public void run() {
+            TOMCAT.setPort(TOMCAT_PORT);
+
+            TOMCAT.setConnector(TOMCAT.getConnector());
+
+
             ApplicationLoader.initializeWebapp(TOMCAT);
 
             loginProperties = ApplicationLoader.initializeLoginProperties(TOMCAT);
@@ -342,11 +356,19 @@ public class PreExperimentDataCollector {
             try {
                 TOMCAT.start();
 
-
+                appCtx = APPLICATION_CONTEXT;
+                //TODO set status
+                //populate attributes
+                for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
+                    dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
+                }
             } catch (LifecycleException e) {
                 logger.error("Failed to start Tomcat: {}", e.getMessage());
                 setState(DevState.FAULT);
                 //TODO status
+            } catch (DevFailed devFailed) {
+                DevFailedUtils.logDevFailed(devFailed, logger);
+                setState(DevState.FAULT);
             }
         }
     }

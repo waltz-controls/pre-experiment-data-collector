@@ -10,7 +10,7 @@
 
     <logger name="org.apache" level="ERROR"/>
     <logger name="org.jacorb" level="ERROR" />
-    <logger name="org.tango" level="DEBUG"/>
+    <logger name="org.tango" level="ERROR"/>
     <logger name="hzg.wpn" level="TRACE"/>
     <logger name="de.hzg.wpi.utils.authorization" level="TRACE"/>
     <logger name="org.quartz" level="ERROR" />

@@ -32,7 +32,8 @@
     <modelVersion>4.0.0</modelVersion>
     <properties>
         <tomcat.version>7.0.77</tomcat.version>
-        <scm.connection.artifactId>preexperimentdatacollector</scm.connection.artifactId>
+        <slf4j-api.version>1.7.5</slf4j-api.version>
+        <bitbucket.repo.name>preexperimentdatacollector</bitbucket.repo.name>
     </properties>
 
     <groupId>hzg.wpn</groupId>
@@ -67,7 +68,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-logging-juli</artifactId>
+            <artifactId>tomcat-embed-logging-log4j</artifactId>
             <version>${tomcat.version}</version>
         </dependency>
         <dependency>
@@ -163,22 +164,18 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.5</version>
+            <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-ext</artifactId>
-            <version>1.7.5</version>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>11.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>hzg.wpn</groupId>
-            <artifactId>utils</artifactId>
-            <version>0.0.7</version>
+            <groupId>de.hzg.wpi.tango</groupId>
+            <artifactId>tango-server-bom</artifactId>
+            <version>6</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.bitbucket.ingvord</groupId>
@@ -187,28 +184,17 @@
         </dependency>
         <dependency>
             <groupId>de.hzg.wpi.utils</groupId>
-            <artifactId>krb-authorization</artifactId>
-            <version>0.1</version>
+            <artifactId>authorization</artifactId>
+            <version>LATEST</version>
         </dependency>
         <dependency>
-            <groupId>org.tango</groupId>
-            <artifactId>ezTangORB</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tango.hzg</groupId>
-            <artifactId>JTangoServer</artifactId>
-            <version>RELEASE</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-ext</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.1</version>
         </dependency>
     </dependencies>
     <build>
-        <finalName>PreExperimentDataCollector</finalName>
+        <finalName>PreExperimentDataCollector-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -364,12 +350,60 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.2</version>
                 <configuration>
+                    <localCheckout>true</localCheckout>
                     <useReleaseProfile>true</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>curl</executable>
+                                    <arguments>
+                                        <argument>-s</argument>
+                                        <argument>-u</argument>
+                                        <argument>ingvord:${bitbucket.ingvord.password}</argument>
+                                        <argument>-X</argument>
+                                        <argument>POST</argument>
+                                        <argument>
+                                            https://api.bitbucket.org/2.0/repositories/hzgwpn/${bitbucket.repo.name}/downloads
+                                        </argument>
+                                        <argument>-F</argument>
+                                        <argument>
+                                            files=@${project.build.directory}/${project.artifactId}-${project.version}.jar
+                                        </argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <repositories>
         <repository>

@@ -33,6 +33,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 
+import static hzg.wpn.tango.PreExperimentDataCollector.TOMCAT_PORT;
+
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 30.01.14
@@ -45,7 +47,7 @@ public class ApplicationLoader implements ServletContextListener {
     public static final String ETC_PRE_EXPERIMENT_DATA_COLLECTOR = "etc/PreExperimentDataCollector";
     public static final String XENV_ROOT;
     public static final String VAR_PREDATOR_ROOT_WAR = "var/predator/ROOT.war";
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationLoader.class);
+    private /*TODO*/ static final Logger logger = LoggerFactory.getLogger(ApplicationLoader.class);
 
     static {
         Converter integerConverter =
@@ -57,7 +59,7 @@ public class ApplicationLoader implements ServletContextListener {
     static {
         String xenv_rootProperty = System.getProperty("XENV_ROOT", System.getenv("XENV_ROOT"));
         XENV_ROOT = xenv_rootProperty == null ? "." : xenv_rootProperty;
-        LOG.info("XENV_ROOT={}", XENV_ROOT);
+        logger.info("XENV_ROOT={}", XENV_ROOT);
     }
 
     public static LoginProperties initializeLoginProperties(Tomcat tomcat) {
@@ -66,17 +68,17 @@ public class ApplicationLoader implements ServletContextListener {
 
             boolean useKerberos = Boolean.parseBoolean(loginProperties.getProperty("predator.tomcat.use.kerberos"));
             if (useKerberos) {
-                Kerberos kerberos = new Kerberos(tomcat, "PreExperimentDataCollector");
-                kerberos.configure();
+                Kerberos kerberos = new Kerberos("PreExperimentDataCollector");
+                kerberos.configure(tomcat);
             } else {
-                PlainText plainText = PlainText.fromProperties(tomcat, loginProperties);
-                plainText.configure();
+                PlainText plainText = PlainText.fromProperties(loginProperties);
+                plainText.configure(tomcat);
             }
 
             PropertiesParser<LoginProperties> factory = PropertiesParser.createInstance(LoginProperties.class);
             return factory.parseProperties(loginProperties);
         } catch (IOException e) {
-            LOG.error("Cannot initialize login.properties", e);
+            logger.error("Cannot initialize login.properties", e);
             throw new RuntimeException(e);
         }
     }
@@ -84,34 +86,37 @@ public class ApplicationLoader implements ServletContextListener {
     public static void initializeWebapp(Tomcat tomcat) {
         try {
             //create tomcat's basedir
-            Path tomcatBasedir = Paths.get(XENV_ROOT, "var/predator/tomcat");
-            if(Files.notExists(tomcatBasedir)) Files.createDirectories(Paths.get(XENV_ROOT,"var/predator/tomcat/webapps"));
+            Path tomcatBasedir = Paths.get("tomcat." + TOMCAT_PORT);
+            Path webapps = tomcatBasedir.resolve("webapps");
+            if (Files.notExists(webapps)) {
+                Files.createDirectories(webapps);
+            }
             tomcat.setBaseDir(tomcatBasedir.toAbsolutePath().toString());
         } catch (IOException e) {
-            LOG.error("Unable to create tomcat's basedir.", e);
+            logger.error("Unable to create tomcat's basedir.", e);
             throw new RuntimeException("Unable to create tomcat's basedir.", e);
         }
 
         try {
             extractWebapp();
         } catch (IOException e) {
-            LOG.error("Unable to extract webapp.", e);
+            logger.error("Unable to extract webapp.", e);
             throw new RuntimeException("Unable to extract webapp.", e);
         }
 
         String webapp = Paths.get(XENV_ROOT).resolve(VAR_PREDATOR_ROOT_WAR).toAbsolutePath().toString();
 
+        logger.info("Adding webapp {}", webapp);
         try {
-            LOG.info("Adding webapp {}", webapp);
             org.apache.catalina.Context context = tomcat.addWebapp("/", webapp);
             WebappLoader loader =
                     new WebappLoader(Thread.currentThread().getContextClassLoader());
+            loader.setDelegate(true);
             context.setLoader(loader);
         } catch (ServletException e) {
-            LOG.error("Unable to add webapp to tomcat.", e);
-            throw new RuntimeException("Unable to add webapp to tomcat.", e);
+            logger.error("Failed to add webapp");
+            throw new RuntimeException("Failed to add webapp", e);
         }
-
     }
 
     private static void extractWebapp() throws IOException {
@@ -145,7 +150,7 @@ public class ApplicationLoader implements ServletContextListener {
             ApplicationProperties appProperties = factory.parseProperties(properties);
             return appProperties;
         } catch (Exception e) {
-            LOG.error("Cannot initialize application properties", e);
+            logger.error("Cannot initialize application properties", e);
             throw new RuntimeException(e);
         }
     }
@@ -183,6 +188,6 @@ public class ApplicationLoader implements ServletContextListener {
         } catch (DevFailed devFailed) {
             throw new RuntimeException(TangoUtils.convertDevFailedToException(devFailed));
         }
-        LOG.info("Context destroyed");
+        logger.info("Context destroyed");
     }
 }
