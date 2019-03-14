@@ -51,7 +51,6 @@ import org.apache.commons.beanutils.DynaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tango.DeviceState;
-import org.tango.client.ez.util.TangoUtils;
 import org.tango.server.ServerManager;
 import org.tango.server.ServerManagerUtils;
 import org.tango.server.StateMachineBehavior;
@@ -74,7 +73,7 @@ import java.util.NoSuchElementException;
 /**
  * Designed to be Thread condemned
  */
-@Device
+@Device(transactionType = TransactionType.NONE)
 public class PreExperimentDataCollector {
     public static final String ERROR_MESSAGE = "data_set is null. load_data_set first.";
     public static final int TOMCAT_PORT = 10002;
@@ -142,7 +141,7 @@ public class PreExperimentDataCollector {
             }
 
             dataBlob.add(dynaProperty.getName(),
-                    new PipeBlobBuilder(dynaProperty.getName())
+                    new PipeBlobBuilder("predator:/" + dynaProperty.getName())
                             .add("value", value)
                             .build());
         }
@@ -211,7 +210,7 @@ public class PreExperimentDataCollector {
     }
 
     @Command(inTypeDesc = "dataset_name")
-    @StateMachine(endState = DeviceState.ON)
+    @StateMachine(endState = DeviceState.STANDBY)
     public void delete_data_set(final String name) throws Exception {
         Iterable<String> users = appCtx.getUsers();
 
@@ -244,6 +243,7 @@ public class PreExperimentDataCollector {
     }
 
     @Command(inTypeDesc = "user_name;dataset_name")
+    @StateMachine(endState = DeviceState.ON)
     public void create_data_set(String[] args) throws Exception {
         if (args.length != 2)
             throw DevFailedUtils.newDevFailed("Exactly 2 arguments are expected here: user name and data set name.");
@@ -256,6 +256,7 @@ public class PreExperimentDataCollector {
 
     @Command(inTypeDesc = "dataset_name")
     //@UpdatesMonitor -- basically calls pushStatus inside aspect
+    @StateMachine(endState = DeviceState.ON)
     public void load_data_set(final String name) throws Exception {
         //get all users
         Iterable<String> users = appCtx.getUsers();
@@ -272,7 +273,7 @@ public class PreExperimentDataCollector {
             deviceManager.pushPipeEvent("status", getStatusPipe());
         } catch (DevFailed devFailed) {
             if(getState() == DevState.FAULT){
-                logger.error("Failed to push statusPipe event: {}", TangoUtils.convertDevFailedToException(devFailed).getMessage());
+                DevFailedUtils.logDevFailed(devFailed, logger);
                 return;//give up
             }
 
@@ -288,6 +289,7 @@ public class PreExperimentDataCollector {
     }
 
     @Init
+    @StateMachine(endState = DeviceState.STANDBY)
     public void init() throws Exception {
         new TomcatStarterTask().run();
     }
@@ -299,7 +301,7 @@ public class PreExperimentDataCollector {
 
     private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx) {
         final StateMachineBehavior stateMachine = new StateMachineBehavior();
-        stateMachine.setDeniedStates(DeviceState.FAULT);
+        stateMachine.setDeniedStates(DeviceState.FAULT, DeviceState.STANDBY);
         return new IAttributeBehavior() {
             @Override
             public AttributeConfiguration getConfiguration() throws DevFailed {

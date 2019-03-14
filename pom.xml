@@ -60,6 +60,18 @@
         </repository>
     </distributionManagement>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>de.hzg.wpi.tango</groupId>
+                <artifactId>tango-server-bom</artifactId>
+                <version>12</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
@@ -79,7 +91,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -138,7 +149,6 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.13</version>
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>
@@ -148,7 +158,6 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.1</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
@@ -172,10 +181,12 @@
             <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.hzg.wpi.tango</groupId>
-            <artifactId>tango-server-bom</artifactId>
-            <version>6</version>
-            <type>pom</type>
+            <groupId>hzg.wpn</groupId>
+            <artifactId>utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.tango-controls</groupId>
+            <artifactId>JTangoServer</artifactId>
         </dependency>
         <dependency>
             <groupId>org.bitbucket.ingvord</groupId>
