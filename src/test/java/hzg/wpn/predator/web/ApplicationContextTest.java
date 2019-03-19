@@ -49,6 +49,6 @@ public class ApplicationContextTest {
 
         Path result = ctx.getUserUploadDir(UsefulTestConstants.TEST_USER);
 
-        assertEquals(Paths.get("var/PreExperimentDataCollector/home/test-user/upload"), result);
+        assertEquals(Paths.get(System.getProperty("user.dir")).resolve("var/PreExperimentDataCollector/home/test-user/upload"), result);
     }
 }
