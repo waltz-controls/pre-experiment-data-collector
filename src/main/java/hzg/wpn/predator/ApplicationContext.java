@@ -29,16 +29,12 @@
 
 package hzg.wpn.predator;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.storage.Storage;
 import hzg.wpn.predator.web.ApplicationProperties;
 import hzg.wpn.predator.web.data.DataSetsManager;
-import hzg.wpn.predator.web.data.User;
 import org.apache.commons.beanutils.DynaClass;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -46,6 +42,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static hzg.wpn.predator.web.ApplicationLoader.VAR_PRE_EXPERIMENT_DATA_COLLECTOR;
 
@@ -140,17 +138,6 @@ public class ApplicationContext {
     }
 
     /**
-     * @param relative
-     * @return a path to the home dir on the server without ending '/'
-     */
-    private StringBuilder getHomeDirPath(boolean relative) {
-        return new StringBuilder()
-                .append(relative ? contextPath : realPath)
-                .append(relative ? "/" : "")
-                .append("home");
-    }
-
-    /**
      * @param user
      * @return a path to user's home dir on the server without ending '/'
      */
@@ -169,31 +156,12 @@ public class ApplicationContext {
         return getUserHomeDirPath(user).resolve("upload");
     }
 
-    public Path getHomeDir() throws IOException {
-        Path homeDir = Paths.get(getHomeDirPath(false).toString());
-
-        if (!Files.exists(homeDir)) {
-            Files.createDirectories(homeDir);
+    private Path getHomeDir() throws IOException {
+        if (!Files.exists(home)) {
+            Files.createDirectories(home);
         }
 
-        return homeDir;
-    }
-
-    /**
-     * Returns a {@link java.io.File} representation of the user's home dir on the server. Creates one if no exists.
-     *
-     * @param user
-     * @return dir
-     * @throws IOException if creation attempt failed
-     */
-    public Path getUserHomeDir(User user) throws IOException {
-        Path dir = getHomeDir().resolve(user.getName());
-
-        if (!Files.exists(dir)) {
-            Files.createDirectories(dir);
-        }
-
-        return dir;
+        return home;
     }
 
     /**
@@ -214,11 +182,6 @@ public class ApplicationContext {
     }
 
     public Iterable<String> getUsers() throws IOException {
-        return Iterables.transform(Files.newDirectoryStream(getHomeDir()), new Function<Path, String>() {
-            @Override
-            public String apply(@Nullable Path input) {
-                return input.getFileName().toString();
-            }
-        });
+        return StreamSupport.stream(Files.newDirectoryStream(getHomeDir()).spliterator(), false).map(input -> input.getFileName().toString()).collect(Collectors.toList());
     }
 }
