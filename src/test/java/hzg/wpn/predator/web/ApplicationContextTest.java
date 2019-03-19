@@ -29,8 +29,8 @@
 
 package hzg.wpn.predator.web;
 
-import hzg.wpn.predator.UsefulTestConstants;
 import hzg.wpn.predator.ApplicationContext;
+import hzg.wpn.predator.UsefulTestConstants;
 import org.junit.Test;
 
 import java.nio.file.Path;
@@ -49,6 +49,6 @@ public class ApplicationContextTest {
 
         Path result = ctx.getUserUploadDir(UsefulTestConstants.TEST_USER);
 
-        assertEquals(Paths.get("some/home/test-user/upload"), result);
+        assertEquals(Paths.get("var/PreExperimentDataCollector/home/test-user/upload"), result);
     }
 }
