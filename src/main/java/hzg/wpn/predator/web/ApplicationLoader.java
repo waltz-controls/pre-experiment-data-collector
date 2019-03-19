@@ -42,6 +42,7 @@ public class ApplicationLoader implements ServletContextListener {
     public static final String APPLICATION_PROPERTIES = "application.properties";
     public static final String META_YAML = "meta.yaml";
     public static final String ETC_PRE_EXPERIMENT_DATA_COLLECTOR = "etc/PreExperimentDataCollector";
+    public static final String VAR_PRE_EXPERIMENT_DATA_COLLECTOR = "var/PreExperimentDataCollector";
     public static final String XENV_ROOT;
     public static final String VAR_PREDATOR_ROOT_WAR = "var/predator/ROOT.war";
     private /*TODO*/ static final Logger logger = LoggerFactory.getLogger(ApplicationLoader.class);

@@ -47,6 +47,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static hzg.wpn.predator.web.ApplicationLoader.VAR_PRE_EXPERIMENT_DATA_COLLECTOR;
+
 /**
  * Provides a number of useful methods to deal with agreed file structure on the server.
  * <p/>
@@ -86,10 +88,7 @@ public class ApplicationContext {
         this.properties = properties;
         this.meta = meta;
         this.dataClass = dataClass;
-        this.home =
-                properties.storageRoot != null && !properties.storageRoot.isEmpty() ?
-                        Paths.get(properties.storageRoot) :
-                        Paths.get(realPath, HOME);
+        this.home = Paths.get(VAR_PRE_EXPERIMENT_DATA_COLLECTOR, HOME);
         this.manager = new DataSetsManager(beamtimeId,
                 home, dataClass, storage);
     }
