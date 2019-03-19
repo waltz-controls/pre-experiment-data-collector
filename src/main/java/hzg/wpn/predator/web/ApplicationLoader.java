@@ -158,13 +158,10 @@ public class ApplicationLoader implements ServletContextListener {
     private ApplicationContext initializeApplicationContext(ApplicationProperties appProperties, ServletContext servletContext) {
         String realPath = servletContext.getRealPath("/");
         String contextPath = servletContext.getContextPath();
-        try {
-
-            String beamtimeId = appProperties.beamtimeId;
-
-            Storage storage = new SimpleSerializationStorage();
-
-            Meta meta = new Meta(ResourceManager.loadResource(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, META_YAML));
+        String beamtimeId = appProperties.beamtimeId;
+        Storage storage = new SimpleSerializationStorage();
+        try (InputStream metaAsResourceStream = ResourceManager.loadResource(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, META_YAML)){
+            Meta meta = new Meta(metaAsResourceStream);
             DynaClass dataClass = meta.extractDynaClass();
 
             ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass);

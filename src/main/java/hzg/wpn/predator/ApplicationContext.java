@@ -88,7 +88,7 @@ public class ApplicationContext {
         this.properties = properties;
         this.meta = meta;
         this.dataClass = dataClass;
-        this.home = Paths.get(VAR_PRE_EXPERIMENT_DATA_COLLECTOR, HOME);
+        this.home = Paths.get(System.getProperty("user.dir")).resolve(VAR_PRE_EXPERIMENT_DATA_COLLECTOR).resolve(HOME);
         this.manager = new DataSetsManager(beamtimeId,
                 home, dataClass, storage);
     }
