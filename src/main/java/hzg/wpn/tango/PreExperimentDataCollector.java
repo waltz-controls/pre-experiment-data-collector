@@ -51,6 +51,7 @@ import org.apache.commons.beanutils.DynaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tango.DeviceState;
+import org.tango.server.ChangeEventPusher;
 import org.tango.server.ServerManager;
 import org.tango.server.ServerManagerUtils;
 import org.tango.server.StateMachineBehavior;
@@ -113,17 +114,10 @@ public class PreExperimentDataCollector {
         this.deviceManager = deviceManager;
     }
 
-    public DevState getState() {
-        return state;
-    }
-
-    public void setState(DevState state) {
-        this.state = state;
-        new EventPusher<>("State", state).run();
-    }
-
     public PipeValue getPipe() {
         Preconditions.checkNotNull(data, ERROR_MESSAGE);
+        setState(DevState.RUNNING);
+        setStatus("Reading PreExperimentDataCollector' pipe...");
 
         PipeBlobBuilder pbb = new PipeBlobBuilder("any");//see DFS
 
@@ -152,7 +146,18 @@ public class PreExperimentDataCollector {
 
         PipeValue result = new PipeValue();
         result.setValue(pbb.build(), System.currentTimeMillis());
+        setState(DevState.ON);
+        setStatus("Done!");
         return result;
+    }
+
+    public DevState getState() {
+        return state;
+    }
+
+    public void setState(DevState state) {
+        this.state = state;
+        new ChangeEventPusher<>("State", state, deviceManager).run();
     }
 
     public String getStatus() {
@@ -161,7 +166,7 @@ public class PreExperimentDataCollector {
 
     public void setStatus(String status) {
         this.status = status;
-        new EventPusher<>("Status", status).run();
+        new ChangeEventPusher<>("Status", status, deviceManager).run();
     }
 
     //aspect
@@ -373,35 +378,6 @@ public class PreExperimentDataCollector {
                 logger.error("Failed to start Tomcat: {}", e.getMessage());
                 setState(DevState.FAULT);
             }
-        }
-    }
-
-    private class EventPusher<T> implements Runnable {
-        private final AttributeValue value;
-        private final String attrName;
-
-        private EventPusher(String attrName, T value) {
-            AttributeValue attributeValue;
-            try {
-                attributeValue = new AttributeValue(value);
-            } catch (DevFailed devFailed) {
-                logger.error("Failed to create AttributeValue due to...");
-                DevFailedUtils.logDevFailed(devFailed, logger);
-                attributeValue = null;
-            }
-            this.value = attributeValue;
-            this.attrName = attrName;
-        }
-
-        @Override
-        public void run() {
-            if (value != null)
-                try {
-                    deviceManager.pushEvent(attrName, value, EventType.CHANGE_EVENT);
-                } catch (DevFailed devFailed) {
-                    logger.error("Failed to push event due to...");
-                    DevFailedUtils.logDevFailed(devFailed, logger);
-                }
         }
     }
 }
