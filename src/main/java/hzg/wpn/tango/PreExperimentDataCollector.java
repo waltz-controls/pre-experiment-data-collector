@@ -60,6 +60,7 @@ import org.tango.server.attribute.AttributeValue;
 import org.tango.server.attribute.IAttributeBehavior;
 import org.tango.server.device.DeviceManager;
 import org.tango.server.dynamic.DynamicManager;
+import org.tango.server.events.EventType;
 import org.tango.server.pipe.PipeValue;
 import org.tango.utils.DevFailedUtils;
 
@@ -89,10 +90,10 @@ public class PreExperimentDataCollector {
     private volatile DynaBean data;
     @DeviceManagement
     private DeviceManager deviceManager;
-    @State
+    @State(isPolled = true)
     //@Monitored
     private volatile DevState state;
-    @Status
+    @Status(isPolled = true)
     private String status;
     @DynamicManagement
     private DynamicManager dynamic;
@@ -118,6 +119,7 @@ public class PreExperimentDataCollector {
 
     public void setState(DevState state) {
         this.state = state;
+        new EventPusher<>("State", state).run();
     }
 
     public PipeValue getPipe() {
@@ -159,6 +161,7 @@ public class PreExperimentDataCollector {
 
     public void setStatus(String status) {
         this.status = status;
+        new EventPusher<>("Status", status).run();
     }
 
     //aspect
@@ -263,7 +266,6 @@ public class PreExperimentDataCollector {
         //add all data sets of each user
         this.data = getDataSet(name, users);
         setStatus(String.format("Dataset[%s] has been loaded", name));
-        pushStatus();
     }
 
 
@@ -371,6 +373,35 @@ public class PreExperimentDataCollector {
                 logger.error("Failed to start Tomcat: {}", e.getMessage());
                 setState(DevState.FAULT);
             }
+        }
+    }
+
+    private class EventPusher<T> implements Runnable {
+        private final AttributeValue value;
+        private final String attrName;
+
+        private EventPusher(String attrName, T value) {
+            AttributeValue attributeValue;
+            try {
+                attributeValue = new AttributeValue(value);
+            } catch (DevFailed devFailed) {
+                logger.error("Failed to create AttributeValue due to...");
+                DevFailedUtils.logDevFailed(devFailed, logger);
+                attributeValue = null;
+            }
+            this.value = attributeValue;
+            this.attrName = attrName;
+        }
+
+        @Override
+        public void run() {
+            if (value != null)
+                try {
+                    deviceManager.pushEvent(attrName, value, EventType.CHANGE_EVENT);
+                } catch (DevFailed devFailed) {
+                    logger.error("Failed to push event due to...");
+                    DevFailedUtils.logDevFailed(devFailed, logger);
+                }
         }
     }
 }
