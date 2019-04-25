@@ -51,10 +51,7 @@ import org.apache.commons.beanutils.DynaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tango.DeviceState;
-import org.tango.server.ChangeEventPusher;
-import org.tango.server.ServerManager;
-import org.tango.server.ServerManagerUtils;
-import org.tango.server.StateMachineBehavior;
+import org.tango.server.*;
 import org.tango.server.annotation.*;
 import org.tango.server.attribute.AttributeConfiguration;
 import org.tango.server.attribute.AttributeValue;
@@ -93,7 +90,7 @@ public class PreExperimentDataCollector {
     private DeviceManager deviceManager;
     @State(isPolled = true)
     //@Monitored
-    private volatile DevState state;
+    private volatile DeviceState state;
     @Status(isPolled = true)
     private String status;
     @DynamicManagement
@@ -116,7 +113,7 @@ public class PreExperimentDataCollector {
 
     public PipeValue getPipe() {
         Preconditions.checkNotNull(data, ERROR_MESSAGE);
-        setState(DevState.RUNNING);
+        setState(DeviceState.RUNNING);
         setStatus("Reading PreExperimentDataCollector' pipe...");
 
         PipeBlobBuilder pbb = new PipeBlobBuilder("any");//see DFS
@@ -146,18 +143,18 @@ public class PreExperimentDataCollector {
 
         PipeValue result = new PipeValue();
         result.setValue(pbb.build(), System.currentTimeMillis());
-        setState(DevState.ON);
+        setState(DeviceState.ON);
         setStatus("Done!");
         return result;
     }
 
-    public DevState getState() {
+    public DeviceState getState() {
         return state;
     }
 
-    public void setState(DevState state) {
+    public void setState(DeviceState state) {
         this.state = state;
-        new ChangeEventPusher<>("State", state, deviceManager).run();
+        new StateChangeEventPusher(state, deviceManager).run();
     }
 
     public String getStatus() {
@@ -279,12 +276,12 @@ public class PreExperimentDataCollector {
         try {
             deviceManager.pushPipeEvent("status", getStatusPipe());
         } catch (DevFailed devFailed) {
-            if(getState() == DevState.FAULT){
+            if(getState() == DeviceState.FAULT){
                 DevFailedUtils.logDevFailed(devFailed, logger);
                 return;//give up
             }
 
-            setState(DevState.FAULT);
+            setState(DeviceState.FAULT);
             //TODO status
 
             pushStatus();
@@ -370,13 +367,16 @@ public class PreExperimentDataCollector {
                 for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
                     dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
                 }
-                setState(DevState.ON);
+                setState(DeviceState.ON);
+                setStatus("Tomcat started");
             } catch (DevFailed devFailed) {
                 DevFailedUtils.logDevFailed(devFailed, logger);
-                setState(DevState.FAULT);
+                setState(DeviceState.FAULT);
+                setStatus("Failed to start Tomcat");
             } catch (Exception e) {
                 logger.error("Failed to start Tomcat: {}", e.getMessage());
-                setState(DevState.FAULT);
+                setState(DeviceState.FAULT);
+                setStatus("Failed to start Tomcat");
             }
         }
     }
