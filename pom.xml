@@ -396,7 +396,8 @@
                                         <fileSet>
                                             <directory>${project.build.directory}</directory>
                                             <includes>
-                                                <include>${project.build.finalName}</include>
+                                                <include>${project.build.finalName}.war</include>
+                                                <include>${project.build.finalName}.jar</include>
                                             </includes>
                                         </fileSet>
                                     </fileSets>
