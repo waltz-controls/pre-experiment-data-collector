@@ -30,11 +30,6 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <properties>
-        <tomcat.version>7.0.77</tomcat.version>
-        <slf4j-api.version>1.7.5</slf4j-api.version>
-        <bitbucket.repo.name>preexperimentdatacollector</bitbucket.repo.name>
-    </properties>
 
     <groupId>hzg.wpn</groupId>
     <artifactId>PreExperimentDataCollector</artifactId>
@@ -46,19 +41,19 @@
 
     <packaging>war</packaging>
 
+    <properties>
+        <tomcat.version>7.0.77</tomcat.version>
+        <slf4j-api.version>1.7.5</slf4j-api.version>
+        <github.organization>hzg-wpi</github.organization>
+        <github.repo>pre-experiment-data-collector</github.repo>
+    </properties>
+
     <scm>
-        <connection>scm:hg:https://bitbucket.org/hzgwpn/PreExperimentDataCollector/PreExperimentDataCollector</connection>
-        <developerConnection>scm:hg:ssh://hg@bitbucket.org/hzgwpn/PreExperimentDataCollector</developerConnection>
-        <url>ssh://hg@bitbucket.org/hzgwpn/PreExperimentDataCollector/PreExperimentDataCollector</url>
+        <connection>scm:git:git@github.com:${github.organization}/${github.repo}.git</connection>
+        <developerConnection>scm:git:git@github.com:${github.organization}/${github.repo}.git</developerConnection>
+        <url>https://github.com/${github.organization}/${github.repo}</url>
         <tag>HEAD</tag>
     </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>bintray-hzg</id>
-            <url>https://api.bintray.com/maven/hzgde/hzg-wpn-projects/PreExperimentDataCollector/;publish=1</url>
-        </repository>
-    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -381,32 +376,30 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.5.0</version>
+                        <groupId>de.jutzig</groupId>
+                        <artifactId>github-release-plugin</artifactId>
+                        <version>1.3.0</version>
                         <executions>
                             <execution>
-                                <id>deploy</id>
-                                <phase>deploy</phase>
+                                <id>release</id>
                                 <goals>
-                                    <goal>exec</goal>
+                                    <goal>release</goal>
                                 </goals>
+                                <phase>
+                                    deploy
+                                </phase>
                                 <configuration>
-                                    <executable>curl</executable>
-                                    <arguments>
-                                        <argument>-s</argument>
-                                        <argument>-u</argument>
-                                        <argument>ingvord:${bitbucket.ingvord.password}</argument>
-                                        <argument>-X</argument>
-                                        <argument>POST</argument>
-                                        <argument>
-                                            https://api.bitbucket.org/2.0/repositories/hzgwpn/${bitbucket.repo.name}/downloads
-                                        </argument>
-                                        <argument>-F</argument>
-                                        <argument>
-                                            files=@${project.build.directory}/${project.artifactId}-${project.version}.jar
-                                        </argument>
-                                    </arguments>
+                                    <description>Automated release preformed by maven plugin</description>
+                                    <releaseName>${project.artifactId}-${project.version}</releaseName>
+                                    <tag>${project.artifactId}-${project.version}</tag>
+                                    <fileSets>
+                                        <fileSet>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>${project.build.finalName}</include>
+                                            </includes>
+                                        </fileSet>
+                                    </fileSets>
                                 </configuration>
                             </execution>
                         </executions>
