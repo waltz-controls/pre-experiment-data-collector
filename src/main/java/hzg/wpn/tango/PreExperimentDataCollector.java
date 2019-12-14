@@ -79,42 +79,37 @@ public class PreExperimentDataCollector {
     private static final Logger logger = LoggerFactory.getLogger(PreExperimentDataCollector.class);
     private static final Tomcat TOMCAT = new Tomcat();
     private static ApplicationContext APPLICATION_CONTEXT;
-    @Pipe(name = "status")
-    private final PipeValue statusPipe = new PipeValue();
     private ApplicationContext appCtx;
-    //@Monitored
-    private LoginProperties loginProperties;
     //@MonitoredSpecial(DataHandler.class)
     private volatile DynaBean data;
     @DeviceManagement
     private DeviceManager deviceManager;
-    @State(isPolled = true)
+    @State(isPolled = true, pollingPeriod = 3000)
     //@Monitored
     private volatile DeviceState state;
-    @Status(isPolled = true)
+    @Status(isPolled = true, pollingPeriod = 3000)
     private String status;
     @DynamicManagement
     private DynamicManager dynamic;
-    @Pipe
-    private PipeValue pipe;
 
     public synchronized static void setStaticContext(ApplicationContext applicationContext) {
         APPLICATION_CONTEXT = applicationContext;
     }
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args) {
         ServerManager.getInstance().start(args, PreExperimentDataCollector.class);
-        ServerManagerUtils.writePidFile(null);
     }
 
     public void setDeviceManager(DeviceManager deviceManager) {
         this.deviceManager = deviceManager;
     }
 
+    @Pipe
+    private PipeValue pipe;
+
     public PipeValue getPipe() {
         Preconditions.checkNotNull(data, ERROR_MESSAGE);
-        setState(DeviceState.RUNNING);
-        setStatus("Reading PreExperimentDataCollector' pipe...");
+        logger.debug("Reading PreExperimentDataCollector' pipe...");
 
         PipeBlobBuilder pbb = new PipeBlobBuilder("any");//see DFS
 
@@ -143,8 +138,6 @@ public class PreExperimentDataCollector {
 
         PipeValue result = new PipeValue();
         result.setValue(pbb.build(), System.currentTimeMillis());
-        setState(DeviceState.ON);
-        setStatus("Done!");
         return result;
     }
 
@@ -154,7 +147,6 @@ public class PreExperimentDataCollector {
 
     public void setState(DeviceState state) {
         this.state = state;
-        new StateChangeEventPusher(state, deviceManager).run();
     }
 
     public String getStatus() {
@@ -162,36 +154,7 @@ public class PreExperimentDataCollector {
     }
 
     public void setStatus(String status) {
-        this.status = status;
-        new ChangeEventPusher<>("Status", status, deviceManager).run();
-    }
-
-    //aspect
-    private PipeBlob updateStatus(){
-
-        PipeBlobBuilder pbb = new PipeBlobBuilder("status");
-
-        //TODO walk through @Monitored and put them into pipe
-
-        pbb.add("state", state);
-        pbb.add("status", "NA");//TODO status
-        pbb.add("dataset", data != null ? BeanUtilsHelper.getProperty(data,Meta.NAME, String.class) : "NONE");
-
-//        pbb.add("auth", loginProperties.isKerberos ? "kerberos" : "basic");
-
-        try {
-            pbb.add("datasets", getDatasets());
-        } catch (Exception e) {
-            logger.warn("Failed to load datasets: {}", e.getMessage());
-        }
-
-        return pbb.build();
-    }
-
-    public PipeValue getStatusPipe() {
-        //pipe value is set in aspect
-        statusPipe.setValue(updateStatus(), System.currentTimeMillis());
-        return statusPipe;
+        this.status = String.format("%d: %s",System.currentTimeMillis(), status);
     }
 
     /**
@@ -215,7 +178,6 @@ public class PreExperimentDataCollector {
     }
 
     @Command(inTypeDesc = "dataset_name")
-    @StateMachine(endState = DeviceState.STANDBY)
     public void delete_data_set(final String name) throws Exception {
         Iterable<String> users = appCtx.getUsers();
 
@@ -224,7 +186,8 @@ public class PreExperimentDataCollector {
         appCtx.getManager().delete(data);
 
         this.data = null;
-        setStatus(String.format("Dataset[%s] has been deleted", name));
+        deviceManager.pushStateChangeEvent(DeviceState.STANDBY);
+        deviceManager.pushStatusChangeEvent(String.format("Dataset[%s] has been deleted", name));
     }
 
     private DynaBean getDataSet(final String name, Iterable<String> users) {
@@ -248,7 +211,6 @@ public class PreExperimentDataCollector {
     }
 
     @Command(inTypeDesc = "user_name;dataset_name")
-    @StateMachine(endState = DeviceState.ON)
     public void create_data_set(String[] args) throws Exception {
         if (args.length != 2)
             throw DevFailedUtils.newDevFailed("Exactly 2 arguments are expected here: user name and data set name.");
@@ -256,51 +218,34 @@ public class PreExperimentDataCollector {
         String name = args[1];
         data = appCtx.getManager().newDataSet(user, name);
         appCtx.getManager().save(data);
-        setStatus(String.format("Dataset[%s] for user[%s] has been created", name, user));
+        deviceManager.pushStateChangeEvent(DeviceState.ON);
+        deviceManager.pushStatusChangeEvent(String.format("Dataset[%s] for user[%s] has been created", name, user));
     }
 
     @Command(inTypeDesc = "dataset_name")
-    //@UpdatesMonitor -- basically calls pushStatus inside aspect
-    @StateMachine(endState = DeviceState.ON)
     public void load_data_set(final String name) throws Exception {
         //get all users
         Iterable<String> users = appCtx.getUsers();
         //add all data sets of each user
         this.data = getDataSet(name, users);
-        setStatus(String.format("Dataset[%s] has been loaded", name));
+        deviceManager.pushStateChangeEvent(DeviceState.ON);
+        deviceManager.pushStatusChangeEvent(String.format("Dataset[%s] has been loaded", name));
     }
 
-
-    //aspect
-    private void pushStatus() {
-        try {
-            deviceManager.pushPipeEvent("status", getStatusPipe());
-        } catch (DevFailed devFailed) {
-            if(getState() == DeviceState.FAULT){
-                DevFailedUtils.logDevFailed(devFailed, logger);
-                return;//give up
-            }
-
-            setState(DeviceState.FAULT);
-            //TODO status
-
-            pushStatus();
-        }
-    }
 
     public void setDynamic(DynamicManager dynamic) {
         this.dynamic = dynamic;
     }
 
     @Init
-    @StateMachine(endState = DeviceState.STANDBY)
-    public void init() throws Exception {
+    public void init() {
         new TomcatStarterTask().run();
     }
 
     @Delete
     public void delete() throws Exception {
         TOMCAT.stop();
+        deviceManager.pushStateChangeEvent(DeviceState.OFF);
     }
 
     private IAttributeBehavior createNewAttribute(final DynaProperty dynaProperty, final ApplicationContext appCtx) {
@@ -354,7 +299,7 @@ public class PreExperimentDataCollector {
 
             ApplicationLoader.initializeWebapp(TOMCAT);
 
-            loginProperties = ApplicationLoader.initializeLoginProperties(TOMCAT);
+            ApplicationLoader.initializeLoginProperties(TOMCAT);
 
             try {
                 TOMCAT.start();
@@ -367,16 +312,17 @@ public class PreExperimentDataCollector {
                 for (final DynaProperty dynaProperty : appCtx.getDataClass().getDynaProperties()) {
                     dynamic.addAttribute(createNewAttribute(dynaProperty, appCtx));
                 }
-                setState(DeviceState.ON);
-                setStatus("Tomcat started");
+
+                deviceManager.pushStateChangeEvent(DeviceState.STANDBY);
+                deviceManager.pushStatusChangeEvent("Tomcat started");
             } catch (DevFailed devFailed) {
                 DevFailedUtils.logDevFailed(devFailed, logger);
-                setState(DeviceState.FAULT);
-                setStatus("Failed to start Tomcat");
+                deviceManager.pushStateChangeEvent(DeviceState.FAULT);
+                deviceManager.pushStatusChangeEvent("Failed to start Tomcat");
             } catch (Exception e) {
                 logger.error("Failed to start Tomcat: {}", e.getMessage());
-                setState(DeviceState.FAULT);
-                setStatus("Failed to start Tomcat");
+                deviceManager.pushStateChangeEvent(DeviceState.FAULT);
+                deviceManager.pushStatusChangeEvent("Failed to start Tomcat");
             }
         }
     }
