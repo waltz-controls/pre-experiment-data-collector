@@ -239,7 +239,7 @@ public class PreExperimentDataCollector {
 
     @Init
     public void init() {
-        new TomcatStarterTask().run();
+//        new TomcatStarterTask().run();
     }
 
     @Delete
