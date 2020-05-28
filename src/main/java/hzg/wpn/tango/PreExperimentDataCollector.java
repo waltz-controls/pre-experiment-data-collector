@@ -41,6 +41,7 @@ import fr.esrf.TangoApi.PipeBlobBuilder;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.web.ApplicationLoader;
+import hzg.wpn.predator.web.ApplicationProperties;
 import hzg.wpn.predator.web.LoginProperties;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
 import org.apache.catalina.LifecycleException;
@@ -68,6 +69,9 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import static hzg.wpn.predator.web.ApplicationLoader.initializeApplicationContext;
+import static hzg.wpn.predator.web.ApplicationLoader.initializeApplicationProperties;
 
 /**
  * Designed to be Thread condemned
@@ -240,6 +244,9 @@ public class PreExperimentDataCollector {
     @Init
     public void init() {
 //        new TomcatStarterTask().run();
+        ApplicationProperties appProperties = initializeApplicationProperties();
+
+        appCtx = initializeApplicationContext(appProperties);
     }
 
     @Delete

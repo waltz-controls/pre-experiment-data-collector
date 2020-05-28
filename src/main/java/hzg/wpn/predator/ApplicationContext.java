@@ -59,8 +59,6 @@ import static hzg.wpn.predator.web.ApplicationLoader.VAR_PRE_EXPERIMENT_DATA_COL
 @Immutable
 public class ApplicationContext {
     public static final String HOME = "home";
-    private final String realPath;
-    private final String contextPath;
     private final String beamtimeId;
     private final Storage storage;
     private final ApplicationProperties properties;
@@ -70,17 +68,13 @@ public class ApplicationContext {
     private final Path home;
 
     /**
-     * @param realPath    ends with '/'
-     * @param contextPath without '/' on the end.
      * @param beamtimeId
      * @param storage
      * @param properties
      * @param meta
      * @param dataClass
      */
-    public ApplicationContext(String realPath, String contextPath, String beamtimeId, Storage storage, ApplicationProperties properties, Meta meta, DynaClass dataClass) {
-        this.realPath = realPath;
-        this.contextPath = contextPath;
+    public ApplicationContext(String beamtimeId, Storage storage, ApplicationProperties properties, Meta meta, DynaClass dataClass) {
         this.beamtimeId = beamtimeId;
         this.storage = storage;
         this.properties = properties;

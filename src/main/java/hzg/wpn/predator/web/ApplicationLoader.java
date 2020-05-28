@@ -18,7 +18,6 @@ import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
@@ -129,14 +128,14 @@ public class ApplicationLoader implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         ApplicationProperties appProperties = initializeApplicationProperties();
 
-        ApplicationContext context = initializeApplicationContext(appProperties, sce.getServletContext());
+        ApplicationContext context = initializeApplicationContext(appProperties);
         sce.getServletContext().setAttribute(APPLICATION_CONTEXT, context);
 
         //TODO avoid this hack
         PreExperimentDataCollector.setStaticContext(context);
     }
 
-    private ApplicationProperties initializeApplicationProperties() {
+    public static ApplicationProperties initializeApplicationProperties() {
         try {
             Properties properties = ResourceManager.loadProperties(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, APPLICATION_PROPERTIES);
 
@@ -151,20 +150,17 @@ public class ApplicationLoader implements ServletContextListener {
 
     /**
      * Initializes {@link ApplicationContext} and puts it into ServletContext
+     *  @param appProperties
      *
-     * @param appProperties
-     * @param servletContext
      */
-    private ApplicationContext initializeApplicationContext(ApplicationProperties appProperties, ServletContext servletContext) {
-        String realPath = servletContext.getRealPath("/");
-        String contextPath = servletContext.getContextPath();
+    public static ApplicationContext initializeApplicationContext(ApplicationProperties appProperties) {
         String beamtimeId = appProperties.beamtimeId;
         Storage storage = new SimpleSerializationStorage();
         try (InputStream metaAsResourceStream = ResourceManager.loadResource(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, META_YAML)){
             Meta meta = new Meta(metaAsResourceStream);
             DynaClass dataClass = meta.extractDynaClass();
 
-            ApplicationContext context = new ApplicationContext(realPath, contextPath, beamtimeId, storage, appProperties, meta, dataClass);
+            ApplicationContext context = new ApplicationContext(beamtimeId, storage, appProperties, meta, dataClass);
 
             return context;
         } catch (Exception e) {
