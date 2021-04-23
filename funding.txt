@@ -1,0 +1,12 @@
+The main contributor to this project is Institute of Materials Research, 
+Helmholtz-Zentrum Geesthacht,
+Germany.  
+
+This project is a contribution of the Helmholtz Association Centres and 
+Technische Universitaet Muenchen to the ESS Design Update Phase.
+
+The project's funding reference is FKZ05E11CG1.
+
+Copyright (c) 2012. Institute of Materials Research,
+Helmholtz-Zentrum Geesthacht,
+Germany.
