@@ -44,8 +44,11 @@
     <properties>
         <tomcat.version>7.0.77</tomcat.version>
         <slf4j-api.version>1.7.5</slf4j-api.version>
+        <jtango.ver>1.0.5</jtango.ver>
         <github.organization>hzg-wpi</github.organization>
         <github.repo>pre-experiment-data-collector</github.repo>
+        <dockerhub.username>hzhereon</dockerhub.username>
+        <dockerhub.repo>pre-experiment-data-collector</dockerhub.repo>
     </properties>
 
     <scm>
@@ -174,7 +177,7 @@
         <dependency>
             <groupId>de.hereon.tango</groupId>
             <artifactId>server</artifactId>
-            <version>1.0.1</version>
+            <version>${jtango.ver}</version>
         </dependency>
         <dependency>
             <groupId>ru.ingvord</groupId>
@@ -207,6 +210,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -231,6 +235,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <argLine>-Xmx1050m -XX:MaxPermSize=128M</argLine>
@@ -299,6 +304,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>assembly</id>
@@ -356,14 +362,39 @@
             </plugin>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
                     <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.12</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <repository>registry.hub.docker.com/${dockerhub.username}/${dockerhub.repo}</repository>
+                    <tag>latest</tag>
+                    <buildArgs>
+                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                    <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
                 </configuration>
             </plugin>
         </plugins>
@@ -374,6 +405,29 @@
             <id>release</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>dockerfile-maven-plugin</artifactId>
+                        <version>1.4.12</version>
+                        <executions>
+                            <execution>
+                                <id>default</id>
+                                <goals>
+                                    <goal>build</goal>
+                                    <goal>push</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <repository>registry.hub.docker.com/${dockerhub.username}/${dockerhub.repo}</repository>
+                            <tag>${project.version}</tag>
+                            <buildArgs>
+                                <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                            </buildArgs>
+                            <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>de.jutzig</groupId>
                         <artifactId>github-release-plugin</artifactId>
