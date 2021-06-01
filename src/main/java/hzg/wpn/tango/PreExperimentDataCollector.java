@@ -35,14 +35,11 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import fr.esrf.Tango.AttrWriteType;
 import fr.esrf.Tango.DevFailed;
-import fr.esrf.Tango.DevState;
-import fr.esrf.TangoApi.PipeBlob;
 import fr.esrf.TangoApi.PipeBlobBuilder;
 import hzg.wpn.predator.ApplicationContext;
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.web.ApplicationLoader;
 import hzg.wpn.predator.web.ApplicationProperties;
-import hzg.wpn.predator.web.LoginProperties;
 import hzg.wpn.util.beanutils.BeanUtilsHelper;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
@@ -52,14 +49,14 @@ import org.apache.commons.beanutils.DynaProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tango.DeviceState;
-import org.tango.server.*;
+import org.tango.server.ServerManager;
+import org.tango.server.StateMachineBehavior;
 import org.tango.server.annotation.*;
 import org.tango.server.attribute.AttributeConfiguration;
 import org.tango.server.attribute.AttributeValue;
 import org.tango.server.attribute.IAttributeBehavior;
 import org.tango.server.device.DeviceManager;
 import org.tango.server.dynamic.DynamicManager;
-import org.tango.server.events.EventType;
 import org.tango.server.pipe.PipeValue;
 import org.tango.utils.DevFailedUtils;
 
@@ -243,7 +240,7 @@ public class PreExperimentDataCollector {
 
     @Init
     public void init() {
-//        new TomcatStarterTask().run();
+        new TomcatStarterTask().run();
         ApplicationProperties appProperties = initializeApplicationProperties();
 
         appCtx = initializeApplicationContext(appProperties);

@@ -39,8 +39,6 @@
     </description>
     <version>4.0.21-SNAPSHOT</version>
 
-    <packaging>war</packaging>
-
     <properties>
         <tomcat.version>7.0.77</tomcat.version>
         <slf4j-api.version>1.7.5</slf4j-api.version>
