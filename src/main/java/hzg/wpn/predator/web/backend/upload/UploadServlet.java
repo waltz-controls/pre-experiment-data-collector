@@ -38,7 +38,6 @@ import java.net.URL;
 
 /**
  * Handles files upload. Files are stored to {WEB_APP_ROOT}/home/{user}/upload directory.
- * //TODO customize destination through application.properties
  *
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 06.01.12

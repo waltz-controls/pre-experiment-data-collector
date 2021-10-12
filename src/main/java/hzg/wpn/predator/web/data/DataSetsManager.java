@@ -27,13 +27,11 @@ import java.util.NoSuchElementException;
 public class DataSetsManager {
     private static final Logger LOG = LoggerFactory.getLogger(DataSetsManager.class);
 
-    private final String beamtimeId;
     private final Path pathToHome;
     private final DynaClass dataSetClass;
     private final Storage storage;
 
-    public DataSetsManager(String beamtimeId, Path pathToHome, DynaClass dataSetClass, Storage storage) {
-        this.beamtimeId = beamtimeId;
+    public DataSetsManager(Path pathToHome, DynaClass dataSetClass, Storage storage) {
         this.pathToHome = pathToHome;
         this.dataSetClass = dataSetClass;
         this.storage = storage;
@@ -117,7 +115,6 @@ public class DataSetsManager {
             //these properties are defined in Meta#DEFAULT_PROPERTIES
             BeanUtils.setProperty(result,"user",user);
             BeanUtils.setProperty(result,"name",dataSetName);
-            BeanUtils.setProperty(result,"beamtimeId",beamtimeId);
 
             return result;
         } catch (InvocationTargetException|IllegalAccessException|InstantiationException e) {

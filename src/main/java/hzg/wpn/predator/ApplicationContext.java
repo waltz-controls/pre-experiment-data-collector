@@ -31,7 +31,6 @@ package hzg.wpn.predator;
 
 import hzg.wpn.predator.meta.Meta;
 import hzg.wpn.predator.storage.Storage;
-import hzg.wpn.predator.web.ApplicationProperties;
 import hzg.wpn.predator.web.data.DataSetsManager;
 import org.apache.commons.beanutils.DynaClass;
 
@@ -59,43 +58,27 @@ import static hzg.wpn.predator.web.ApplicationLoader.VAR_PRE_EXPERIMENT_DATA_COL
 @Immutable
 public class ApplicationContext {
     public static final String HOME = "home";
-    private final String beamtimeId;
     private final Storage storage;
-    private final ApplicationProperties properties;
     private final Meta meta;
     private final DynaClass dataClass;
     private final DataSetsManager manager;
     private final Path home;
 
     /**
-     * @param beamtimeId
      * @param storage
-     * @param properties
      * @param meta
      * @param dataClass
      */
-    public ApplicationContext(String beamtimeId, Storage storage, ApplicationProperties properties, Meta meta, DynaClass dataClass) {
-        this.beamtimeId = beamtimeId;
+    public ApplicationContext(Storage storage, Meta meta, DynaClass dataClass) {
         this.storage = storage;
-        this.properties = properties;
         this.meta = meta;
         this.dataClass = dataClass;
         this.home = Paths.get(
                 System.getProperty("XENV_ROOT", System.getProperty("user.dir"))).resolve(VAR_PRE_EXPERIMENT_DATA_COLLECTOR).resolve(HOME);
-        this.manager = new DataSetsManager(beamtimeId,
+        this.manager = new DataSetsManager(
                 home, dataClass, storage);
     }
 
-
-    /**
-     * Returns current beamtimeId associated with this application. BeamtimeId is usually stored in BeamtimeId.txt resource file.
-     * It is assumed beamtimeId is being set once during the experiment installation setup.
-     *
-     * @return beamtimeId
-     */
-    public String getBeamtimeId() {
-        return beamtimeId;
-    }
 
     /**
      * @return meta is a wrapper for the yaml description
@@ -122,13 +105,6 @@ public class ApplicationContext {
      */
     public Storage getStorage() {
         return storage;
-    }
-
-    /**
-     * @return application properties
-     */
-    public ApplicationProperties getApplicationProperties() {
-        return properties;
     }
 
     /**

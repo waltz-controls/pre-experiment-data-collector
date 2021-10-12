@@ -38,7 +38,6 @@ import static hzg.wpn.tango.PreExperimentDataCollector.TOMCAT_PORT;
 public class ApplicationLoader implements ServletContextListener {
     public static final String APPLICATION_CONTEXT = "predator.context";
     public static final String LOGIN_PROPERTIES = "login.properties";
-    public static final String APPLICATION_PROPERTIES = "application.properties";
     public static final String META_YAML = "meta.yaml";
     public static final String ETC_PRE_EXPERIMENT_DATA_COLLECTOR = "etc/PreExperimentDataCollector";
     public static final String VAR_PRE_EXPERIMENT_DATA_COLLECTOR = "var/PreExperimentDataCollector";
@@ -126,41 +125,24 @@ public class ApplicationLoader implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        ApplicationProperties appProperties = initializeApplicationProperties();
-
-        ApplicationContext context = initializeApplicationContext(appProperties);
+        ApplicationContext context = initializeApplicationContext();
         sce.getServletContext().setAttribute(APPLICATION_CONTEXT, context);
 
         //TODO avoid this hack
         PreExperimentDataCollector.setStaticContext(context);
     }
 
-    public static ApplicationProperties initializeApplicationProperties() {
-        try {
-            Properties properties = ResourceManager.loadProperties(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, APPLICATION_PROPERTIES);
-
-            PropertiesParser<ApplicationProperties> factory = PropertiesParser.createInstance(ApplicationProperties.class);
-            ApplicationProperties appProperties = factory.parseProperties(properties);
-            return appProperties;
-        } catch (Exception e) {
-            logger.error("Cannot initialize application properties", e);
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * Initializes {@link ApplicationContext} and puts it into ServletContext
-     *  @param appProperties
      *
      */
-    public static ApplicationContext initializeApplicationContext(ApplicationProperties appProperties) {
-        String beamtimeId = appProperties.beamtimeId;
+    public static ApplicationContext initializeApplicationContext() {
         Storage storage = new SimpleSerializationStorage();
         try (InputStream metaAsResourceStream = ResourceManager.loadResource(ETC_PRE_EXPERIMENT_DATA_COLLECTOR, META_YAML)){
             Meta meta = new Meta(metaAsResourceStream);
             DynaClass dataClass = meta.extractDynaClass();
 
-            ApplicationContext context = new ApplicationContext(beamtimeId, storage, appProperties, meta, dataClass);
+            ApplicationContext context = new ApplicationContext(storage, meta, dataClass);
 
             return context;
         } catch (Exception e) {
