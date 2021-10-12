@@ -37,7 +37,7 @@
         users. Prior the experiment the users have to fill out the form. In this form there are several fields that
         describes the ongoing experiment (samples, purposes etc.)
     </description>
-    <version>4.0.22</version>
+    <version>4.0.23-SNAPSHOT</version>
 
     <properties>
         <tomcat.version>7.0.77</tomcat.version>
@@ -53,7 +53,7 @@
         <connection>scm:git:git@github.com:${github.organization}/${github.repo}.git</connection>
         <developerConnection>scm:git:git@github.com:${github.organization}/${github.repo}.git</developerConnection>
         <url>https://github.com/${github.organization}/${github.repo}</url>
-        <tag>PreExperimentDataCollector-4.0.22</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencies>
